@@ -456,6 +456,10 @@
 .ps-rx-paste-confirm { padding: 8px 14px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--border-hover) 90%, transparent); background: var(--accent-soft); color: var(--accent); font-family: inherit; font-size: var(--type-small); cursor: pointer; flex-shrink: 0; transition: all 0.15s ease; }
 .ps-rx-paste-confirm:hover:not(:disabled) { background: var(--accent); color: #fff; border-color: var(--accent); }
 .ps-rx-paste-confirm:disabled { opacity: 0.42; cursor: not-allowed; }
+.ps-rx-paste-buttons { display: flex; align-items: center; gap: 8px; }
+.ps-rx-paste-clear { padding: 8px 12px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--border) 90%, transparent); background: transparent; color: var(--text-muted); font-family: inherit; font-size: var(--type-small); cursor: pointer; flex-shrink: 0; transition: all 0.15s ease; }
+.ps-rx-paste-clear:hover:not(:disabled) { border-color: color-mix(in srgb, var(--border-hover) 88%, transparent); color: var(--text-soft); }
+.ps-rx-paste-clear:disabled { opacity: 0.42; cursor: not-allowed; }
 
 @media (max-width: 720px) {
   .ps-rx-grid { grid-template-columns: minmax(0, 1fr); }

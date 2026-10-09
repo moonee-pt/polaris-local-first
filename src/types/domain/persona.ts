@@ -204,6 +204,7 @@ export interface PersonaAdvancedSettings {
   customBody: string;
   regexRules: string;
   regexTriggers?: string;
+  languageStylePrompt?: string;
   snippets: string[];
 }
 

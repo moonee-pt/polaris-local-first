@@ -16,11 +16,13 @@ export function buildAssistantPromptLayers(params: {
   templateContext: TemplateContext;
   messages: ChatMessage[];
   regexTriggers?: string;
+  languageStylePrompt?: string;
   currentTask?: ConversationTaskState | null;
   includeRuntimeClockContext?: boolean;
   promptInjections?: ProviderCapabilityPromptInjection[];
   toolContext?: AssistantToolContext;
   toolProtocolMode?: AssistantToolPromptProtocolMode;
+  modeInstruction?: string;
 }): string[] {
   return buildAssistantPromptParts(params)
     .filter((part) => part.enabled)
@@ -33,13 +35,15 @@ export function buildAssistantPromptParts(params: {
   templateContext: TemplateContext;
   messages: ChatMessage[];
   regexTriggers?: string;
+  languageStylePrompt?: string;
   currentTask?: ConversationTaskState | null;
   includeRuntimeClockContext?: boolean;
   promptInjections?: ProviderCapabilityPromptInjection[];
   toolContext?: AssistantToolContext;
   toolProtocolMode?: AssistantToolPromptProtocolMode;
+  modeInstruction?: string;
 }): AssistantPromptPart[] {
-  const { personaPrompt, personaPromptSource, templateContext, messages, regexTriggers, currentTask, includeRuntimeClockContext, promptInjections, toolContext, toolProtocolMode } = params;
+  const { personaPrompt, personaPromptSource, templateContext, messages, regexTriggers, languageStylePrompt, currentTask, includeRuntimeClockContext, promptInjections, toolContext, toolProtocolMode, modeInstruction } = params;
   const systemIdentityEntries = buildSystemIdentityEntries();
   const identityEntries = buildIdentityEntries({
     personaPrompt,
@@ -58,13 +62,35 @@ export function buildAssistantPromptParts(params: {
     enabled: false,
     charCount: 0
   };
+  const languageStyleEntry = {
+    name: 'language_style_prompt' as const,
+    label: '语言风格',
+    role: 'system' as const,
+    layer: 'context' as const,
+    truncationPriority: 56,
+    content: languageStylePrompt?.trim() ?? '',
+    enabled: false,
+    charCount: 0
+  };
   const workRuntimeEntry = buildWorkRuntimeEntry({ currentTask, messages, toolContext });
   const capabilityEntries = buildCapabilityEntries({ messages, toolContext, toolProtocolMode });
+  const modeInstructionEntry = {
+    name: 'speech_cue_instruction' as const,
+    label: '语音演出标记',
+    role: 'system' as const,
+    layer: 'context' as const,
+    truncationPriority: 58,
+    content: modeInstruction?.trim() ?? '',
+    enabled: false,
+    charCount: 0
+  };
 
   return [
     ...systemIdentityEntries,
     ...identityEntries,
     ...capabilityEntries,
+    modeInstructionEntry,
+    languageStyleEntry,
     ...(runtimeClockEntry ? [runtimeClockEntry] : []),
     ...(modelRuntimeEntry ? [modelRuntimeEntry] : []),
     regexTriggerEntry,

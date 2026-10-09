@@ -587,6 +587,7 @@ export async function prepareCollaboratorReplyRequest(params: {
   signal?: AbortSignal;
   requestVectorEmbeddings?: RequestSemanticVectorEmbeddingClient;
   requestImageUnderstanding?: ImageUnderstandingRequestReply;
+  modeInstruction?: string;
 }): Promise<{
   assistantName: string;
   modelId: string;
@@ -596,7 +597,7 @@ export async function prepareCollaboratorReplyRequest(params: {
   conversation: RequestMessage[];
   imageUnderstandingResults: RequestImageUnderstandingResult[];
 }> {
-  const { api, persona, personas, messages, toolLedger, toolContext, currentTask, nickname } = params;
+  const { api, persona, personas, messages, toolLedger, toolContext, currentTask, nickname, modeInstruction } = params;
   const startedAt = runtimeNow();
   const requestId = createUid('request');
   const preparedAdvanced = resolvePreparedAdvancedSettings({
@@ -640,11 +641,13 @@ export async function prepareCollaboratorReplyRequest(params: {
     personaPromptSource: personaPrompt.source,
     templateContext,
     regexTriggers: preparedAdvanced?.regexTriggers,
+    languageStylePrompt: preparedAdvanced?.languageStylePrompt,
     includeRuntimeClockContext: persona?.systemTimeContextEnabled === true,
     promptInjections: providerCapability.promptInjections,
     toolContext,
     currentTask,
     toolProtocolMode,
+    modeInstruction,
     messages: requestSourceMessages
   });
   const promptPartsMs = runtimeNow() - stepStartedAt;

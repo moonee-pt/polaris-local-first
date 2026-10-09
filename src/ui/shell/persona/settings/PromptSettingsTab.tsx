@@ -4,12 +4,13 @@ import { Icon, type IconName } from '../../../Icon';
 import { type PersonaTabProps } from '../personaUiShared';
 import { PromptCoreSettingsPage } from './PromptCoreSettingsPage';
 import { SnippetsSettingsTab } from './SnippetsSettingsTab';
+import { LanguageStylePromptField } from './LanguageStylePromptField';
 
 type PromptSettingsTabProps = PersonaTabProps & {
   expandedUsesPageScroll?: boolean;
 };
 
-type PromptSettingsPage = 'prompt' | 'message' | 'tone' | 'rules';
+type PromptSettingsPage = 'prompt' | 'message' | 'tone' | 'rules' | 'style';
 
 const PROMPT_PAGE_META: Record<PromptSettingsPage, {
   label: string;
@@ -18,10 +19,11 @@ const PROMPT_PAGE_META: Record<PromptSettingsPage, {
   prompt: { label: '提示词', icon: 'promptScript' },
   message: { label: '消息', icon: 'promptMessage' },
   tone: { label: '调性', icon: 'promptTone' },
-  rules: { label: '世界书', icon: 'promptRules' }
+  rules: { label: '世界书', icon: 'promptRules' },
+  style: { label: '语言风格', icon: 'feather' }
 };
 
-const PROMPT_PAGES: PromptSettingsPage[] = ['prompt', 'message', 'tone', 'rules'];
+const PROMPT_PAGES: PromptSettingsPage[] = ['prompt', 'message', 'tone', 'rules', 'style'];
 
 export function PromptSettingsTab({
   activeCollaboratorId,
@@ -100,6 +102,14 @@ export function PromptSettingsTab({
           activePersona={activePersona}
           onUpdatePersona={onUpdatePersona}
           visibleSections="worldBook"
+        />
+      ) : null}
+
+      {activePromptPage === 'style' ? (
+        <LanguageStylePromptField
+          activeCollaboratorId={activeCollaboratorId}
+          activePersona={activePersona}
+          onUpdatePersona={onUpdatePersona}
         />
       ) : null}
     </div>
