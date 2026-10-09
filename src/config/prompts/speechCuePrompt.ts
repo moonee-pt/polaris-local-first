@@ -8,11 +8,11 @@
 export const SPEECH_CUE_INSTRUCTION = [
   '[语音演出标记]',
   '你的话会被念成声音，所以台词和描写要分开写：',
-  '- 说出口的台词放进「」里，只有「」里的内容会被念出来。',
+  '- 说出口的台词放进【】里，只有【】里的内容会被念出来。',
   '- 动作、神态、心理、旁白写进（）里，不会被念出来。',
   '- 两段台词之间夹了动作时，朗读会自动停顿；动作写得越多停顿越久，你照常写就行。',
   '',
-  '可以用方括号标记指导念法，写在「」里、要生效的那句前面，只认下面这些，照抄英文原样：',
+  '可以用方括号标记指导念法，写在【】里、要生效的那句前面，只认下面这些，照抄英文原样：',
   '语气：[angry] [sad] [embarrassed] [emphasis] [whispering] [soft] [breathy] [excited]',
   '音效：[laughing] [chuckling] [moaning] [clear throat] [sobbing] [crying loudly] [sighing] [panting] [groaning]',
   '停顿：[pause] [long pause]',

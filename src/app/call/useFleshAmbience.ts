@@ -86,14 +86,15 @@ export function useFleshAmbience(): FleshAmbienceController {
     }
   }, []);
 
-  const prefetchLoops = useCallback((context: AudioContext) => {
+  const prefetchLoops = useCallback((context: AudioContext, preferred: FleshLoopCategory) => {
+    const ordered: FleshLoopCategory[] = [preferred, ...FLESH_LOOP_CATEGORIES.filter((item) => item !== preferred)];
     void (async () => {
-      for (const category of FLESH_LOOP_CATEGORIES) {
+      for (const category of ordered) {
         for (const clip of FLESH_CLIP_NAMES[category]) {
           if (bufferRef.current.has(`${category}/${clip}`)) continue;
           await decodeClip(context, category, clip);
         }
-        setReady(true);
+        if (category === preferred) setReady(true);
       }
     })();
   }, [decodeClip]);
@@ -149,7 +150,7 @@ export function useFleshAmbience(): FleshAmbienceController {
     const context = ensureGraph();
     if (!context || !masterRef.current) return;
     void context.resume().catch(() => {});
-    prefetchLoops(context);
+    prefetchLoops(context, category);
     loopRef.current = createFleshAmbienceLoop({
       seed: Math.floor(Math.random() * 0x7fffffff),
       category,

@@ -4,6 +4,9 @@ import { stripFleshCues } from '../../../../engines/voice/fleshAmbience';
 
 type SpeechSegment = { kind: 'speech' | 'stage'; text: string };
 
+/** 【】 marks what is said out loud; this is what call mode asks the model to write. */
+const CALL_SPEECH_PAIRS: Array<[string, string]> = [['【', '】']];
+
 const QUOTE_PAIRS: Array<[string, string]> = [
   ['「', '」'],
   ['『', '』'],
@@ -46,12 +49,12 @@ function normalizeSpeechWhitespace(content: string) {
  * (stage directions: actions, expressions, inner thoughts). Only spoken lines are
  * handed to the speech engine; the rest is dropped.
  */
-function splitSpeechSegments(content: string): SpeechSegment[] {
+function splitSpeechSegments(content: string, pairs: Array<[string, string]>): SpeechSegment[] {
   const segments: SpeechSegment[] = [];
   let cursor = 0;
   while (cursor < content.length) {
     let open: { start: number; opener: string; closer: string } | null = null;
-    for (const [opener, closer] of QUOTE_PAIRS) {
+    for (const [opener, closer] of pairs) {
       const start = content.indexOf(opener, cursor);
       if (start !== -1 && (open === null || start < open.start)) open = { start, opener, closer };
     }
@@ -89,12 +92,23 @@ function joinSpokenSegments(segments: SpeechSegment[]) {
   return parts.join('');
 }
 
+/**
+ * Fallback for replies that never marked their spoken lines: read the prose but skip
+ * the （）stage directions instead of reading the whole thing out loud.
+ */
+function stripStageDirections(content: string) {
+  if (!content.includes('（') && !content.includes('(')) return content;
+  const withoutStage = content.replace(/（[^（）]*）/g, '').replace(/\([^()]*\)/g, '');
+  return withoutStage.trim() ? withoutStage : content;
+}
+
 export function buildAssistantSpeechText(content: string) {
   const withoutToolDrafts = stripToolDraftBlocks(content);
   const withoutCodeBlocks = stripCodeBlocksFromMessage(withoutToolDrafts);
   const cleaned = normalizeSpeechWhitespace(stripMarkdownForSpeech(withoutCodeBlocks));
-  const segments = splitSpeechSegments(cleaned);
+  const pairs = cleaned.includes('【') ? CALL_SPEECH_PAIRS : QUOTE_PAIRS;
+  const segments = splitSpeechSegments(cleaned, pairs);
   const hasSpokenLines = segments.some((segment) => segment.kind === 'speech' && segment.text.trim());
-  const spoken = hasSpokenLines ? joinSpokenSegments(segments) : cleaned;
+  const spoken = hasSpokenLines ? joinSpokenSegments(segments) : stripStageDirections(cleaned);
   return stripFleshCues(normalizeSpeechWhitespace(spoken));
 }
