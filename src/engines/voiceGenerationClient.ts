@@ -283,7 +283,8 @@ function buildFishAudioSpeechBody(input: string, voice: string, format: VoiceGen
     text: input,
     ...(voice ? { reference_id: voice } : {}),
     format,
-    normalize: true
+    normalize: true,
+    latency: 'balanced'
   };
 }
 

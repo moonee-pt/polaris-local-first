@@ -37,6 +37,7 @@ export const collection = {
   'collection.world.loadingRooms': 'Loading rooms',
   'collection.world.roomViewAria': 'Room view',
   'collection.world.newConversation': 'New chat',
+  'collection.world.collaboratorMoreActions': 'More: edit this collaborator',
   'collection.scope.drawerAria': 'Collaborator switcher drawer',
   'collection.scope.closeDrawerAria': 'Collapse collaborator drawer',
   'collection.scope.dialogAria': 'Collaborator switcher',

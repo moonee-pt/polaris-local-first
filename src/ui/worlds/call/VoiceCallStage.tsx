@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useVoiceCallPlayback } from '../../../app/call/useVoiceCallPlayback';
+import { useFleshAmbience } from '../../../app/call/useFleshAmbience';
 import { splitVoiceCallCaptions } from '../../../engines/voice/voiceCallCaption';
+import { readFleshCues } from '../../../engines/voice/fleshAmbience';
 import { useI18n } from '../../../i18n';
 import type { I18nKey } from '../../../i18n/messages';
 import { useChatActions, useChatPresentation, useChatStablePayload, useChatUi } from '../chat/context/ChatContext';
@@ -56,6 +58,23 @@ export function VoiceCallStage({ onClose }: VoiceCallStageProps) {
     },
     onError: (code) => setErrorCode(code)
   });
+  const ambience = useFleshAmbience();
+
+  useEffect(() => {
+    if (playback.status === 'speaking') {
+      ambience.setDucked(true);
+      return;
+    }
+    ambience.setDucked(false);
+    if (playback.status === 'idle' && ambience.active) ambience.stop();
+  }, [ambience, playback.status]);
+
+  const applyFleshCues = (content: string) => {
+    for (const cue of readFleshCues(content)) {
+      if (cue.kind === 'loop') ambience.start(cue.category, cue.preset);
+      else ambience.playOneShot(cue.category);
+    }
+  };
 
   useEffect(() => {
     const interval = window.setInterval(() => {
@@ -78,6 +97,8 @@ export function VoiceCallStage({ onClose }: VoiceCallStageProps) {
 
   const speakAssistantMessage = (messageId: string, text: string) => {
     if (!text) return;
+    const source = stablePayload.messages.find((message) => message.id === messageId);
+    if (source) applyFleshCues(source.content);
     const cachedVoice = stablePayload.messages.find((message) => message.id === messageId)?.voiceCache;
     if (cachedVoice) {
       const segments = splitVoiceCallCaptions(text);
@@ -109,6 +130,7 @@ export function VoiceCallStage({ onClose }: VoiceCallStageProps) {
     const startedAt = startedAtRef.current;
     const endedAt = Date.now();
     playback.stop();
+    ambience.stop();
 
     if (conversationId) {
       const callMessages = stablePayload.messages.filter((message) =>
@@ -144,6 +166,7 @@ export function VoiceCallStage({ onClose }: VoiceCallStageProps) {
     if (!message) return;
     const speechText = buildAssistantSpeechText(message.content);
     if (!speechText) return;
+    applyFleshCues(message.content);
     setErrorCode(null);
     speakAssistantMessage(message.id, speechText);
   }

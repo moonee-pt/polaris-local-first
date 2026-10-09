@@ -3,6 +3,8 @@ import { createPortal } from 'react-dom';
 import type { CodeCardActionMode } from '../../../../app/chat/chatDerivedState';
 import { readMessageSpeechCacheBlob, saveMessageSpeechCache } from '../../../../app/chat/messageSpeechCache';
 import { requestGeneratedSpeech } from '../../../../engines/voiceGenerationClient';
+import { readFleshCues } from '../../../../engines/voice/fleshAmbience';
+import { useFleshAmbience } from '../../../../app/call/useFleshAmbience';
 import { writeTextToClipboard } from '../../../../infrastructure/clipboard';
 import { canUseNativeSystemBackupFiles, exportFileViaSystemFiles } from '../../../../native/systemBackupFiles';
 import { useRuntimeStore } from '../../../../stores/runtimeStore';
@@ -138,6 +140,17 @@ export function MessageActions({
     setNativeSpeechAvailable(typeof window !== 'undefined' && 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window);
   }, []);
 
+  const {
+    start: startAmbience,
+    stop: stopAmbience,
+    setDucked: setAmbienceDucked,
+    playOneShot: playAmbienceOneShot
+  } = useFleshAmbience();
+
+  useEffect(() => {
+    setAmbienceDucked(speaking);
+  }, [speaking, setAmbienceDucked]);
+
   useEffect(() => () => {
     stopSpeechPlayback();
   }, []);
@@ -154,6 +167,7 @@ export function MessageActions({
   };
 
   function stopSpeechPlayback() {
+    stopAmbience();
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       window.speechSynthesis.cancel();
     }
@@ -172,6 +186,13 @@ export function MessageActions({
     abortRef.current = null;
     setSpeaking(false);
     setSpeechLoading(false);
+  }
+
+  function applyMessageAmbience() {
+    for (const cue of readFleshCues(messageContent)) {
+      if (cue.kind === 'loop') startAmbience(cue.category, cue.preset);
+      else playAmbienceOneShot(cue.category);
+    }
   }
 
   const playNativeSpeech = (text: string) => {
@@ -280,6 +301,7 @@ export function MessageActions({
       return;
     }
     stopSpeechPlayback();
+    applyMessageAmbience();
     if (speechCache?.assetId) {
       void playCachedSpeech(speechCache);
       return;

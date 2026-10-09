@@ -1,0 +1,680 @@
+/* Polaris settings sheet - mobile list treatment.
+   Scope: the settings panel and its standalone sub-sheets.
+   One structural unit: the row. Hierarchy comes from type and rhythm. */
+
+:is(.menu-sheet-page, .api-provider-sheet) {
+  --set-divider: color-mix(in srgb, var(--border) 44%, transparent);
+  --set-label: color-mix(in srgb, var(--sheet-readable-muted) 74%, var(--sheet-readable-text));
+  --set-muted: var(--sheet-readable-muted);
+  --set-text: var(--sheet-readable-text);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* 1. page header */
+:is(.menu-sheet-page, .api-provider-sheet) .menu-sheet-header {
+  gap: 0;
+  margin-bottom: 18px;
+  padding: 0;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-sheet-title small {
+  margin-bottom: 2px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: var(--set-label);
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-sheet-title h2 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  color: var(--set-text);
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-sheet-header-root .menu-sheet-title small {
+  margin-bottom: 0;
+  font-size: 19px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--set-text);
+}
+
+/* 2. sections - separated by air, not by rules */
+:is(.menu-sheet-page, .api-provider-sheet) .menu-section {
+  margin-top: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-section:first-of-type {
+  margin-top: 0;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-section-head {
+  gap: 6px;
+  margin-bottom: 0;
+  padding: 0 0 4px;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-section-kicker {
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.14em;
+  color: var(--set-label);
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-section-note {
+  margin: 6px 0 0;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--set-muted);
+}
+
+/* 3. rows - one rule between siblings, never a trailing rule */
+:is(.menu-sheet-page, .api-provider-sheet) .settings-item,
+:is(.menu-sheet-page, .api-provider-sheet) .menu-preference-row,
+:is(.menu-sheet-page, .api-provider-sheet) .menu-font-scope-row,
+:is(.menu-sheet-page, .api-provider-sheet) .menu-font-card,
+:is(.menu-sheet-page, .api-provider-sheet) .memory-toggle,
+:is(.menu-sheet-page, .api-provider-sheet) .usage-entry-row {
+  min-height: 56px;
+  padding: 14px 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .settings-item + .settings-item,
+:is(.menu-sheet-page, .api-provider-sheet) .menu-preference-row + .menu-preference-row,
+:is(.menu-sheet-page, .api-provider-sheet) .menu-font-scope-row + .menu-font-scope-row,
+:is(.menu-sheet-page, .api-provider-sheet) .menu-font-card + .menu-font-card,
+:is(.menu-sheet-page, .api-provider-sheet) .memory-toggle + .memory-toggle,
+:is(.menu-sheet-page, .api-provider-sheet) .usage-entry-row + .usage-entry-row,
+:is(.menu-sheet-page, .api-provider-sheet) .menu-preference-list > * + *,
+:is(.menu-sheet-page, .api-provider-sheet) .menu-font-scope-list > * + *,
+:is(.menu-sheet-page, .api-provider-sheet) .menu-font-list > * + *,
+:is(.menu-sheet-page, .api-provider-sheet) .memory-toggle-grid > * + * {
+  border-top: 1px solid var(--set-divider);
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-preference-list,
+:is(.menu-sheet-page, .api-provider-sheet) .menu-font-list,
+:is(.menu-sheet-page, .api-provider-sheet) .menu-font-scope-list,
+:is(.menu-sheet-page, .api-provider-sheet) .memory-toggle-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-bottom: 0;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-preference-row,
+:is(.menu-sheet-page, .api-provider-sheet) .menu-font-scope-row,
+:is(.menu-sheet-page, .api-provider-sheet) .menu-font-card {
+  gap: 12px;
+  align-items: center;
+}
+
+/* 4. row type */
+:is(.menu-sheet-page, .api-provider-sheet) .settings-item-copy strong,
+:is(.menu-sheet-page, .api-provider-sheet) .menu-preference-copy strong,
+:is(.menu-sheet-page, .api-provider-sheet) .menu-font-scope-copy strong,
+:is(.menu-sheet-page, .api-provider-sheet) .menu-font-card-copy strong,
+:is(.menu-sheet-page, .api-provider-sheet) .memory-toggle-copy strong,
+:is(.menu-sheet-page, .api-provider-sheet) .usage-entry-row strong {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+  color: var(--set-text);
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .settings-item-copy small,
+:is(.menu-sheet-page, .api-provider-sheet) .menu-preference-copy small,
+:is(.menu-sheet-page, .api-provider-sheet) .menu-font-scope-copy small,
+:is(.menu-sheet-page, .api-provider-sheet) .menu-font-card-copy span,
+:is(.menu-sheet-page, .api-provider-sheet) .memory-toggle-copy span,
+:is(.menu-sheet-page, .api-provider-sheet) .usage-entry-row span {
+  margin-top: 3px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--set-muted);
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .settings-item-leading {
+  align-items: flex-start;
+  gap: 10px;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .settings-item-icon {
+  width: 20px;
+  min-width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: color-mix(in srgb, var(--set-muted) 88%, transparent);
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .settings-item-arrow {
+  font-size: 15px;
+  color: color-mix(in srgb, var(--set-muted) 55%, transparent);
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .help-hint--menu-item {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: color-mix(in srgb, var(--set-muted) 60%, transparent);
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .help-hint--menu-item:hover,
+:is(.menu-sheet-page, .api-provider-sheet) .help-hint--menu-item:focus-visible,
+:is(.menu-sheet-page, .api-provider-sheet) .help-hint--menu-item[data-open='true'] {
+  border: 0;
+  background: transparent;
+  color: var(--set-text);
+}
+
+/* 5. pickers - the accent underline is the only selection mark */
+:is(.menu-sheet-page, .api-provider-sheet) .menu-appearance-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin-top: 12px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-appearance-option {
+  min-height: 44px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 2px;
+  padding: 0 6px 10px 0;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+  color: var(--set-muted);
+  transition: color 150ms ease, border-color 150ms ease;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-appearance-option span {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-appearance-option small {
+  margin-top: 2px;
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--set-muted);
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-appearance-option:hover,
+:is(.menu-sheet-page, .api-provider-sheet) .menu-appearance-option:focus-visible {
+  border-bottom-color: color-mix(in srgb, var(--accent) 36%, transparent);
+  background: transparent;
+  color: var(--set-text);
+  outline: none;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-appearance-option.active,
+:is(.menu-sheet-page, .api-provider-sheet) .menu-appearance-option.active:hover,
+:is(.menu-sheet-page, .api-provider-sheet) .menu-appearance-option.active:focus-visible {
+  border-bottom-color: var(--accent);
+  background: transparent;
+  color: var(--set-text);
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-language-options {
+  display: inline-flex;
+  align-items: center;
+  gap: 20px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .theme-mode-switch {
+  gap: 20px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-language-option,
+:is(.menu-sheet-page, .api-provider-sheet) .theme-mode-chip {
+  min-height: 34px;
+  flex: 0 0 auto;
+  padding: 0 0 8px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--set-muted);
+  font-size: 14px;
+  font-weight: 600;
+  transition: color 150ms ease, border-color 150ms ease;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-language-option:hover,
+:is(.menu-sheet-page, .api-provider-sheet) .menu-language-option:focus-visible,
+:is(.menu-sheet-page, .api-provider-sheet) .theme-mode-chip:hover,
+:is(.menu-sheet-page, .api-provider-sheet) .theme-mode-chip:focus-visible {
+  background: transparent;
+  color: var(--set-text);
+  border-bottom-color: color-mix(in srgb, var(--accent) 36%, transparent);
+  outline: none;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-language-option.active,
+:is(.menu-sheet-page, .api-provider-sheet) .theme-mode-chip.active {
+  background: transparent;
+  box-shadow: none;
+  color: var(--set-text);
+  border-bottom-color: var(--accent);
+}
+
+@media (max-width: 430px) {
+  :is(.menu-sheet-page, .api-provider-sheet) .menu-language-options {
+    width: auto;
+  }
+
+  :is(.menu-sheet-page, .api-provider-sheet) .menu-language-option {
+    flex: 0 0 auto;
+  }
+}
+
+/* 6. slider */
+:is(.menu-sheet-page, .api-provider-sheet) .menu-preference-row input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 22px;
+  margin: 2px 0 0;
+  padding: 0;
+  background: transparent;
+  accent-color: var(--accent);
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-preference-row input[type='range']::-webkit-slider-runnable-track {
+  height: 3px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--border) 88%, transparent);
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-preference-row input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  margin-top: -6.5px;
+  border: 1.5px solid var(--accent);
+  border-radius: 50%;
+  background: var(--surface-solid);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.14);
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-preference-row input[type='range']::-moz-range-track {
+  height: 3px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--border) 88%, transparent);
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-preference-row input[type='range']::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--accent);
+  border-radius: 50%;
+  background: var(--surface-solid);
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-font-preview {
+  margin: 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--set-divider);
+  color: var(--set-text);
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+/* 7. switches */
+:is(.menu-sheet-page, .api-provider-sheet) .menu-preference-row--switch input[type='checkbox'],
+:is(.menu-sheet-page, .api-provider-sheet) .memory-toggle input[type='checkbox'] {
+  -webkit-appearance: none;
+  appearance: none;
+  position: relative;
+  flex: 0 0 auto;
+  width: 38px;
+  height: 22px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--border) 86%, transparent);
+  cursor: pointer;
+  transition: background 200ms ease;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-preference-row--switch input[type='checkbox']::after,
+:is(.menu-sheet-page, .api-provider-sheet) .memory-toggle input[type='checkbox']::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--surface-solid);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-preference-row--switch input[type='checkbox']:checked,
+:is(.menu-sheet-page, .api-provider-sheet) .memory-toggle input[type='checkbox']:checked {
+  background: var(--accent);
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-preference-row--switch input[type='checkbox']:checked::after,
+:is(.menu-sheet-page, .api-provider-sheet) .memory-toggle input[type='checkbox']:checked::after {
+  transform: translateX(16px);
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-preference-row--switch input[type='checkbox']:focus-visible,
+:is(.menu-sheet-page, .api-provider-sheet) .memory-toggle input[type='checkbox']:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2.5px var(--accent-soft);
+}
+
+/* 8. font library */
+:is(.menu-sheet-page, .api-provider-sheet) .menu-font-actions {
+  margin: 12px 0 0;
+  gap: 10px;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-font-card-side {
+  gap: 10px;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-font-card-badges {
+  gap: 8px;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-font-card-badges small {
+  min-height: 0;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--set-muted);
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-font-card-badges small + small::before {
+  content: '\00b7';
+  margin-right: 8px;
+  color: color-mix(in srgb, var(--set-muted) 55%, transparent);
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-font-delete {
+  min-height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--set-muted);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-font-delete:hover,
+:is(.menu-sheet-page, .api-provider-sheet) .menu-font-delete:focus-visible {
+  background: transparent;
+  color: var(--set-text);
+}
+
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-font-scope-row select {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  min-width: 0;
+  height: 40px;
+  min-height: 40px;
+  padding: 0 22px 0 0;
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23888' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6.5L8 10.5L12 6.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right center;
+  background-size: 15px 15px;
+  color: var(--set-muted);
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+  box-shadow: none;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-font-scope-row select:disabled {
+  opacity: 0.5;
+}
+
+/* 9. quiet notes, not cards */
+:is(.menu-sheet-page, .api-provider-sheet) .theme-mode-guidance,
+:is(.menu-sheet-page, .api-provider-sheet) .provider-health-note,
+:is(.menu-sheet-page, .api-provider-sheet) .mcp-guide,
+:is(.menu-sheet-page, .api-provider-sheet) .mcp-empty-state,
+:is(.menu-sheet-page, .api-provider-sheet) .menu-doc-card {
+  padding: 12px 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .theme-mode-guidance {
+  margin-top: 12px;
+  gap: 4px;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .theme-mode-guidance strong,
+:is(.menu-sheet-page, .api-provider-sheet) .mcp-guide strong,
+:is(.menu-sheet-page, .api-provider-sheet) .menu-doc-card strong {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--set-text);
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .theme-mode-guidance p,
+:is(.menu-sheet-page, .api-provider-sheet) .mcp-guide p,
+:is(.menu-sheet-page, .api-provider-sheet) .menu-doc-card small {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--set-muted);
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .mcp-guide-item {
+  padding: 11px 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .mcp-guide-item + .mcp-guide-item {
+  border-top: 1px solid var(--set-divider);
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-doc-card {
+  padding-left: 0;
+  transition: color 160ms ease;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .menu-doc-card.active {
+  padding-left: 12px;
+  border-left: 2px solid var(--accent);
+  background: transparent;
+  color: var(--set-text);
+}
+
+/* 10. fields and buttons */
+:is(.menu-sheet-page, .api-provider-sheet) .ps-input,
+:is(.menu-sheet-page, .api-provider-sheet) .ps-textarea,
+:is(.menu-sheet-page, .api-provider-sheet) .settings-form input,
+:is(.menu-sheet-page, .api-provider-sheet) .settings-form select,
+:is(.menu-sheet-page, .api-provider-sheet) .settings-form textarea,
+:is(.menu-sheet-page, .api-provider-sheet) .api-provider-masked-input {
+  border-radius: 6px;
+  box-shadow: none;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .btn-secondary,
+:is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .mcp-btn,
+:is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .mcp-icon-button,
+:is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .mcp-guide-help-icon,
+:is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .api-provider-batch-test-status {
+  border-radius: 6px;
+  background-image: none;
+  box-shadow: none;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .api-provider-list-row.active {
+  background: color-mix(in srgb, var(--accent-soft) 46%, transparent);
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .toolbox-toggle-row-head {
+  align-items: flex-start;
+}
+
+/* 11. API provider sub-sheet */
+:is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .api-provider-list-card,
+:is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .api-provider-section,
+:is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .api-provider-hero-badge,
+:is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .api-provider-control-layer,
+:is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .provider-stack,
+:is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .theme-css-guard-card {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .api-provider-section-head {
+  padding: 16px 0 8px;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .api-provider-section-head strong,
+:is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .api-provider-section-head h3 {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--set-text);
+}
+
+:is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .api-provider-hero-badge,
+:is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .api-provider-control-layer,
+:is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .theme-css-guard-card {
+  padding: 14px 0;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .api-provider-hero-badge strong {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .api-provider-hero-badge span {
+  margin-top: 3px;
+  font-size: 12.5px;
+  color: var(--set-muted);
+}
+
+:is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .api-provider-section + .api-provider-section,
+:is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .api-provider-list-card + .api-provider-list-card {
+  border-top: 1px solid var(--set-divider);
+}
+
+:is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .api-provider-list-row {
+  min-height: 56px;
+  padding: 14px 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .api-provider-list-row + .api-provider-list-row {
+  border-top: 1px solid var(--set-divider);
+}
+
+/* 12. usage and local data */
+:is(.menu-sheet-page, .api-provider-sheet) .usage-metric-grid {
+  gap: 0 24px;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .usage-metric-tile,
+:is(.menu-sheet-page, .api-provider-sheet) .usage-model-panel,
+:is(.menu-sheet-page, .api-provider-sheet) .usage-cache-panel {
+  margin-bottom: 0;
+  padding: 13px 0;
+  border: 0;
+  border-top: 1px solid var(--set-divider);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  font-variant-numeric: tabular-nums;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .usage-metric-tile.primary {
+  border-top-color: var(--set-divider);
+  background: transparent;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .usage-metric-tile strong {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .usage-metric-tile small {
+  margin-top: 4px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--set-muted);
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .usage-model-row {
+  padding: 11px 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet) .usage-entry-row {
+  font-variant-numeric: tabular-nums;
+}

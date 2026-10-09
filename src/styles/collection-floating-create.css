@@ -17,30 +17,22 @@
   width: 44px;
   height: 44px;
   padding: 0;
-  border: 1px solid color-mix(in srgb, var(--border-hover) 56%, transparent);
-  border-radius: 999px;
-  background:
-    radial-gradient(circle at 30% 24%, rgba(255,255,255,0.78), transparent 52%),
-    linear-gradient(180deg, color-mix(in srgb, var(--surface-solid) 88%, rgba(255,255,255,0.4)), color-mix(in srgb, var(--surface) 78%, transparent));
+  border: 1px solid color-mix(in srgb, var(--border) 76%, transparent);
+  border-radius: 50%;
+  background: var(--surface-solid);
   color: color-mix(in srgb, var(--text) 82%, var(--text-soft) 18%);
-  box-shadow:
-    0 12px 26px rgba(18, 18, 18, 0.1),
-    inset 0 1px 0 color-mix(in srgb, rgba(255,255,255,0.46) 100%, transparent);
+  box-shadow: 0 6px 16px rgba(18, 18, 18, 0.08);
   display: inline-grid;
   place-items: center;
   cursor: pointer;
-  backdrop-filter: blur(18px) saturate(1.08);
-  -webkit-backdrop-filter: blur(18px) saturate(1.08);
   transition: transform 0.28s var(--ease-out), opacity 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .collection-floating-create-fab:hover,
 .collection-floating-create-fab:focus-visible {
   transform: translateY(-1px);
-  border-color: color-mix(in srgb, var(--accent) 28%, var(--border-hover) 72%);
-  box-shadow:
-    0 15px 30px rgba(18, 18, 18, 0.12),
-    inset 0 1px 0 color-mix(in srgb, rgba(255,255,255,0.5) 100%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 26%, var(--border) 74%);
+  box-shadow: 0 9px 20px rgba(18, 18, 18, 0.1);
 }
 
 .collection-floating-create-fab:active {
@@ -59,23 +51,17 @@
 .app-layout-wide .collection-floating-create-fab {
   width: 40px;
   height: 40px;
-  border-color: color-mix(in srgb, var(--border-hover) 62%, transparent);
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--surface-solid) 88%, rgba(255,255,255,0.42)), color-mix(in srgb, var(--surface) 76%, transparent));
+  border-color: color-mix(in srgb, var(--border) 76%, transparent);
+  background: var(--surface-solid);
   color: color-mix(in srgb, var(--text) 84%, var(--text-soft) 16%);
-  box-shadow:
-    0 12px 24px rgba(18, 18, 18, 0.08),
-    inset 0 1px 0 color-mix(in srgb, rgba(255,255,255,0.46) 100%, transparent);
+  box-shadow: 0 6px 16px rgba(18, 18, 18, 0.07);
 }
 
 .app-layout-wide .collection-floating-create-fab:hover,
 .app-layout-wide .collection-floating-create-fab:focus-visible {
-  border-color: color-mix(in srgb, var(--accent) 28%, var(--border-hover) 72%);
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--surface-solid) 92%, rgba(255,255,255,0.52)), color-mix(in srgb, var(--surface) 82%, transparent));
-  box-shadow:
-    0 15px 28px rgba(18, 18, 18, 0.1),
-    inset 0 1px 0 color-mix(in srgb, rgba(255,255,255,0.5) 100%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 26%, var(--border) 74%);
+  background: var(--surface-solid);
+  box-shadow: 0 9px 20px rgba(18, 18, 18, 0.09);
 }
 
 .collection-floating-create-anchor--disabled {

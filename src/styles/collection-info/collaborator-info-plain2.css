@@ -1,0 +1,780 @@
+/* 角色配置页（身份 / 记忆 / 主题）· 朴素化第二遍
+   一句话：修掉横向出血造成的整页错位与首字被裁；去掉嵌套白卡片、虚线框、胶囊按钮、
+   大圆环色块；内容统一回到 18px 基线，分隔线用伪元素通栏画到面板边缘，强调色只用在当前项。 */
+
+/* ── 0. 基线与容器 ───────────────────────────────────────── */
+.collaborator-info-content {
+  --info-pad: 18px;
+  --info-line: color-mix(in srgb, var(--border) 58%, transparent);
+  --info-line-strong: color-mix(in srgb, var(--border) 82%, transparent);
+  --info-quiet: var(--text-muted);
+  position: relative;
+  padding-left: var(--info-pad);
+  padding-right: var(--info-pad);
+  overflow-x: clip;
+  overflow-clip-margin: 24px;
+}
+
+/* 作废所有「负 margin 撑宽」的旧出血写法：
+   文字不再顶到面板边、也不会被裁掉首字，页面不再能横向滑动。 */
+.collaborator-info-content .collaborator-avatar-inline-grid,
+.collaborator-info-content .room-display-settings .collaborator-avatar-inline-grid,
+.collaborator-info-content .memory-overview-grid,
+.collaborator-info-content .memory-overview-card,
+.collaborator-info-content .memory-settings-field .ps-field-head,
+.collaborator-info-content .prompt-settings-field .ps-field-head,
+.collaborator-info-content .memory-vector-index-panel,
+.collaborator-info-content .persona-mcp-follow-toggle,
+.collaborator-info-content .persona-mcp-personal-section,
+.collaborator-info-content .ps-toggle,
+.collaborator-info-content .theme-studio-section,
+.collaborator-info-content .room-star-settings-head,
+.collaborator-info-content .room-star-color-row,
+.collaborator-info-content .ps-section > .ps-field,
+.collaborator-info-content .prompt-settings-flow > .ps-field,
+.collaborator-info-content .automation-rules-panel .menu-section,
+.collaborator-info-content .automation-rule-card,
+.collaborator-info-content .room-theme-page-nav,
+.collaborator-info-content .collaborator-identity-danger-zone,
+.collaborator-info-detail-shell .collaborator-info-nav,
+.collaborator-info-detail-shell--fullscreen .collaborator-info-nav {
+  width: 100%;
+  max-width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+  box-sizing: border-box;
+}
+
+.collaborator-info-content .theme-studio-section {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* ── 1. 顶部 tab（身份 / 记忆 / 主题）────────────────────── */
+.collaborator-info-detail-shell .collaborator-info-nav,
+.collaborator-info-detail-shell--fullscreen .collaborator-info-nav {
+  border-bottom: 1px solid var(--info-line);
+  border-radius: 0;
+  background: transparent;
+  overflow: visible;
+}
+
+.collaborator-info-nav .ps-nav-item {
+  min-height: 44px;
+  padding: 12px 6px;
+  font-size: 13px;
+  letter-spacing: 0;
+}
+
+.collaborator-info-nav .ps-nav-item--active {
+  font-weight: 620;
+}
+
+.collaborator-info-nav .ps-nav-item--active::after {
+  left: 9px;
+  right: 9px;
+  bottom: -1px;
+  height: 2px;
+  border-radius: 0;
+  background: var(--accent);
+  opacity: 1;
+}
+
+/* ── 2. 二级 tab（总览 / 条目 / 资料 / 旧对话 / 索引）────── */
+.collaborator-info-content .room-theme-page-nav {
+  display: flex;
+  gap: 0;
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid var(--info-line);
+  border-radius: 0;
+  background: transparent;
+}
+
+.collaborator-info-content .room-theme-page-nav button {
+  position: relative;
+  display: inline-flex;
+  flex: 1 1 0;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 42px;
+  padding: 11px 2px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--info-quiet);
+  font-family: inherit;
+  font-size: 12.5px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+/* 5 项挤在一条窄条里时，图标只会让字变小；去掉图标把字号让出来 */
+.collaborator-info-content .room-theme-page-nav button svg {
+  display: none;
+}
+
+.collaborator-info-content .room-theme-page-nav button.active {
+  background: transparent;
+  color: var(--text);
+  font-weight: 620;
+}
+
+.collaborator-info-content .room-theme-page-nav button.active::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: -1px;
+  height: 2px;
+  border-radius: 0;
+  background: var(--accent);
+}
+
+/* ── 3. 字段：统一的标签基线与控件质感 ───────────────────── */
+.collaborator-info-content .ps-section {
+  gap: 18px;
+}
+
+.collaborator-info-content .ps-field-head {
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  min-width: 0;
+}
+
+.collaborator-info-content .ps-field-label {
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.collaborator-info-content .ps-field-hint {
+  color: var(--info-quiet);
+  font-size: 11.5px;
+}
+
+.collaborator-info-content .ps-input,
+.collaborator-info-content .ps-textarea,
+.collaborator-info-content .automation-rules-panel .automation-settings-form input,
+.collaborator-info-content .automation-rules-panel .automation-settings-form select,
+.collaborator-info-content .automation-rules-panel .automation-settings-form textarea {
+  border: 1px solid var(--info-line-strong);
+  border-radius: 6px;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  font-size: 13px;
+}
+
+.collaborator-info-content .ps-input:focus,
+.collaborator-info-content .ps-textarea:focus {
+  border-color: color-mix(in srgb, var(--accent) 52%, var(--border) 48%);
+  background: transparent;
+  box-shadow: none;
+}
+
+/* 身份页抬头：名字可编辑但只留一条底线，定位说明不再套方框 */
+.collaborator-info-content .collaborator-identity-summary {
+  gap: 2px;
+  padding: 2px 0 10px;
+  border-bottom: 0;
+}
+
+.collaborator-info-content .collaborator-identity-summary .ps-input,
+.collaborator-info-content .collaborator-info-name-input {
+  padding: 2px 0 8px;
+  border: 0;
+  border-bottom: 1px solid var(--info-line-strong);
+  border-radius: 0;
+  background: transparent;
+}
+
+.collaborator-info-content .collaborator-identity-summary .ps-textarea,
+.collaborator-info-content .collaborator-info-desc-input {
+  min-height: 0;
+  padding: 2px 0 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.collaborator-info-content .collaborator-identity-summary .ps-input:focus,
+.collaborator-info-content .collaborator-info-name-input:focus {
+  border-bottom-color: color-mix(in srgb, var(--accent) 62%, transparent);
+}
+
+.collaborator-info-content .collaborator-identity-summary .ps-textarea:focus,
+.collaborator-info-content .collaborator-info-desc-input:focus {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+/* ── 4. 开关行与概览行：细线分隔的朴素一行行 ─────────────── */
+.collaborator-info-content .ps-toggle-stack {
+  gap: 0;
+}
+
+.collaborator-info-content .ps-toggle {
+  position: relative;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.collaborator-info-content .ps-toggle + .ps-toggle {
+  border-top: 0;
+}
+
+.collaborator-info-content .ps-toggle-label {
+  color: var(--text);
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.collaborator-info-content .ps-toggle-desc {
+  color: var(--info-quiet);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.collaborator-info-content .memory-overview-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-top: 1px solid var(--info-line);
+}
+
+.collaborator-info-content .memory-overview-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  column-gap: 14px;
+  row-gap: 2px;
+  min-height: 0;
+  padding: 12px 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.collaborator-info-content .memory-overview-card + .memory-overview-card {
+  border-top: 0;
+}
+
+.collaborator-info-content .memory-overview-card span {
+  grid-column: 1;
+  grid-row: 1;
+  color: var(--info-quiet);
+  font-size: 12.5px;
+}
+
+.collaborator-info-content .memory-overview-card strong {
+  grid-column: 2;
+  grid-row: 1;
+  font-size: 13.5px;
+  font-weight: 650;
+}
+
+.collaborator-info-content .memory-overview-card small {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  color: var(--info-quiet);
+  font-size: 11.5px;
+}
+
+/* 身份页删除区：同样一条通栏细线，不再撑宽盒子 */
+.collaborator-info-content .collaborator-identity-danger-zone {
+  position: relative;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 0;
+}
+
+.collaborator-info-content .collaborator-identity-danger-zone::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: calc(var(--info-pad) * -1);
+  right: calc(var(--info-pad) * -1);
+  height: 1px;
+  background: var(--info-line);
+  pointer-events: none;
+}
+
+/* 通栏细线：不撑宽盒子，靠伪元素画到面板边缘 */
+.collaborator-info-content .ps-toggle + .ps-toggle::before,
+.collaborator-info-content .memory-overview-card + .memory-overview-card::before,
+.collaborator-info-content .theme-summary-actions .compact-btn + .compact-btn::before,
+.collaborator-info-content .theme-css-part-list button + button::before,
+.collaborator-info-content .theme-saved-list .theme-saved-item + .theme-saved-item::before,
+.collaborator-info-content .theme-history-list .theme-history-item + .theme-history-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: calc(var(--info-pad) * -1);
+  right: calc(var(--info-pad) * -1);
+  height: 1px;
+  background: var(--info-line);
+  pointer-events: none;
+}
+
+/* ── 5. 按钮：行内动作一律纯文字，不再有胶囊、底色和毛玻璃 ── */
+.collaborator-info-content .btn-secondary,
+.collaborator-info-content .btn-secondary.compact,
+.collaborator-info-content .memory-doc-import-btn,
+.collaborator-info-content .memory-vector-config-btn {
+  min-height: 32px;
+  padding: 0 2px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  color: color-mix(in srgb, var(--accent) 62%, var(--text) 38%);
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  transform: none;
+}
+
+.collaborator-info-content .btn-secondary:hover,
+.collaborator-info-content .btn-secondary:focus-visible,
+.collaborator-info-content .memory-doc-import-btn:hover,
+.collaborator-info-content .memory-doc-import-btn:focus-visible,
+.collaborator-info-content .memory-vector-config-btn:hover,
+.collaborator-info-content .memory-vector-config-btn:focus-visible {
+  border-color: transparent;
+  background: transparent;
+  color: var(--accent);
+  outline: none;
+  transform: none;
+}
+
+.collaborator-info-content .btn-secondary:disabled,
+.collaborator-info-content .memory-doc-import-btn:disabled {
+  background: transparent;
+  color: color-mix(in srgb, var(--info-quiet) 70%, transparent);
+}
+
+.collaborator-info-content .theme-summary-actions {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  gap: 0;
+}
+
+.collaborator-info-content .theme-summary-actions .compact-btn {
+  position: relative;
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 44px;
+  padding: 12px 0;
+  justify-content: flex-start;
+  gap: 9px;
+  border-top: 0;
+  color: var(--text-soft);
+  font-size: 13px;
+}
+
+/* ── 6. 记忆：条目 / 资料 / 旧对话 ───────────────────────── */
+.collaborator-info-content .ps-mc-add-input {
+  border: 1px solid var(--info-line-strong);
+  border-radius: 6px;
+  background: transparent;
+  box-shadow: none;
+  font-size: 13px;
+}
+
+.collaborator-info-content .ps-mc-add-input:focus {
+  border-color: color-mix(in srgb, var(--accent) 52%, var(--border) 48%);
+  background: transparent;
+  box-shadow: none;
+}
+
+.collaborator-info-content .memory-empty-card {
+  padding: 14px 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--info-quiet);
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+
+.collaborator-info-content .memory-doc-import-row {
+  gap: 12px;
+  margin-top: 2px;
+}
+
+.collaborator-info-content .memory-doc-import-hint {
+  color: var(--info-quiet);
+  font-size: 11.5px;
+}
+
+/* ── 7. 记忆 / 索引：拆掉套娃卡片 ────────────────────────── */
+.collaborator-info-content .memory-vector-index-panel {
+  display: grid;
+  gap: 0;
+  padding: 0;
+  border: 0;
+  border-top: 1px solid var(--info-line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.collaborator-info-content .memory-vector-index-panel .toolbox-toggle-row-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 0 10px;
+}
+
+.collaborator-info-content .toolbox-inline-config.memory-vector-index-status {
+  display: grid;
+  gap: 10px;
+  padding: 0 0 6px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.collaborator-info-content .memory-vector-index-flow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  padding: 2px 0 4px;
+}
+
+.collaborator-info-content .memory-vector-index-flow span {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--info-quiet);
+  font-size: 12px;
+}
+
+.collaborator-info-content .memory-vector-index-flow span[data-active='true'] {
+  border-color: transparent;
+  background: transparent;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.collaborator-info-content .memory-vector-index-progress {
+  padding: 8px 0 0;
+  border: 0;
+  border-top: 1px solid var(--info-line);
+  border-radius: 0;
+  background: transparent;
+}
+
+/* ── 8. 主题 / 总览：颜色点回到小圆点，不再是大圆环 ──────── */
+.collaborator-info-content .room-star-settings-head {
+  gap: 10px;
+  padding: 14px 0 0;
+}
+
+.collaborator-info-content .room-star-settings-icon {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.collaborator-info-content .room-star-settings-head strong {
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.collaborator-info-content .room-star-settings-head span {
+  color: var(--info-quiet);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.collaborator-info-content .room-star-color-row {
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 0;
+  padding: 12px 0 2px;
+}
+
+.collaborator-info-content .room-star-color-swatches {
+  gap: 8px;
+}
+
+.collaborator-info-content .room-star-custom-trigger,
+.collaborator-info-content .room-star-color-swatch {
+  width: 26px;
+  height: 26px;
+  padding: 2px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  box-shadow: none;
+}
+
+.collaborator-info-content .room-star-color-preview {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: currentColor;
+  box-shadow: none;
+}
+
+/* 色点靠 ::before 画，原来的规则漏了 content，所以点一直没出来 */
+.collaborator-info-content .room-star-color-swatch::before {
+  content: '';
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: currentColor;
+  box-shadow: none;
+}
+
+.collaborator-info-content .room-star-color-swatch.active,
+.collaborator-info-content .room-star-custom-trigger.active {
+  border-color: color-mix(in srgb, currentColor 58%, var(--text) 42%);
+  box-shadow: none;
+}
+
+/* 主题页每段之间一条通栏细线，两行开关不再漂在空白里 */
+.collaborator-info-content .room-settings-flow > .theme-studio-section {
+  position: relative;
+  padding-top: 14px;
+}
+
+.collaborator-info-content .room-settings-flow > .theme-studio-section + .theme-studio-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: calc(var(--info-pad) * -1);
+  right: calc(var(--info-pad) * -1);
+  height: 1px;
+  background: var(--info-line);
+  pointer-events: none;
+}
+
+/* ── 9. 主题 / CSS：45 张白卡换成细线列表 ────────────────── */
+.collaborator-info-content .theme-css-section {
+  gap: 16px;
+}
+
+.collaborator-info-content .theme-css-panel-head {
+  gap: 8px;
+  padding: 10px 0 2px;
+}
+
+.collaborator-info-content .theme-css-panel-head strong {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.collaborator-info-content .theme-css-panel-head span {
+  color: var(--info-quiet);
+  font-size: 11.5px;
+}
+
+.collaborator-info-content .theme-css-panel-head .theme-inline-action {
+  margin-left: auto;
+  font-size: 12.5px;
+}
+
+.collaborator-info-content .theme-css-editor {
+  min-height: 150px;
+  padding: 12px 13px;
+  border: 1px solid var(--info-line-strong);
+  border-radius: 6px !important;
+  background: transparent;
+  box-shadow: none;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.collaborator-info-content .theme-css-selector-catalog {
+  display: block;
+  gap: 0;
+}
+
+.collaborator-info-content .theme-css-selector-group {
+  display: block;
+  gap: 0;
+}
+
+.collaborator-info-content .theme-css-selector-group-title {
+  margin: 18px 0 2px;
+  color: var(--info-quiet);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.collaborator-info-content .theme-css-part-list {
+  display: block;
+  gap: 0;
+}
+
+.collaborator-info-content .theme-css-part-list button {
+  position: relative;
+  display: grid;
+  gap: 3px;
+  width: 100%;
+  min-height: 0;
+  padding: 11px 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  text-align: left;
+}
+
+.collaborator-info-content .theme-css-part-list button:first-child::before {
+  display: none;
+}
+
+.collaborator-info-content .theme-css-part-list button.active {
+  border-color: transparent;
+  background: transparent;
+}
+
+.collaborator-info-content .theme-css-part-list button.active strong {
+  color: var(--accent);
+}
+
+.collaborator-info-content .theme-css-part-list button:hover strong,
+.collaborator-info-content .theme-css-part-list button:focus-visible strong {
+  color: var(--accent);
+}
+
+.collaborator-info-content .theme-css-part-list button:focus-visible {
+  outline: none;
+}
+
+.collaborator-info-content .theme-css-part-list strong {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.collaborator-info-content .theme-css-part-list span {
+  color: var(--info-quiet);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 11.5px;
+}
+
+.collaborator-info-content .theme-css-part-row em {
+  font-size: 11.5px;
+}
+
+.collaborator-info-content .theme-css-empty-parts {
+  min-height: 0;
+  padding: 14px 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--info-quiet);
+  font-size: 12.5px;
+}
+
+/* ── 10. 主题 / 主题库 ───────────────────────────────────── */
+.collaborator-info-content .theme-save-row {
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.collaborator-info-content .theme-save-row input {
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--info-line-strong);
+  border-radius: 6px !important;
+  background: transparent;
+  box-shadow: none;
+  font-size: 13px;
+}
+
+.collaborator-info-content .theme-save-row input:focus {
+  border: 1px solid color-mix(in srgb, var(--accent) 52%, var(--border) 48%);
+  background: transparent;
+  box-shadow: none;
+}
+
+.collaborator-info-content .theme-save-row .btn-primary.compact-btn {
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+  border-radius: 6px;
+  background: transparent;
+  box-shadow: none;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 620;
+}
+
+.collaborator-info-content .theme-save-row .btn-primary.compact-btn:hover,
+.collaborator-info-content .theme-save-row .btn-primary.compact-btn:focus-visible {
+  border-color: color-mix(in srgb, var(--accent) 74%, transparent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  color: var(--accent);
+  outline: none;
+  transform: none;
+}
+
+.collaborator-info-content .theme-saved-list,
+.collaborator-info-content .theme-history-list {
+  gap: 0;
+  border: 0;
+  border-radius: 0 !important;
+  background: transparent;
+  box-shadow: none;
+}
+
+.collaborator-info-content .theme-saved-item,
+.collaborator-info-content .theme-history-item {
+  position: relative;
+  gap: 12px;
+  padding: 13px 0;
+}
+
+.collaborator-info-content .theme-saved-item.active {
+  background: transparent;
+  box-shadow: inset 2px 0 0 color-mix(in srgb, var(--accent) 72%, transparent);
+}
+
+.collaborator-info-content .theme-empty-card {
+  padding: 12px 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--info-quiet);
+  font-size: 12.5px;
+}
+
+/* ── 11. 40 项以内的短列表（记忆条目 / 资料）保持朴素行 ──── */
+.collaborator-info-content .ps-mc-list {
+  gap: 0;
+}
+
+.collaborator-info-content .memory-entry-card,
+.collaborator-info-content .memory-summary-card {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}

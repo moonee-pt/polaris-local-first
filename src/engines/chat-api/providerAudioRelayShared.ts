@@ -109,10 +109,11 @@ export function isElevenLabsAudioRequestBody(value: unknown): value is Record<st
 export function isFishAudioRequestBody(value: unknown): value is Record<string, unknown> {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
   const record = value as Record<string, unknown>;
-  const allowedKeys = new Set(['text', 'reference_id', 'format', 'normalize']);
+  const allowedKeys = new Set(['text', 'reference_id', 'format', 'normalize', 'latency']);
   if (Object.keys(record).some((key) => !allowedKeys.has(key))) return false;
   if (typeof record.text !== 'string' || !record.text.trim()) return false;
   if (record.reference_id !== undefined && (typeof record.reference_id !== 'string' || !record.reference_id.trim())) return false;
+  if (record.latency !== undefined && !['low', 'normal', 'balanced'].includes(String(record.latency))) return false;
   if (record.format !== undefined && !['mp3', 'opus', 'wav', 'pcm'].includes(String(record.format))) return false;
   if (record.normalize !== undefined && typeof record.normalize !== 'boolean') return false;
   return true;

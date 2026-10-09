@@ -576,3 +576,29 @@
 .collaborator-info-content .request-settings-section-title {
   display: none;
 }
+
+/* 17. 提示词页：编辑框随屏幕撑满，下面不留大片空白 */
+.collaborator-info-content .ps-section:has(> .prompt-settings-flow) {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.collaborator-info-content .prompt-settings-flow {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.collaborator-info-content .prompt-settings-flow > .ps-field--prompt-editor:not(.ps-field--expanded) {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.collaborator-info-content .prompt-settings-flow > .ps-field--prompt-editor:not(.ps-field--expanded) > .ps-textarea {
+  flex: 1;
+  min-height: 140px;
+}

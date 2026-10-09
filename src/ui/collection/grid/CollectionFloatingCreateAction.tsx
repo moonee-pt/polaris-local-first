@@ -1,10 +1,11 @@
 import { forwardRef, type ReactNode } from 'react';
-import { Icon } from '../../Icon';
+import { Icon, type IconName } from '../../Icon';
 import { CreateActionSheet } from '../../create/CreateActionSheet';
 import { runImpactAction } from '../../haptics';
 
 type CollectionFloatingCreateActionProps = {
   label: string;
+  icon?: IconName;
   expanded?: boolean;
   disabled?: boolean;
   className?: string;
@@ -15,6 +16,7 @@ type CollectionFloatingCreateActionProps = {
 export const CollectionFloatingCreateAction = forwardRef<HTMLDivElement, CollectionFloatingCreateActionProps>(
   function CollectionFloatingCreateAction({
     label,
+    icon = 'plus',
     expanded = false,
     disabled = false,
     className,
@@ -52,7 +54,7 @@ export const CollectionFloatingCreateAction = forwardRef<HTMLDivElement, Collect
             runImpactAction(onPress, { element: event.currentTarget });
           }}
         >
-          <Icon name={expanded ? 'x' : 'plus'} size={16} />
+          <Icon name={expanded ? 'x' : icon} size={16} />
         </button>
       </div>
     );

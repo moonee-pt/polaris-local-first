@@ -1028,21 +1028,27 @@ export function MemorySettingsTab({ activePersona, onUpdatePersona }: PersonaTab
       </div>
 
           <div className="memory-overview-grid">
-            <div className="memory-overview-card">
-              <span>{t('memory.overview.entriesTitle')}</span>
-              <strong>{t('memory.overview.entriesCount', { count: memories.length })}</strong>
-              <small>{t('memory.overview.entriesDetail')}</small>
-            </div>
-            <div className="memory-overview-card">
-              <span>{t('memory.overview.docsTitle')}</span>
-              <strong>{t('memory.overview.docsCount', { count: visibleReferenceDocs.length })}</strong>
-              <small>{t('memory.overview.docsDetail')}</small>
-            </div>
-            <div className="memory-overview-card" data-muted={!crossConversationRecallEnabled}>
-              <span>{t('memory.overview.summariesTitle')}</span>
-              <strong>{t('memory.overview.summariesCount', { count: visibleConversationSummaries.length })}</strong>
-              <small>{crossConversationRecallEnabled ? t('memory.overview.summariesActive') : t('memory.overview.summariesPaused')}</small>
-            </div>
+            {memories.length > 0 ? (
+              <div className="memory-overview-card">
+                <span>{t('memory.overview.entriesTitle')}</span>
+                <strong>{t('memory.overview.entriesCount', { count: memories.length })}</strong>
+                <small>{t('memory.overview.entriesDetail')}</small>
+              </div>
+            ) : null}
+            {visibleReferenceDocs.length > 0 ? (
+              <div className="memory-overview-card">
+                <span>{t('memory.overview.docsTitle')}</span>
+                <strong>{t('memory.overview.docsCount', { count: visibleReferenceDocs.length })}</strong>
+                <small>{t('memory.overview.docsDetail')}</small>
+              </div>
+            ) : null}
+            {visibleConversationSummaries.length > 0 ? (
+              <div className="memory-overview-card" data-muted={!crossConversationRecallEnabled}>
+                <span>{t('memory.overview.summariesTitle')}</span>
+                <strong>{t('memory.overview.summariesCount', { count: visibleConversationSummaries.length })}</strong>
+                <small>{crossConversationRecallEnabled ? t('memory.overview.summariesActive') : t('memory.overview.summariesPaused')}</small>
+              </div>
+            ) : null}
             <div className="memory-overview-card" data-muted={!crossConversationRecallEnabled || !vectorRetrievalEnabled}>
               <span>{t('memory.overview.vectorTitle')}</span>
               <strong>{formatVectorIndexStatus(vectorIndex.status, t)}</strong>

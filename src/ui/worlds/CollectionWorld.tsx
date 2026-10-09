@@ -262,8 +262,14 @@ export function CollectionWorld({
         <div ref={setFloatingActionHost} className="collection-floating-action-host" />
         {controller.ready && activeShelf === 'dialogue' ? (
           <CollectionFloatingCreateAction
-            label={t('collection.world.newConversation')}
-            onPress={controller.onCreateConversation}
+            label={t('collection.world.collaboratorMoreActions')}
+            icon="more"
+            disabled={!controller.currentCollaboratorId}
+            onPress={() => {
+              const collaboratorId = controller.currentCollaboratorId;
+              if (!collaboratorId) return;
+              controller.onOpenCollaboratorInfo(collaboratorId);
+            }}
           />
         ) : null}
         <CollectionShelfTabs

@@ -1,5 +1,6 @@
 import type { CSSProperties, ReactNode } from 'react';
 import { renderLatexNode } from './messageMath';
+import { renderTextWithPerformanceTags } from './messagePerformanceTag';
 
 const INLINE_MARKUP_PATTERN = /<br\s*\/?>|<(span|small|sub|sup|mark|strong|b|em|i|u|del|s)([^>]*)>([\s\S]*?)<\/\1>/gi;
 const INLINE_TOKEN_PATTERN = /(`[^`\n]+`|\\\([^\n]+?\\\)|\$(?![\s$])(?:\\.|[^$\\\n])*?[^\s\\]\$|~~[^~\n](?:[\s\S]*?[^~\n])?~~|\*\*[^*\n](?:[\s\S]*?[^*\n])?\*\*|__[^_\n](?:[\s\S]*?[^_\n])?__|\*[^*\n](?:[\s\S]*?[^*\n])?\*|_[^_\n](?:[\s\S]*?[^_\n])?_|!\[[^\]]*\]\([^)]+\)|\[[^\]]+\]\([^)]+\))/g;
@@ -82,7 +83,7 @@ function renderInlineMarkdownOnly(content: string): ReactNode[] {
     const matchIndex = match.index ?? 0;
     const segment = match[0];
     if (matchIndex > cursor) {
-      nodes.push(<span key={`text-${index}`}>{content.slice(cursor, matchIndex)}</span>);
+      nodes.push(...renderTextWithPerformanceTags(content.slice(cursor, matchIndex), `text-${index}`));
       index += 1;
     }
     if (segment.startsWith('$') && matchIndex > 0 && content[matchIndex - 1] === '\\') {
@@ -124,7 +125,7 @@ function renderInlineMarkdownOnly(content: string): ReactNode[] {
   }
 
   if (cursor < content.length) {
-    nodes.push(<span key={`text-${index}`}>{content.slice(cursor)}</span>);
+    nodes.push(...renderTextWithPerformanceTags(content.slice(cursor), `text-${index}`));
   }
 
   return nodes;

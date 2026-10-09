@@ -10,6 +10,9 @@ import {
   normalizeProviderErrorMessage
 } from '../../engines/providerErrorHandling';
 import { requestCollaboratorReply } from '../../engines/request/requestPipeline';
+import { VOICE_CALL_MODE_INSTRUCTION } from '../../config/prompts/callModePrompt';
+import { SPEECH_CUE_INSTRUCTION } from '../../config/prompts/speechCuePrompt';
+import { useVoiceCallSession } from '../call/voiceCallSession';
 import type { AssistantReply } from '../../engines/chatApi';
 import type { AssistantRequestAudit } from '../../engines/request/requestAudit';
 import { resolveMcpToolCatalog } from '../../engines/mcpRuntime';
@@ -379,6 +382,9 @@ async function requestReplyRound({
       toolContext: toolContextWithMcp,
       currentTask: activeRequestSnapshot.currentTask,
       preferredOpenAiToolHistoryMode,
+      modeInstruction: useVoiceCallSession.getState().active
+        ? `${SPEECH_CUE_INSTRUCTION}\n\n${VOICE_CALL_MODE_INSTRUCTION}`
+        : SPEECH_CUE_INSTRUCTION,
       signal: streaming.controller.signal,
       onProgress: streaming.queueProgress,
       onAudit: (audit) => {

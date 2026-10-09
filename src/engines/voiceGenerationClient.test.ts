@@ -328,7 +328,8 @@ describe('requestGeneratedSpeech', () => {
       text: '晚安。',
       reference_id: 'ca3007f96ae7499ab87d27ea3599956a',
       format: 'mp3',
-      normalize: true
+      normalize: true,
+      latency: 'balanced'
     });
     expect(result.model).toBe('s2-pro');
     expect(result.voice).toBe('ca3007f96ae7499ab87d27ea3599956a');
@@ -362,7 +363,8 @@ describe('requestGeneratedSpeech', () => {
     expect(requestBody).toEqual({
       text: '晚安。',
       format: 'wav',
-      normalize: true
+      normalize: true,
+      latency: 'balanced'
     });
   });
 });

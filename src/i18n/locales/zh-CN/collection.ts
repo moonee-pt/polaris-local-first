@@ -35,6 +35,7 @@ export const collection = {
   'collection.world.loadingRooms': '正在载入房间',
   'collection.world.roomViewAria': '房间视图',
   'collection.world.newConversation': '新建对话',
+  'collection.world.collaboratorMoreActions': '更多：编辑当前角色',
   'collection.scope.drawerAria': '角色切换抽屉',
   'collection.scope.closeDrawerAria': '收起角色抽屉',
   'collection.scope.dialogAria': '角色切换',
