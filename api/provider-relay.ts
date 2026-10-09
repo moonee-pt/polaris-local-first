@@ -1,7 +1,7 @@
 import { once } from 'node:events';
 import type { ReadableStream as NodeReadableStream } from 'node:stream/web';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { hasProviderRelayAuthHeader, sanitizeProviderRelayHeaders } from '../src/engines/chat-api/providerRelay.js';
+import { hasProviderRelayAuthHeader, sanitizeProviderRelayHeaders } from '../src/engines/chat-api/providerRelayShared.js';
 import { isAllowedPolarisApiOrigin } from '../src/engines/server/corsOrigin.js';
 import { ProviderRelayTargetError, validateProviderRelayTarget } from '../server/providerRelayTarget.js';
 

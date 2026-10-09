@@ -4,7 +4,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import {
   isProviderAudioRelayRequestBody
 } from '../src/engines/chat-api/providerAudioRelayShared.js';
-import { hasProviderRelayAuthHeader, sanitizeProviderRelayHeaders } from '../src/engines/chat-api/providerRelay.js';
+import { hasProviderRelayAuthHeader, sanitizeProviderRelayHeaders } from '../src/engines/chat-api/providerRelayShared.js';
 import { isAllowedPolarisApiOrigin } from '../src/engines/server/corsOrigin.js';
 import {
   ProviderAudioRelayTargetError,

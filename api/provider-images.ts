@@ -2,7 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import {
   isProviderImageGenerationRequestBody
 } from '../src/engines/chat-api/providerImageRelayShared.js';
-import { hasProviderRelayAuthHeader, sanitizeProviderRelayHeaders } from '../src/engines/chat-api/providerRelay.js';
+import { hasProviderRelayAuthHeader, sanitizeProviderRelayHeaders } from '../src/engines/chat-api/providerRelayShared.js';
 import { isAllowedPolarisApiOrigin } from '../src/engines/server/corsOrigin.js';
 import {
   ProviderImageRelayTargetError,
