@@ -117,7 +117,7 @@ describe('vibeBuilderModel', () => {
     );
     const executionLayers = buildPersonaVibeLayers(aligned);
 
-    expect(executionLayers.L1_IDENTITY).toContain('任务推进型协作者');
+    expect(executionLayers.L1_IDENTITY).toContain('任务推进型角色');
     expect(executionLayers.L5_PROTOCOL).toContain('只问最少问题');
     expect(executionLayers.L2_PRIMARY_VALUE).toContain('目标或约束互相冲突时先停下来对齐');
     expect(executionLayers.L3_STYLE).toContain('必须用术语时');

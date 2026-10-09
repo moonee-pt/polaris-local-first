@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   buildProviderPresetPatch,
   PROVIDER_PRESETS
@@ -9,6 +10,7 @@ import { getLocalizedProviderProtocolLabel } from '../../i18n/providerLabels';
 import { useI18n } from '../../i18n/useI18n';
 import type { ProviderProfile } from '../../types/domain';
 import { HelpHint } from '../HelpHint';
+import { Icon } from '../Icon';
 
 type ApiProviderConnectionSectionProps = {
   api: ProviderProfile;
@@ -32,6 +34,7 @@ export function ApiProviderConnectionSection({
   onSetApiConfig
 }: ApiProviderConnectionSectionProps) {
   const { t } = useI18n();
+  const [showApiKey, setShowApiKey] = useState(false);
 
   return (
     <section className="api-provider-section api-provider-section-config">
@@ -93,18 +96,28 @@ export function ApiProviderConnectionSection({
             text={t('apiProvider.connection.keyHelp')}
           />
         </label>
-        <input
-          className="api-provider-masked-input"
-          value={api.apiKey}
-          onChange={(event) => onSetApiConfig({ apiKey: event.target.value })}
-          placeholder="sk-..."
-          type="text"
-          inputMode="text"
-          autoCapitalize="none"
-          autoCorrect="off"
-          spellCheck={false}
-          autoComplete="off"
-        />
+        <div className="api-provider-key-input-wrapper">
+          <input
+            className={showApiKey ? '' : 'api-provider-masked-input'}
+            value={api.apiKey}
+            onChange={(event) => onSetApiConfig({ apiKey: event.target.value })}
+            placeholder="sk-..."
+            type={showApiKey ? 'text' : 'password'}
+            inputMode="text"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
+            autoComplete="off"
+          />
+          <button
+            type="button"
+            className="api-provider-key-toggle"
+            onClick={() => setShowApiKey((prev) => !prev)}
+            aria-label={showApiKey ? t('apiProvider.connection.hideKey') : t('apiProvider.connection.showKey')}
+          >
+            <Icon name="eye" size={16} />
+          </button>
+        </div>
       </div>
       <div className="provider-health-note api-provider-connection-note">
         <strong>{matchedPresetName || t('apiProvider.connection.defaultPathNote')}</strong>

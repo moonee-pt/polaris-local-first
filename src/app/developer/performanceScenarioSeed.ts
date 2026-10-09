@@ -122,7 +122,7 @@ function buildMessages(conversationIndex: number, messagesPerConversation: numbe
       id: assistantId,
       role: 'assistant',
       origin: 'assistant-reply',
-      assistantName: `Perf 协作者 ${(conversationIndex % 10) + 1}`,
+      assistantName: `Perf 角色 ${(conversationIndex % 10) + 1}`,
       content: buildAssistantContent(conversationIndex, turn),
       timestamp: timestamp((conversationIndex * 1000 + turn * 12 + 1) * 1000)
     });
@@ -346,8 +346,8 @@ function buildPersonas(options: Required<PerformanceScenarioSeedOptions>) {
   return Array.from({ length: options.collaboratorCount }, (_, index) =>
     createPersonaTemplate({
       id: `perf-persona-${String(index).padStart(2, '0')}`,
-      name: `Perf 协作者 ${index + 1}`,
-      description: '本地性能复线协作者',
+      name: `Perf 角色 ${index + 1}`,
+      description: '本地性能复线角色',
       purpose: '制造可重复的长对话、卡片和工作区压力，不调用任何外部 API。',
       baseId: 'executor',
       relationship: 'partner',

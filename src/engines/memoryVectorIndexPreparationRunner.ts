@@ -191,7 +191,7 @@ function splitMemoryVectorSourceChunk(chunk: MemoryRetrievalChunk): MemoryRetrie
 
   const exactTextTarget = Math.max(
     1,
-    MEMORY_VECTOR_EMBEDDING_INPUT_TARGET_CHARS - chunk.conversationTitle.length - 1
+    MEMORY_VECTOR_EMBEDDING_INPUT_TARGET_CHARS - (chunk.conversationTitle.length + 1)
   );
   const exactTextParts = splitTextForEmbeddingInput(chunk.exactText, exactTextTarget);
   if (exactTextParts.length <= 1) {

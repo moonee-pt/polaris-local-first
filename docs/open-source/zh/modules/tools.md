@@ -54,5 +54,5 @@ Tool protocol 让模型可见工具在 prompt、parser、executor、UI evidence 
 
 - `chatAssistantToolRuntime.ts` 只做出口聚合；ingress、目标解析、房间卡、工作区和 native tool 各自有明确 owner。
 - desktop、MCP 和 proactive execution context 由 `chatToolExecutionContext.ts` 组合，不在主 return object 里重复实现。
-- environment-directory execution 有独立 context owner，并继续使用同一组 runtime、协作者、收藏、附件、原生能力和 desktop-host 事实。
+- environment-directory execution 有独立 context owner，并继续使用同一组 runtime、角色、收藏、附件、原生能力和 desktop-host 事实。
 - follow-up 只依据已落定 exchange 的稳定指纹继续，不注入按领域编排的 system message，同一个 exchange 不能重复触发自己。

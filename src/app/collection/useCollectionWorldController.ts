@@ -32,7 +32,7 @@ import { useSpaceFrontstageBindings } from '../../stores/spaceStoreFrontstageBin
 import { useSpaceStore } from '../../stores/spaceStore';
 import type { ChatMessage, McpServerConfig, PolarisTriggerRule, PolarisTriggerSchedule } from '../../types/domain';
 import { hasArchivedConversationContent } from './conversationArchiveVisibility';
-import { enterCollaboratorCollectionScope } from '../shell/frontstageNavigation';
+import { enterCollaboratorCollectionScope, revealCollaboratorInfo } from '../shell/frontstageNavigation';
 
 type CollectionWorldUiPorts = {
   confirm: (message: string) => boolean;
@@ -224,11 +224,14 @@ export function useCollectionWorldController(ui: CollectionWorldUiPorts) {
 
   const filteredConversations = useMemo(
     () => conversationSearchCorpus.filter((conversation) => {
-      if (!normalizedSearch) return true;
+      if (conversation.id === activeConversationId) return true;
+      if (conversation.messages.length > 0) return true;
+      if (!loadedMessageConversationIds.includes(conversation.id)) return true;
+      if (!normalizedSearch) return false;
       const collaboratorName = resolveConversationCollaboratorName(conversation, collaborators);
       return buildConversationSearchText(conversation, collaboratorName).toLowerCase().includes(normalizedSearch);
     }),
-    [collaborators, conversationSearchCorpus, normalizedSearch]
+    [activeConversationId, collaborators, conversationSearchCorpus, loadedMessageConversationIds, normalizedSearch]
   );
   const conversationMessageSearchIndex = useMemo(
     () => buildConversationMessageSearchIndex(filteredConversations, normalizedSearch),
@@ -430,6 +433,20 @@ export function useCollectionWorldController(ui: CollectionWorldUiPorts) {
         setActiveCollaborator(collaboratorId);
         frontstage.setEditingCollaboratorId(collaboratorId);
       }
+    },
+    onOpenCollaboratorInfo: (collaboratorId: string) => {
+      if (!isCompanionCollaboratorId(collaboratorId) && !hasPersistedCollaborator(collaboratorId)) return;
+      enterCollaboratorCollectionScope({
+        activeWorld: frontstage.activeWorld,
+        setFrontstageCollaboratorId: frontstage.setFrontstageCollaboratorId,
+        setCollectionShelf: frontstage.setCollectionShelf,
+        setWorld: frontstage.setWorld
+      }, collaboratorId);
+      if (!isCompanionCollaboratorId(collaboratorId)) {
+        setActiveCollaborator(collaboratorId);
+        frontstage.setEditingCollaboratorId(collaboratorId);
+      }
+      revealCollaboratorInfo({ setWorld: frontstage.setWorld, setCollectionShelf: frontstage.setCollectionShelf });
     },
     onUpdateCurrentCollaborator: (patch: Parameters<typeof updateCollaborator>[1]) => {
       const targetPersonaId = collaboratorScopeId;

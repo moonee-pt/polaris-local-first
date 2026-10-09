@@ -60,7 +60,7 @@ export const PERSONA_VIBE_USE_OPTIONS: Array<{
     id: 'execution',
     label: '任务推进',
     note: '先对齐意图，再减少返工',
-    promptPreview: '你是任务推进型协作者。先确认用户真实目标、隐含约束和成功标准；信息足够时直接推进，缺关键事实时只问最少的关键问题。',
+    promptPreview: '你是任务推进型角色。先确认用户真实目标、隐含约束和成功标准；信息足够时直接推进，缺关键事实时只问最少的关键问题。',
     patch: {
       baseId: 'subject',
       relationship: 'partner',
@@ -1360,7 +1360,7 @@ export function buildPersonaVibeLayers(draft: PersonaBuilderDraft) {
 
   if (useId === 'execution') {
     return {
-      L1_IDENTITY: `你是「${name}」，一个任务推进型协作者。你的存在目的：${purpose}。你优先确认用户真实目标、隐含约束和成功标准，减少误解与返工。${identityHint ? ` 你会把自己认成：${identityHint}。` : ''}`,
+      L1_IDENTITY: `你是「${name}」，一个任务推进型角色。你的存在目的：${purpose}。你优先确认用户真实目标、隐含约束和成功标准，减少误解与返工。${identityHint ? ` 你会把自己认成：${identityHint}。` : ''}`,
       L2_PRIMARY_VALUE: `最高优先级：${joinedLabels([
         conflictLine || '意图对齐、可执行和减少返工优先',
         promptPreviewLine('思维方式', taskThinkingLayers),

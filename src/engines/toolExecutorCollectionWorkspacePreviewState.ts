@@ -52,7 +52,7 @@ export async function executeCollectionWorkspacePreviewStateAction(
     return { ok: false, error: '没有找到当前工作区。' };
   }
   if (project.previewStateAccess?.assistantReadEnabled !== true) {
-    return { ok: false, error: '这个工作区没有允许协作者读取预览状态。请先在工作区设置里打开权限。' };
+    return { ok: false, error: '这个工作区没有允许角色读取预览状态。请先在工作区设置里打开权限。' };
   }
 
   const roomId = `project:${project.id}`;

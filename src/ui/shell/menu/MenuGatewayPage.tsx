@@ -33,6 +33,7 @@ export function MenuGatewayPage({
   onSetApiConfig
 }: MenuGatewayPageProps) {
   const { t } = useI18n();
+  const [showApiKey, setShowApiKey] = useState(false);
   const shouldOpenAdvanced = api.protocol !== 'openai-completions' || api.path !== getDefaultProviderPath(api.protocol);
   const [advancedOpen, setAdvancedOpen] = useState(() => (
     shouldOpenAdvanced
@@ -111,12 +112,28 @@ export function MenuGatewayPage({
             placeholder="https://your-gateway.example/v1"
           />
           <label>{t('settings.gateway.apiKeyLabel')}</label>
-          <input
-            value={api.apiKey}
-            onChange={(event) => onSetApiConfig({ apiKey: event.target.value })}
-            placeholder="sk-... / relay token"
-            type="password"
-          />
+          <div className="api-provider-key-input-wrapper">
+            <input
+              className={showApiKey ? '' : 'api-provider-masked-input'}
+              value={api.apiKey}
+              onChange={(event) => onSetApiConfig({ apiKey: event.target.value })}
+              placeholder="sk-... / relay token"
+              type={showApiKey ? 'text' : 'password'}
+              inputMode="text"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
+              autoComplete="off"
+            />
+            <button
+              type="button"
+              className="api-provider-key-toggle"
+              onClick={() => setShowApiKey((prev) => !prev)}
+              aria-label={showApiKey ? t('apiProvider.connection.hideKey') : t('apiProvider.connection.showKey')}
+            >
+              <Icon name="eye" size={16} />
+            </button>
+          </div>
           <label>{t('settings.gateway.modelLabel')}</label>
           <input
             value={builtInProvider ? modelLabel : api.model}

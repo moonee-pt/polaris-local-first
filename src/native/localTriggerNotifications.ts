@@ -190,7 +190,7 @@ async function ensureTriggerNotificationChannel() {
   await LocalNotifications.createChannel({
     id: POLARIS_TRIGGER_NOTIFICATION_CHANNEL_ID,
     name: '主动消息',
-    description: '协作者按时间主动找你时显示。',
+    description: '角色按时间主动找你时显示。',
     importance: 4,
     visibility: 1,
     vibration: true
@@ -202,7 +202,7 @@ async function ensureProactiveReplyNotificationChannel() {
   await LocalNotifications.createChannel({
     id: POLARIS_PROACTIVE_REPLY_NOTIFICATION_CHANNEL_ID,
     name: '主动回复',
-    description: '协作者主动生成回复后显示。',
+    description: '角色主动生成回复后显示。',
     importance: 4,
     visibility: 1,
     vibration: true

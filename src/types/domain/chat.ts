@@ -17,6 +17,18 @@ export type ChatMessageVoiceCache = {
   format: VoiceGenerationFormat;
 };
 
+/**
+ * Marks the messages that were exchanged during one voice call. Messages without
+ * this marker stay ordinary chat messages; messages carrying it are folded into a
+ * single call record in the timeline.
+ */
+export type ChatMessageVoiceCall = {
+  sessionId: string;
+  startedAt: number;
+  endedAt: number;
+  turnCount: number;
+};
+
 export interface ChatMessage {
   id: string;
   role: 'user' | 'assistant' | 'system';
@@ -36,6 +48,7 @@ export interface ChatMessage {
   speakerCollaboratorId?: string;
   thinkingText?: string;
   voiceCache?: ChatMessageVoiceCache;
+  voiceCall?: ChatMessageVoiceCall;
   nativeToolCalls?: ChatNativeToolCall[];
   toolInvocation?: ToolInvocation;
   cardReference?: ChatCardReference;

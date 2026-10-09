@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import type { World } from '../../types/domain';
+import { Icon } from '../Icon';
 import { selectionHaptic } from '../haptics';
 import { WorldMark } from './WorldMark';
 
 type WorldSwitchVeilProps = {
   activeWorld: World;
+  placement?: 'edge' | 'topbar';
   canReviveTheme: boolean;
   onToggleWorld: () => void;
   onReviveLastSkin: () => void;
@@ -16,6 +18,7 @@ const LONG_PRESS_REVIVE_MS = 620;
 
 export function WorldSwitchVeil({
   activeWorld,
+  placement = 'edge',
   canReviveTheme,
   onToggleWorld,
   onReviveLastSkin,
@@ -29,6 +32,7 @@ export function WorldSwitchVeil({
   const pointerToggleTriggeredRef = useRef(false);
   const hostRef = useRef<HTMLDivElement | null>(null);
   const targetWorld: World = activeWorld === 'chat' ? 'collection' : 'chat';
+  const inline = placement === 'topbar';
 
   const clearHideTimer = () => {
     if (hideTimerRef.current !== null) {
@@ -87,8 +91,8 @@ export function WorldSwitchVeil({
     <div ref={hostRef} className={`world-switch-veil-host ${activeWorld} ${reviveOpen ? 'revive-open' : ''}`}>
       <button
         type="button"
-        className={`world-switch-veil ${activeWorld} ${revealed ? 'revealed' : 'collapsed'} ${reviveOpen ? 'revive-open' : ''}`}
-        aria-label={`切换到${activeWorld === 'chat' ? '房间' : '对话'}`}
+        className={`world-switch-veil ${activeWorld} ${inline ? 'world-switch-veil--inline revealed' : revealed ? 'revealed' : 'collapsed'} ${reviveOpen ? 'revive-open' : ''}`}
+        aria-label={`${inline ? '返回' : '切换到'}${activeWorld === 'chat' ? '房间' : '对话'}`}
         onContextMenu={(event) => event.preventDefault()}
         onPointerEnter={(event) => {
           if (event.pointerType === 'mouse') {
@@ -149,14 +153,14 @@ export function WorldSwitchVeil({
         <span className="world-switch-veil-core" aria-hidden="true" />
         <span className="world-switch-veil-sheen" aria-hidden="true" />
         <span className="world-switch-veil-icon" aria-hidden="true">
-          <WorldMark world={targetWorld} className="world-switch-veil-mark" />
+          {inline ? <Icon name="chevron" size={20} /> : <WorldMark world={targetWorld} className="world-switch-veil-mark" />}
         </span>
       </button>
 
       {reviveOpen ? (
         <div className="world-switch-revive-popover" role="dialog" aria-label="主题复活">
           <strong>复活 Polaris？</strong>
-          <p>长按边缘就能把孩子拉回来。要么回上一张稳定皮，要么直接恢复默认底座。</p>
+          <p>长按这里就能把孩子拉回来。要么回上一张稳定皮，要么直接恢复默认底座。</p>
           <div className="world-switch-revive-actions">
             <button
               type="button"

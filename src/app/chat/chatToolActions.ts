@@ -97,7 +97,7 @@ export function createChatToolActions({
       }
     );
     if (!session) {
-      ui.setCommandStatus('当前没有可用协作者，先新建一个协作者再执行工具。', true);
+      ui.setCommandStatus('当前没有可用角色，先新建一个角色再执行工具。', true);
       return;
     }
     void runToolAction(session.conversationId, action, false).catch((error) => {

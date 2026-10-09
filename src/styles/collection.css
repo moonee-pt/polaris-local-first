@@ -177,7 +177,7 @@
   --room-rule-card-border: 2px solid color-mix(in srgb, var(--collection-card-text) 18%, var(--collection-card-border-hover) 82%);
   --room-rule-card-inner-border: rgba(255, 255, 255, 0.18);
   --room-rule-card-shadow: 0 14px 30px rgba(87, 99, 95, 0.08), 0 0 0 1px rgba(84, 96, 93, 0.12);
-  --collection-card-divider-bg: linear-gradient(90deg, transparent, color-mix(in srgb, var(--border-hover) 14%, transparent), transparent);
+  --collection-card-divider-bg: color-mix(in srgb, var(--border) 60%, transparent);
   --collection-card-thread-bg: linear-gradient(180deg, color-mix(in srgb, var(--border-hover) 28%, white 72%), color-mix(in srgb, var(--border) 12%, transparent));
   --collection-card-thread-opacity: 0.16;
   --collection-dialogue-card-isolation: auto;
@@ -188,9 +188,9 @@
   --collection-dialogue-card-padding-mobile: 10px 9px 10px 11px;
   --collection-dialogue-card-padding-search-open: 14px 10px 14px 13px;
   --collection-dialogue-card-padding-search-closed: 9px 10px 9px 13px;
-  --collection-dialogue-card-radius: 12px;
-  --collection-dialogue-card-radius-search-open: 14px;
-  --collection-dialogue-card-radius-search-closed: 10px;
+  --collection-dialogue-card-radius: 0;
+  --collection-dialogue-card-radius-search-open: 0;
+  --collection-dialogue-card-radius-search-closed: 0;
   --collection-dialogue-card-border: 1px solid transparent;
   --collection-dialogue-card-background: transparent;
   --collection-dialogue-card-shadow: none;
@@ -199,7 +199,7 @@
   --collection-dialogue-card-hover-shadow: none;
   --collection-dialogue-card-press-transform: none;
   --collection-dialogue-card-press-shadow: none;
-  --collection-dialogue-card-divider-display: none;
+  --collection-dialogue-card-divider-display: block;
   --collection-dialogue-card-thread-display: none;
   --collection-dialogue-card-copy-padding-left: 6px;
   --collection-dialogue-card-copy-padding-left-mobile: 5px;

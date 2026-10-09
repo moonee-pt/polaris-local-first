@@ -2,7 +2,7 @@ import type { PersonaBaseId, PersonaStackId } from '../../types/domain';
 import { BASE_PROMPT_COPY } from './personaPromptCopy';
 
 const SUBJECT_DEFAULT_SHORT = '有稳定底色，也会随相处慢慢清晰';
-export const PERSONA_SUMMARY_PLACEHOLDER = '还没有协作者印象';
+export const PERSONA_SUMMARY_PLACEHOLDER = '还没有角色印象';
 const LEGACY_DEFAULT_SHORT_COPY = new Map<string, string>([
   ['等待你定义', PERSONA_SUMMARY_PLACEHOLDER],
   ['我已经存在，会完整地站在每段语境里', PERSONA_SUMMARY_PLACEHOLDER],

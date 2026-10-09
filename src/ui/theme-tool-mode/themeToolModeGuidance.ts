@@ -70,7 +70,7 @@ export function buildThemeToolModePanelDescription(mode: ThemeToolMode, t?: Tran
     return localizeThemeMode(t, 'theme.toolMode.panel.off', '完全关掉换肤工具。之后普通聊天不会再自动滑进换肤，更适合先安静说话。');
   }
   if (mode === 'stable') {
-    return localizeThemeMode(t, 'theme.toolMode.panel.stable', '让协作者更稳定地更换整页全局风格，适合先拿到完整、协调、可继续精修的一版。');
+    return localizeThemeMode(t, 'theme.toolMode.panel.stable', '让角色更稳定地更换整页全局风格，适合先拿到完整、协调、可继续精修的一版。');
   }
   return localizeThemeMode(t, 'theme.toolMode.panel.creative', '把自由度完全交给 AI。上限看 AI 能力，也可能有意想不到的后果，长按右侧侧边星星可复活。');
 }

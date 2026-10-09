@@ -38,7 +38,20 @@ const IMAGE_GENERATION_TEST_PROMPT =
 
 type ImageGenerationEndpointKind =
   | 'openai-compatible'
-  | 'minimax';
+  | 'minimax'
+  | 'dashscope';
+
+const DASHSCOPE_NATIVE_IMAGE_ENDPOINT =
+  '/api/v1/services/aigc/multimodal-generation/generation';
+
+function isDashScopeGeneralDomain(endpoint: string) {
+  try {
+    const parsed = new URL(endpoint);
+    return parsed.hostname.toLowerCase() === 'dashscope.aliyuncs.com';
+  } catch {
+    return false;
+  }
+}
 
 function normalizeImageGenerationPath(path: string) {
   const trimmed = path.trim();
@@ -101,14 +114,27 @@ export function buildImageGenerationEndpoint(api: ProviderProfile) {
   if (fullEndpointInBaseUrl) {
     return fullEndpointInBaseUrl;
   }
-  return buildApiEndpoint(api.baseUrl, normalizeImageGenerationPath(api.path));
+  const candidate = buildApiEndpoint(api.baseUrl, normalizeImageGenerationPath(api.path));
+  if (isDashScopeGeneralDomain(candidate)) {
+    try {
+      const origin = new URL(candidate).origin;
+      return `${origin}${DASHSCOPE_NATIVE_IMAGE_ENDPOINT}`;
+    } catch {
+      // fall through
+    }
+  }
+  return candidate;
 }
 
 function getImageEndpointKind(endpoint: string): ImageGenerationEndpointKind {
   try {
     const parsed = new URL(endpoint);
-    if (parsed.pathname.toLowerCase().replace(/\/+$/, '').endsWith('/image_generation')) {
+    const pathname = parsed.pathname.toLowerCase().replace(/\/+$/, '');
+    if (pathname.endsWith('/image_generation')) {
       return 'minimax';
+    }
+    if (pathname.endsWith(DASHSCOPE_NATIVE_IMAGE_ENDPOINT)) {
+      return 'dashscope';
     }
   } catch {
     return 'openai-compatible';
@@ -134,6 +160,7 @@ function isStepImageEndpoint(endpoint: string, model: string) {
 function shouldUseImageRelay(endpoint: string) {
   if (typeof window === 'undefined' || Capacitor.isNativePlatform()) return false;
   if (!isProviderImageRelayTarget(endpoint)) return false;
+  if (isDashScopeGeneralDomain(endpoint)) return false;
 
   const currentOrigin = window.location?.origin;
   if (typeof currentOrigin !== 'string' || !currentOrigin) return false;
@@ -232,6 +259,31 @@ async function parseImageResponse(data: unknown, fetchImpl: typeof fetch): Promi
     }
   }
 
+  const output = responseObject.output;
+  if (output && typeof output === 'object' && !Array.isArray(output)) {
+    const choices = (output as { choices?: unknown }).choices;
+    if (Array.isArray(choices) && choices.length > 0) {
+      const first = choices[0] as Record<string, unknown>;
+      const message = first.message as Record<string, unknown> | undefined;
+      const content = message?.content;
+      if (Array.isArray(content) && content.length > 0) {
+        const firstContent = content[0] as Record<string, unknown>;
+        const imageUrl = typeof firstContent.image === 'string' ? firstContent.image.trim() : '';
+        if (imageUrl) {
+          const response = await fetchImpl(imageUrl);
+          if (!response.ok) {
+            throw new Error(`读取生图结果失败：${response.status}`);
+          }
+          const mimeType = response.headers.get('content-type')?.split(';')[0]?.trim() || 'image/png';
+          return {
+            blob: await response.blob(),
+            mimeType
+          };
+        }
+      }
+    }
+  }
+
   const first = responseObject.data;
   if (!Array.isArray(first) || !first.length || !first[0] || typeof first[0] !== 'object') {
     throw new Error('生图响应缺少 data 图片结果。');
@@ -295,6 +347,27 @@ function buildImageRequestBody(args: {
     return body;
   }
 
+  if (kind === 'dashscope') {
+    const body: Record<string, unknown> = {
+      model: args.model,
+      input: {
+        messages: [
+          {
+            role: 'user',
+            content: [{ text: args.prompt }]
+          }
+        ]
+      },
+      parameters: {
+        n: 1
+      }
+    };
+    if (args.size !== 'auto') {
+      (body.parameters as Record<string, unknown>).size = args.size.replace(/x/i, '*');
+    }
+    return body;
+  }
+
   const body: Record<string, unknown> = {
     model: args.model,
     prompt: args.prompt,
@@ -345,7 +418,8 @@ export async function requestGeneratedImage(params: ImageGenerationRequest): Pro
 
   if (!response.ok) {
     const text = await response.text();
-    throw new Error(`生图 API ${response.status}: ${text.slice(0, 180)}`);
+    const detail = text.trim() ? text.slice(0, 200) : '响应体为空';
+    throw new Error(`生图 API ${response.status}: ${detail}（${endpoint}）`);
   }
 
   const parsed = await parseImageResponse(await response.json(), fetchImpl);

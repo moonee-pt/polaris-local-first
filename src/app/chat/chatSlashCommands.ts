@@ -290,7 +290,7 @@ export function createChatSlashCommandHandler({
       }
     );
     if (!session) {
-      ui.setCommandStatus('当前没有可用协作者，先新建一个协作者再绑定工作区。', true);
+      ui.setCommandStatus('当前没有可用角色，先新建一个角色再绑定工作区。', true);
       return;
     }
     store.chat.setConversationActiveProject(session.conversationId, project.id);
@@ -357,7 +357,7 @@ export function createChatSlashCommandHandler({
       }
     );
     if (!session) {
-      ui.setCommandStatus('当前没有可用协作者，先新建一个协作者再启动任务。', true);
+      ui.setCommandStatus('当前没有可用角色，先新建一个角色再启动任务。', true);
       return;
     }
     const userMessage = createMessage('user', command.goal, undefined, 'user-input');
@@ -486,7 +486,7 @@ export function createChatSlashCommandHandler({
           tags: ['memory', 'note']
         });
         clearCommandInput();
-        ui.setCommandStatus('已存成记忆笔记卡；不会写入协作者长期记忆。');
+        ui.setCommandStatus('已存成记忆笔记卡；不会写入角色长期记忆。');
         return;
       case 'exitWorkspace': {
         const conversationId = derived.activeConversation?.id;

@@ -96,7 +96,7 @@ describe('promptCompiler', () => {
     expect(variants.compiledPrompt).toBe('');
     expect(variants.effectivePrompt).toBe('');
     expect(variants.effectiveSource).toBe('none');
-    expect(variants.runtimeNote).toContain('不注入协作者人格提示词');
+    expect(variants.runtimeNote).toContain('不注入角色人格提示词');
   });
 
   it('shows the same anchored effective prompt in builder/runtime previews', () => {

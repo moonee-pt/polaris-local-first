@@ -24,15 +24,15 @@ export function describeProactiveMessageToolAction(action: ProactiveMessageToolA
         kind: action.kind,
         title: '创建主动消息规则',
         summary: action.schedule.kind === 'daily'
-          ? `${action.targetLabel || action.name || '当前协作者'} · 每天 ${action.schedule.time}`
-          : `${action.targetLabel || action.name || '当前协作者'} · 每隔 ${action.schedule.everyMinutes} 分钟`,
+          ? `${action.targetLabel || action.name || '当前角色'} · 每天 ${action.schedule.time}`
+          : `${action.targetLabel || action.name || '当前角色'} · 每隔 ${action.schedule.everyMinutes} 分钟`,
         targetLabel: action.targetLabel || action.name
       };
     case 'listProactiveMessageRules':
       return {
         kind: action.kind,
         title: '查看主动消息规则',
-        summary: `查看当前协作者主动消息规则${action.targetLabel ? ` · ${action.targetLabel}` : ''}`,
+        summary: `查看当前角色主动消息规则${action.targetLabel ? ` · ${action.targetLabel}` : ''}`,
         targetLabel: action.targetLabel
       };
     case 'updateProactiveMessageRule':

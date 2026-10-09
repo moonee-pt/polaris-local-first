@@ -46,7 +46,7 @@ function createCollectionContext() {
     readWorkspaceReferenceDoc: vi.fn((docId: string) => docId === reference.id ? reference : null),
     listCollaboratorMemoryDocs: vi.fn(() => [{
       id: 'memory-doc-1',
-      title: '协作者资料',
+      title: '角色资料',
       summary: '白树风格',
       content: '白树的风格更像冷光。',
       source: 'user' as const,

@@ -163,6 +163,7 @@ function buildActionsSection(args: {
     editMessage: args.ui.startEditingMessage,
     editAssistantMessage: args.chatActions.updateAssistantMessage,
     cacheAssistantSpeech: args.chatActions.cacheAssistantSpeech,
+    markVoiceCall: args.chatActions.markVoiceCall,
     forkFromMessage: args.chatActions.forkConversationFromMessage,
     updateEditingDraft: (value: string) =>
       args.ui.setEditing((current) => (current ? { ...current, draft: value } : null)),
@@ -171,6 +172,9 @@ function buildActionsSection(args: {
         ? { ...current, attachments: current.attachments.filter((item) => item.id !== attachmentId) }
         : null),
     commitEdit: args.chatActions.commitMessageEdit,
+    deleteMessage: args.chatActions.deleteMessage,
+    regenerateFromMessage: args.chatActions.regenerateFromUserMessage,
+    rollbackToMessage: args.chatActions.rollbackToMessage,
     cancelEdit: args.ui.cancelEditingMessage,
     toggleThinkingCollapsed: (messageId: string) =>
       args.ui.setCollapsedThinkingMessageIds((current) =>

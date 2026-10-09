@@ -54,7 +54,7 @@ describe('buildCollaboratorInfoOverview', () => {
       imageCards: []
     });
 
-    expect(overview[0].summary).toBe('还没有协作者印象');
+    expect(overview[0].summary).toBe('还没有角色印象');
   });
 
   it('hides the product guide model label from overview cards', () => {
@@ -82,7 +82,7 @@ describe('buildCollaboratorInfoOverview', () => {
       personas: [
         createPersonaTemplate({
           id: 'persona-pinned',
-          name: '置顶协作者',
+          name: '置顶角色',
           description: '已经置顶',
           pinnedAt: 10
         })

@@ -170,7 +170,7 @@ async function updateMemoryVectorIndexForCollaboratorNow(
   const persona = personaState.personas.find((item) => item.id === collaboratorId);
 
   if (!persona) {
-    throw new Error('找不到要整理向量索引的协作者。');
+    throw new Error('找不到要整理向量索引的角色。');
   }
 
   const vectorIndex = persona.memory.vectorIndex ?? { enabled: false };

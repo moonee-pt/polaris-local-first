@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { resolveChatGenerationActive, resolveChatMessageLifecycle, type ChatMessageLifecycle } from '../../../../app/chat/chatStreamingDisplay';
 import { resolveChatCardReference } from '../../../../app/collection/codeCollectionSource';
 import { resolveCodeCardPresentation } from '../../../../app/collection/codeCardPresentation';
@@ -22,7 +23,8 @@ import { appendEnteringMessageIds } from './messageTimelineEntering';
 import { buildTimelineRenderItems } from './messageTimelineItems';
 import { buildTimelineTaskReceipts } from './messageTimelineTaskReceipts';
 import { TaskRuntimeCard, type TaskRuntimeExecutionSegment } from './TaskRuntimeCard';
-import { TaskRuntimeDock } from './TaskRuntimeDock';
+import { VoiceCallRecordCard } from '../../call/VoiceCallRecordCard';
+import { TaskRuntimeDock, TaskModeArmedCard } from './TaskRuntimeDock';
 import { resolveTimelineWindow } from './messageTimelineWindow';
 import { useTimelineScroll } from './TimelineScroll';
 import { Icon } from '../../../Icon';
@@ -336,6 +338,21 @@ export function MessageTimeline({ isWorldSettled }: MessageTimelineProps) {
     setExpandedTaskReceiptMessageId(null);
   }, [expandedTaskReceiptMessageId, taskReceiptsByMessageId]);
 
+  const expandedTaskReceipt = expandedTaskReceiptMessageId
+    ? taskReceiptsByMessageId.get(expandedTaskReceiptMessageId) ?? null
+    : null;
+  const isTaskSheetOpen = Boolean(expandedTaskReceipt) || !isTaskDockCollapsed;
+  const closeTaskSheet = useCallback(() => {
+    setExpandedTaskReceiptMessageId(null);
+    setIsTaskDockCollapsed(true);
+  }, []);
+
+  useEffect(() => {
+    if (!showJumpToLatest) {
+      setIsTaskDockCollapsed(true);
+    }
+  }, [showJumpToLatest]);
+
   useLayoutEffect(() => {
     if (previousConversationIdRef.current !== conversationId) {
       previousConversationIdRef.current = conversationId;
@@ -412,6 +429,9 @@ export function MessageTimeline({ isWorldSettled }: MessageTimelineProps) {
     updateEditingDraft: actions.updateEditingDraft,
     commitEdit: actions.commitEdit,
     cancelEdit: actions.cancelEdit,
+    deleteMessage: actions.deleteMessage,
+    regenerateFromMessage: actions.regenerateFromMessage,
+    rollbackToMessage: actions.rollbackToMessage,
     toggleThinkingCollapsed: actions.toggleThinkingCollapsed,
     openThinkingSummary: actions.openThinkingSummary,
     saveImageAttachment: actions.saveImageAttachment,
@@ -436,6 +456,9 @@ export function MessageTimeline({ isWorldSettled }: MessageTimelineProps) {
     actions.cancelEdit,
     actions.codeCardAction,
     actions.commitEdit,
+    actions.deleteMessage,
+    actions.regenerateFromMessage,
+    actions.rollbackToMessage,
     actions.cacheAssistantSpeech,
     actions.editAssistantMessage,
     actions.editMessage,
@@ -487,7 +510,19 @@ export function MessageTimeline({ isWorldSettled }: MessageTimelineProps) {
         {timelineWindow.topSpacerHeight > 0 ? (
           <div className="chat-flow-spacer" aria-hidden="true" style={{ height: `${timelineWindow.topSpacerHeight}px` }} />
         ) : null}
-        {timelineWindow.visibleItems.map(({ message, toolMessages, messageCycleIndex, userBubbleIndex, isAssistantContinuation, isTerminalAssistantInUserTurn }) => {
+        {timelineWindow.visibleItems.map(({ message, toolMessages, messageCycleIndex, userBubbleIndex, isAssistantContinuation, isTerminalAssistantInUserTurn, voiceCall }) => {
+          if (voiceCall) {
+            return (
+              <TimelineMeasuredRow key={message.id} messageId={message.id} onMeasure={handleRowMeasure}>
+                <VoiceCallRecordCard
+                  meta={voiceCall.meta}
+                  messages={voiceCall.messages}
+                  assistantName={presentation.assistantName}
+                />
+              </TimelineMeasuredRow>
+            );
+          }
+
           const taskReceipt = taskReceiptsByMessageId.get(message.id) ?? null;
           const lifecycle: ChatMessageLifecycle = resolveChatMessageLifecycle({
             messageId: message.id,
@@ -542,20 +577,14 @@ export function MessageTimeline({ isWorldSettled }: MessageTimelineProps) {
                 taskReceiptAction={taskReceipt ? {
                   status: taskReceipt.task.status,
                   expanded: expandedTaskReceiptMessageId === message.id,
-                  onToggle: () => setExpandedTaskReceiptMessageId((currentId) => (
-                    currentId === message.id ? null : message.id
-                  ))
+                  onToggle: () => {
+                    setIsTaskDockCollapsed(true);
+                    setExpandedTaskReceiptMessageId((currentId) => (
+                      currentId === message.id ? null : message.id
+                    ));
+                  }
                 } : null}
               />
-              {taskReceipt && expandedTaskReceiptMessageId === message.id ? (
-                <div className="message-task-receipt-panel">
-                  <TaskRuntimeCard
-                    task={taskReceipt.task}
-                    executionSegments={taskReceipt.executionSegments}
-                    onCollapse={() => setExpandedTaskReceiptMessageId(null)}
-                  />
-                </div>
-              ) : null}
             </TimelineMeasuredRow>
           );
         })}
@@ -570,13 +599,15 @@ export function MessageTimeline({ isWorldSettled }: MessageTimelineProps) {
         <TaskRuntimeDock
           task={currentTask}
           taskModeEnabled={composer.taskModeEnabled}
-          executionSegments={currentTaskEvidence}
           collapsed={isTaskDockCollapsed}
           justArmed={taskDockJustArmed}
           justCompleted={taskJustCompleted}
           showJumpToLatest={showJumpToLatest}
           showJumpToTop={showJumpToTop}
-          onToggleCollapsed={() => setIsTaskDockCollapsed((current) => !current)}
+          onToggleCollapsed={() => {
+            setExpandedTaskReceiptMessageId(null);
+            setIsTaskDockCollapsed((current) => !current);
+          }}
           onJumpToLatest={jumpToLatest}
           onJumpToTop={jumpToTop}
         />
@@ -587,6 +618,34 @@ export function MessageTimeline({ isWorldSettled }: MessageTimelineProps) {
             {showJumpToLatest ? <JumpToLatest onClick={jumpToLatest} /> : null}
           </div>
         </div>
+      ) : null}
+      {isTaskSheetOpen && typeof document !== 'undefined' ? createPortal(
+        <>
+          <button
+            type="button"
+            className="task-receipt-sheet-dismiss"
+            aria-label={t('chat.taskDock.collapseCurrent')}
+            onClick={closeTaskSheet}
+          />
+          <div className="task-receipt-sheet" role="dialog" aria-modal="true" aria-label={t('chat.taskDock.collapseCurrent')}>
+            {expandedTaskReceipt ? (
+              <TaskRuntimeCard
+                task={expandedTaskReceipt.task}
+                executionSegments={expandedTaskReceipt.executionSegments}
+                onCollapse={closeTaskSheet}
+              />
+            ) : currentTask ? (
+              <TaskRuntimeCard
+                task={currentTask}
+                executionSegments={currentTaskEvidence}
+                onCollapse={closeTaskSheet}
+              />
+            ) : (
+              <TaskModeArmedCard onCollapse={closeTaskSheet} />
+            )}
+          </div>
+        </>,
+        document.body
       ) : null}
       {codeCardPreview && codeCardPreview.presentation === 'code' ? (
         <CodeRunFullscreen

@@ -101,7 +101,7 @@ export function createMenuStorageMaintenanceActions({
       if (!ui.confirm(
         [
           `清理 ${audit.orphanAssetCount} 个未引用附件和 ${audit.orphanPreviewCacheCount} 个孤儿预览缓存，预计释放 ${formatBytesForAlert(audit.orphanTotalBytes)}。`,
-          '只会删除没有被对话记录、图片库、协作者头像、主题背景、字体、房间、工作区文件、参考资料或待发送栏引用的本机附件资产。',
+          '只会删除没有被对话记录、图片库、角色头像、主题背景、字体、房间、工作区文件、参考资料或待发送栏引用的本机附件资产。',
           '预览缓存不是资产本体；只清理没有对应资产实体的孤儿预览。',
           '这个动作不会自动清理仍在对话记录里的图片或文件。继续吗？'
         ].join('\n')

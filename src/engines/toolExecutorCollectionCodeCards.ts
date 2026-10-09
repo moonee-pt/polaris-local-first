@@ -34,7 +34,7 @@ export function formatCodeCardDirectory(cards: CodeCard[]) {
           `   更新：${new Date(card.updatedAt).toISOString()}`
         ].filter(Boolean).join('\n'))
       ].join('\n')
-    : '房间卡目录：当前协作者房间里还没有房间卡。';
+    : '房间卡目录：当前角色房间里还没有房间卡。';
 }
 
 export function formatCodeCardRead(card: CodeCard) {

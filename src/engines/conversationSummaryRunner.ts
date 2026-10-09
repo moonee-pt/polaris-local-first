@@ -87,10 +87,10 @@ type RawConversationSummary = {
 
 const CONVERSATION_SUMMARY_SYSTEM_PROMPT = [
   '你是 Polaris 的跨对话记忆整理小模型。',
-  '你的任务是把同一个协作者的历史对话整理成可长期回放给主模型的记忆草稿。',
+  '你的任务是把同一个角色的历史对话整理成可长期回放给主模型的记忆草稿。',
   '只保留对未来对话有持续价值的信息：关系模式、偏好、反复出现的主题、仍未完成的上下文。',
   '不要逐句复述原文，不要把玩笑、自嘲、临时情绪写成稳定事实。',
-  '不要写当前任务执行记录，也不要替用户或协作者新增没有来源支持的设定。',
+  '不要写当前任务执行记录，也不要替用户或角色新增没有来源支持的设定。',
   '只输出可读的中文记忆草稿，不要输出 JSON、Markdown 表格、messageId、conversationId 或解释。'
 ].join('\n');
 
@@ -120,7 +120,7 @@ function resolveSummaryProvider(args: {
 
 function buildConversationSummaryUserPrompt(persona: Persona, batch: ConversationSummarySourceBatch) {
   const userName = CONVERSATION_SUMMARY_USER_SUBJECT_LABEL;
-  const collaboratorName = resolveSummarySubjectName(persona.name, '协作者');
+  const collaboratorName = resolveSummarySubjectName(persona.name, '角色');
   return [
     `名字表：${userName} = 历史来源中 role:user 的说话人；${collaboratorName} = 历史来源中 role:assistant 的说话人。`,
     `批次：${batch.sequence}`,
@@ -128,12 +128,12 @@ function buildConversationSummaryUserPrompt(persona: Persona, batch: Conversatio
     `来源消息数：${batch.sourceMessageIds.length}`,
     '',
     '整理步骤：',
-    `1. 先做对象确认：把每段来源里的“我/你/他/她/用户/助手/协作者”等称呼还原成名字表里的“${userName}”或“${collaboratorName}”。这一步是理解前提，不要单独输出。`,
+    `1. 先做对象确认：把每段来源里的“我/你/他/她/用户/助手/角色”等称呼还原成名字表里的“${userName}”或“${collaboratorName}”。这一步是理解前提，不要单独输出。`,
     '2. 再基于已经确认的对象关系整理长期关系和近期主题。',
     '',
     '输出格式使用这两个小标题；没有内容的小标题可以省略：',
     '长期关系：',
-    '- 稳定关系模式、表达偏好、协作者以后应该持续知道的事。',
+    '- 稳定关系模式、表达偏好、角色以后应该持续知道的事。',
     '',
     '近期主题：',
     '- 近期仍可能继续的主题、任务线索、创作线索。',
@@ -142,7 +142,7 @@ function buildConversationSummaryUserPrompt(persona: Persona, batch: Conversatio
     '',
     '人称硬边界：',
     `- 总结必须使用名字表里的明确名字：“${userName}”、“${collaboratorName}”、“双方”。`,
-    '- 不要用“我/你/他/她/用户/助手/协作者”指代关系主体；源对话里的第一人称和第二人称必须先还原成明确对象。',
+    '- 不要用“我/你/他/她/用户/助手/角色”指代关系主体；源对话里的第一人称和第二人称必须先还原成明确对象。',
     '- 如果无法确定某句话的指代对象，宁可省略，不要猜。',
     '',
     '数量与长度边界：',
@@ -371,7 +371,7 @@ function normalizeModelSummaries(args: {
       sourceMessageIds: args.batch.sourceMessageIds,
       sourceCharCount: args.batch.sourceCharCount,
       subjectCollaboratorId: args.persona.id,
-      subjectCollaboratorName: resolveSummarySubjectName(args.persona.name, '协作者'),
+      subjectCollaboratorName: resolveSummarySubjectName(args.persona.name, '角色'),
       userLabel: CONVERSATION_SUMMARY_USER_SUBJECT_LABEL,
       generator: 'small_model',
       generatedAt: args.now,
@@ -477,7 +477,7 @@ export async function runConversationSummaryMemory(
   const allBatches = resolveConversationSummarySourceBatches({
     conversations: params.conversations,
     currentCollaboratorId: params.persona.id,
-    currentCollaboratorName: resolveSummarySubjectName(params.persona.name, '协作者'),
+    currentCollaboratorName: resolveSummarySubjectName(params.persona.name, '角色'),
     userLabel: CONVERSATION_SUMMARY_USER_SUBJECT_LABEL,
     targetSourceChars: resolveSummarySourceTarget(params.settings.targetSourceChars)
   });

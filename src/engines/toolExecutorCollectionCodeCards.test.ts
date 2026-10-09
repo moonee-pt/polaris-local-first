@@ -40,7 +40,7 @@ describe('code card formatting', () => {
 
     expect(formatCodeCardDirectory([card])).toContain('1. 白树房间（html） id=card-1');
     expect(formatCodeCardDirectory([card])).toContain('标签：视觉');
-    expect(formatCodeCardDirectory([])).toBe('房间卡目录：当前协作者房间里还没有房间卡。');
+    expect(formatCodeCardDirectory([])).toBe('房间卡目录：当前角色房间里还没有房间卡。');
   });
 
   it('formats full code card reads', () => {

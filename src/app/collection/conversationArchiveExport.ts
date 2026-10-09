@@ -59,7 +59,7 @@ function formatIsoTime(timestamp: number) {
 
 function resolveScopeLabel(collaboratorScopeId: string | null, collaborators: Persona[]) {
   if (!collaboratorScopeId) return '全部直聊';
-  return collaborators.find((collaborator) => collaborator.id === collaboratorScopeId)?.name.trim() || '当前协作者';
+  return collaborators.find((collaborator) => collaborator.id === collaboratorScopeId)?.name.trim() || '当前角色';
 }
 
 function resolveSpeakerLabel(message: ChatMessage, collaboratorName: string | null) {
@@ -161,7 +161,7 @@ export async function buildConversationArchiveExportPayload({
     ...entries.flatMap((entry, index) => [
       `## ${index + 1}. ${headingText(entry.conversation.title, '未命名对话')}`,
       '',
-      `- 协作者：${entry.collaboratorName ?? '未归属历史'}`,
+      `- 角色：${entry.collaboratorName ?? '未归属历史'}`,
       `- 对话 ID：${entry.conversation.id}`,
       `- 更新时间：${formatIsoTime(entry.conversation.updatedAt)}`,
       '',

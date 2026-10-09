@@ -30,19 +30,19 @@ export const FRONTSTAGE_SURFACE_REGISTRY: Record<FrontstageSurfaceId, Frontstage
   'collaborator-switch-panel': {
     id: 'collaborator-switch-panel',
     worlds: ['chat', 'collection'],
-    role: '承载当前协作者闭环切换的轻面板',
-    note: '它优先负责快速换人和进入当前协作者闭环，不该继续和深设置编辑混成同一坨无名内容。'
+    role: '承载当前角色闭环切换的轻面板',
+    note: '它优先负责快速换人和进入当前角色闭环，不该继续和深设置编辑混成同一坨无名内容。'
   },
   'collaborator-switch-library': {
     id: 'collaborator-switch-library',
     worlds: ['chat', 'collection'],
-    role: '协作者快速切换区，负责当前闭环里的候选对象',
-    note: '它是 quick switch，不是 studio，也不是完整协作者资料页。'
+    role: '角色快速切换区，负责当前闭环里的候选对象',
+    note: '它是 quick switch，不是 studio，也不是完整角色资料页。'
   },
   'collaborator-studio-entry': {
     id: 'collaborator-studio-entry',
     worlds: ['chat', 'collection'],
-    role: '从轻切换层进入协作者编辑和新建流的入口区',
+    role: '从轻切换层进入角色编辑和新建流的入口区',
     note: '它承接进入 builder / full sheet 的动作，不和 quick switch 混在同一层语义里。'
   },
   'tab-strip': {

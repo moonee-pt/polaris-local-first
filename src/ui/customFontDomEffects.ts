@@ -92,7 +92,7 @@ function buildDisplayPreferenceCss(fontScale: number) {
     '}',
     `.world-chat .bubble { font-size: calc(13.5px * ${scale}); }`,
     `.message-code-lines { font-size: calc(12px * ${scale}); }`,
-    `.chat-box textarea { font-size: ${fontScale > 1 ? `calc(16px * ${scale})` : '16px'}; }`
+    `.chat-box textarea { font-size: ${fontScale > 1 ? `calc(15px * ${scale})` : '15px'}; }`
   ].join('\n');
 }
 

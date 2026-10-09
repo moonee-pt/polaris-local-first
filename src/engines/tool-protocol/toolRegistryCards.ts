@@ -192,16 +192,16 @@ export const CARD_TOOL_DEFINITION_MAP = {
     name: 'listCodeCards',
     group: 'card',
     resultReplayMode: 'full-detail',
-    brief: '列出当前协作者房间卡目录',
+    brief: '列出当前角色房间卡目录',
     schema: {
       name: 'listCodeCards',
-      description: '列出当前协作者房间里可访问的房间卡目录。它只返回标题、id、语言、标签和更新时间，不返回卡片正文。',
+      description: '列出当前角色房间里可访问的房间卡目录。它只返回标题、id、语言、标签和更新时间，不返回卡片正文。',
       parameters: objectParameters({
         targetLabel: stringProperty('可选的目标说明。')
       })
     },
     rules: [
-      '4. listCodeCards：列出当前协作者房间卡目录。',
+      '4. listCodeCards：列出当前角色房间卡目录。',
       '- 用户提到过去的卡、某张卡、之前那个房间，但目标不明确时，先用它看目录。',
       '- 它只返回标题、id、语言、标签和更新时间；不返回正文。',
       '- 看到目标后，再用 `readCodeCard` 按 id 或标题读取全文。'
@@ -410,7 +410,7 @@ export const CARD_TOOL_DEFINITION_MAP = {
     },
     rules: [
       '7. readWorkspacePreviewState：读取当前工作区预览状态。',
-      '- 只有用户在工作区设置里允许协作者读取预览状态时，这个工具才存在。',
+      '- 只有用户在工作区设置里允许角色读取预览状态时，这个工具才存在。',
       '- 它读取的是 Polaris 宿主保存的当前工作区 preview room state：`window.PolarisRoom`、预览内 `localStorage/sessionStorage` shim、自动保存的表单字段。',
       '- 它不读取项目文件；要看源码仍用 readProjectFile / searchProjectFiles。',
       '- 它不读取真实浏览器 localStorage、本机文件、其他工作区、外部网页或未托管页面。',
@@ -546,7 +546,7 @@ export const CARD_TOOL_DEFINITION_MAP = {
     },
     rules: [
       '10. searchReadableContext：跨当前可读取材料找入口。',
-      '- 它只返回候选和推荐工具：项目文件用 `readProjectFile`，工作区参考用 `readWorkspaceReference`，协作者长期资料用 `readMemoryDoc`。',
+      '- 它只返回候选和推荐工具：项目文件用 `readProjectFile`，工作区参考用 `readWorkspaceReference`，角色长期资料用 `readMemoryDoc`。',
       '- 这个工具是导航辅助，不是万能读取；需要正文时必须调用候选里推荐的 read 工具。'
     ]
   },

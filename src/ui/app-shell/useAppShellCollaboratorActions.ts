@@ -205,7 +205,7 @@ export function useAppShellCollaboratorActions({
       return;
     }
     const persona = findCollaborator(collaboratorId);
-    if (!persona || !window.confirm(`确认删除 ${persona.name}？TA 的历史对话会保留在“全部”里，但不再归属于任何协作者。`)) return;
+    if (!persona || !window.confirm(`确认删除 ${persona.name}？TA 的历史对话会保留在“全部”里，但不再归属于任何角色。`)) return;
 
     const nextPersonas = personas.filter((candidate) => candidate.id !== collaboratorId);
     const fallbackCollaboratorId = nextPersonas[0]?.id ?? null;

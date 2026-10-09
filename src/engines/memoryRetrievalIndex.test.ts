@@ -112,15 +112,15 @@ describe('buildConversationRetrievalChunks', () => {
       conversations: [
         conversation({
           id: 'same',
-          title: '同协作者',
+          title: '同角色',
           collaboratorId: 'pharos',
-          messages: [message({ id: 'same-user', content: '这条可以被当前协作者召回。', timestamp: 1 })]
+          messages: [message({ id: 'same-user', content: '这条可以被当前角色召回。', timestamp: 1 })]
         }),
         conversation({
           id: 'other',
-          title: '其他协作者',
+          title: '其他角色',
           collaboratorId: 'nova',
-          messages: [message({ id: 'other-user', content: '这条不属于当前协作者。', timestamp: 2 })]
+          messages: [message({ id: 'other-user', content: '这条不属于当前角色。', timestamp: 2 })]
         })
       ]
     });
@@ -275,9 +275,9 @@ describe('buildConversationSemanticChunks', () => {
         }),
         conversation({
           id: 'other',
-          title: '其他协作者',
+          title: '其他角色',
           collaboratorId: 'nova',
-          messages: [message({ id: 'other-user', content: '其他协作者的内容不进当前块。', timestamp: 3 })]
+          messages: [message({ id: 'other-user', content: '其他角色的内容不进当前块。', timestamp: 3 })]
         }),
         conversation({
           id: 'old',

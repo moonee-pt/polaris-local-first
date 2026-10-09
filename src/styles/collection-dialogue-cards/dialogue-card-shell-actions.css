@@ -1,6 +1,6 @@
-.conversation-card-list { display: flex; flex-direction: column; gap: 6px; padding-top: 2px; transition: gap 0.22s var(--ease-out); --collection-dialogue-card-current-margin: var(--collection-dialogue-card-margin); --collection-dialogue-card-current-padding: var(--collection-dialogue-card-padding); --collection-dialogue-card-current-radius: var(--collection-dialogue-card-radius); }
-.conversation-card-list.search-open { gap: 8px; }
-.conversation-card-list.search-closed { gap: 2px; }
+.conversation-card-list { display: flex; flex-direction: column; gap: 0; padding-top: 2px; transition: gap 0.22s var(--ease-out); --collection-dialogue-card-current-margin: var(--collection-dialogue-card-margin); --collection-dialogue-card-current-padding: var(--collection-dialogue-card-padding); --collection-dialogue-card-current-radius: var(--collection-dialogue-card-radius); }
+.conversation-card-list.search-open { gap: 0; }
+.conversation-card-list.search-closed { gap: 0; }
 .conversation-card-list.cards-heavy {
   --collection-dialogue-card-backdrop: none;
   --collection-dialogue-card-shadow: none;
@@ -66,8 +66,8 @@
   content: '';
   display: var(--collection-dialogue-card-divider-display);
   position: absolute;
-  left: 14px;
-  right: 14px;
+  left: 0;
+  right: 0;
   bottom: 0;
   height: 1px;
   background: var(--collection-card-divider-bg);
@@ -81,9 +81,7 @@
 .conversation-card.active,
 .collection .conversation-card.active {
   border: 1px solid transparent;
-  background:
-    linear-gradient(90deg, color-mix(in srgb, var(--collection-card-accent-soft) 34%, transparent), transparent 68%),
-    color-mix(in srgb, var(--collection-card-surface-solid) 24%, transparent);
+  background: transparent;
   box-shadow: none;
   transform: none;
 }
@@ -97,7 +95,13 @@
 
 .conversation-card.active .conversation-card-thread-mark {
   display: block;
-  opacity: 0.44;
+  opacity: 1;
+  top: 4px;
+  bottom: 4px;
+  left: 0;
+  width: 2px;
+  border-radius: 1px;
+  background: var(--collection-card-accent);
 }
 
 .conversation-card-swipe-delete {
@@ -108,7 +112,7 @@
   z-index: 2;
   width: 68px;
   border: 0;
-  border-radius: calc(var(--collection-dialogue-card-current-radius) - 6px);
+  border-radius: 2px;
   background: color-mix(in srgb, #c85f5f 86%, var(--collection-card-surface-solid) 14%);
   color: #fff;
   font-size: 12px;
@@ -276,4 +280,8 @@
   border-color: rgba(194, 92, 92, 0.28);
   background: rgba(194, 92, 92, 0.08);
   color: #b45f5f;
+}
+
+.conversation-card-list > .conversation-card:last-of-type::after {
+  display: none;
 }

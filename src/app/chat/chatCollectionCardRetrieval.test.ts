@@ -43,7 +43,7 @@ describe('retrieveRelevantCollectionCards', () => {
       title: 'Footer',
       language: 'tsx',
       tags: ['页脚'],
-      originLabel: '未知协作者'
+      originLabel: '未知角色'
     });
     expect('content' in result[0]).toBe(false);
   });

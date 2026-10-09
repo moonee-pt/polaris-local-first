@@ -407,7 +407,7 @@ function buildChatboxPersona() {
   return createPersonaTemplate({
     id: CHATBOX_PERSONA_ID,
     name: 'Chatbox 导入',
-    description: '从 Chatbox 备份转换来的历史协作者。',
+    description: '从 Chatbox 备份转换来的历史角色。',
     purpose: '承载 Chatbox 导入的历史对话。',
     generatedPromptMode: 'off',
     baseId: 'custom',

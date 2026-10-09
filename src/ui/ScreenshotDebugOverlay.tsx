@@ -35,7 +35,7 @@ export function ScreenshotDebugOverlay({
     ? activeConversationTitle || '未命名对话'
     : `${topbarState.collectionShelf} shelf`;
   const collaboratorLabel = topbarState.activeWorld === 'chat'
-    ? (activeConversationCollaboratorName || '未绑定协作者')
+    ? (activeConversationCollaboratorName || '未绑定角色')
     : (frontstageCollaboratorName || '全部视角');
   const flagText = [
     `menu ${Number(topbarState.menuOpen)}`,

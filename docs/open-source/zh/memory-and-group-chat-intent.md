@@ -11,7 +11,7 @@ Polaris 构造的是一个能让模型重新回到真实工作现场的环境：
 - context 被组装成命名 lane
 - 应用要告诉模型每块 context 从哪里来
 - stable facts、recent wording、summary、document、tool、room events 保持不同权威
-- 协作者进入 shared space 时仍保留自己的身份
+- 角色进入 shared space 时仍保留自己的身份
 - 系统通过结构、状态和工具塑造环境
 
 ## 意图到实现
@@ -23,7 +23,7 @@ Polaris 构造的是一个能让模型重新回到真实工作现场的环境：
 | 长资料应该可展开 | memory/reference docs 先作为目录进入，需要时通过工具读取 | 大材料可用，但不淹没每次请求 |
 | summary pipeline 和 request visibility 不能混淆 | `memoryReleaseGates.ts` 可控制生成/存储/UI 与请求注入 | 生成数据存在不等于每轮回复都受它影响 |
 | 群聊是房间面 | `src/app/group/` 拥有 turn-taking、group request shaping、private lanes、tabs、settings、room artifacts | 群聊行为来自房间结构 |
-| 协作者进群后仍是自己 | Group request 保留成员 identity 和可选 memory recall，同时收窄 room-level tools | 同一个协作者能把个人连续性带进共享空间 |
+| 角色进群后仍是自己 | Group request 保留成员 identity 和可选 memory recall，同时收窄 room-level tools | 同一个角色能把个人连续性带进共享空间 |
 | 共享产物需要房间和作者归属 | Group artifact selectors 收集 room-lineage cards/files/images 并保留 owner | 用户和模型都不会混淆协作痕迹 |
 
 ## 记忆合同
@@ -36,7 +36,7 @@ Polaris 构造的是一个能让模型重新回到真实工作现场的环境：
 - confirmed memory entries 承载稳定用户或项目事实
 - long reference documents 保持为可读文档，不塞进每次请求
 
-小模型辅助会增加生成材料：profile-like summaries、recent-topic summaries、用于 vector retrieval 的 semantic text。地基是当前 raw tail、协作者身份、confirmed memory、recent wording 和 reference docs；summary 可用时再增加结构。
+小模型辅助会增加生成材料：profile-like summaries、recent-topic summaries、用于 vector retrieval 的 semantic text。地基是当前 raw tail、角色身份、confirmed memory、recent wording 和 reference docs；summary 可用时再增加结构。
 
 ## 记忆是 context compiler 的燃料
 
@@ -56,7 +56,7 @@ Memory 在请求路径中进入不同 lane。
 
 | Lane | 用途 | 当前实现 |
 | --- | --- | --- |
-| Confirmed memory | 给协作者选出的稳定事实和偏好 | `requestMemoryPlan.ts`, `buildMemorySegment()` |
+| Confirmed memory | 给角色选出的稳定事实和偏好 | `requestMemoryPlan.ts`, `buildMemorySegment()` |
 | Memory reference docs | 长材料先暴露目录，再由工具读取 | `buildMemorySegment()` 和 memory-doc tools |
 | Conversation summaries | profile/recent-topic summary，不是 quote 或 rule | `requestConversationSummaryPlan.ts`, `buildConversationSummarySegment()` |
 | Semantic recall | prior wording 和 retrieved continuity clues | `requestSemanticRecallPlan.ts`, vector recall helpers, `buildSemanticRecallSegment()` |
@@ -80,10 +80,10 @@ Memory 在请求路径中进入不同 lane。
 用户心智模型是：
 
 - group room 是一个 shared public conversation
-- 每个协作者在房间里仍是自己
-- 每个协作者能带自己的 memory 和 identity
+- 每个角色在房间里仍是自己
+- 每个角色能带自己的 memory 和 identity
 - group outputs 属于 group，并带 authorship
-- private member lanes 可承载每个协作者自己的 context 和 process
+- private member lanes 可承载每个角色自己的 context 和 process
 - room 决定哪些 shared tools 存在
 
 ## 群聊房间秩序
@@ -104,15 +104,15 @@ Memory 在请求路径中进入不同 lane。
 
 每个成员 turn 都会被改造成 room-shaped request：
 
-- `buildGroupMemberSystemMessage()` 告诉当前协作者这是 public group room，不是回到 private chat。
-- `labelRequestMessagesForMember()` 把其他协作者公开消息标成 named messages。
+- `buildGroupMemberSystemMessage()` 告诉当前角色这是 public group room，不是回到 private chat。
+- `labelRequestMessagesForMember()` 把其他角色公开消息标成 named messages。
 - `buildLaneDigestMessage()` 把该成员 private lane 带进本轮。
 - `buildGroupTurnAnchorMessage()` 在靠近生成点的位置再次钉住 room/member identity。
 - `useGroupWorldController()` 为 group request 清掉 current task、active project、workspace docs、theme tools 等单聊上下文，并按 group settings 暴露 cards/images/MCP。
 
 ## 群里的记忆
 
-协作者在群里仍是自己，所以 room 不会替换个人记忆。当前实现点：
+角色在群里仍是自己，所以 room 不会替换个人记忆。当前实现点：
 
 - `groupMemoryRecallEnabled()` 能让某个 group 关闭 member memory recall，但不删除个人记忆。
 - `buildGroupToolPreferences()` 在允许时保留 personal memory 和 recall，同时让 group room 只启用当前房间需要的工具组。
@@ -120,7 +120,7 @@ Memory 在请求路径中进入不同 lane。
 
 ## 私域与公开产物
 
-每个协作者可以有 private lane：用户能进入成员 lane，看 process context，和一个成员单独说话，而不是自动广播到群里。
+每个角色可以有 private lane：用户能进入成员 lane，看 process context，和一个成员单独说话，而不是自动广播到群里。
 
 当前实现：
 
@@ -131,4 +131,4 @@ Memory 在请求路径中进入不同 lane。
 
 ## 设计总结
 
-记忆是分层 context compiler，群聊是带 per-member request shaping 的房间面。共同结构很直接：事实来源有名字，模型上下文可检查，群里的协作者不是一次性 bot instance。
+记忆是分层 context compiler，群聊是带 per-member request shaping 的房间面。共同结构很直接：事实来源有名字，模型上下文可检查，群里的角色不是一次性 bot instance。

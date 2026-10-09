@@ -59,10 +59,10 @@ export function toolEventCopy(tool: ToolInvocation, t?: ToolLabelTranslator) {
   }
   if (tool.status === 'preview') {
     if (tool.kind === 'writeMemory') {
-      return localizeToolLabel(t, 'chat.toolEvent.previewMemory', '这批记忆暂未写入，确认后才会进入当前协作者的长期记忆。');
+      return localizeToolLabel(t, 'chat.toolEvent.previewMemory', '这批记忆暂未写入，确认后才会进入当前角色的长期记忆。');
     }
     if (tool.kind === 'writeMemoryDoc') {
-      return localizeToolLabel(t, 'chat.toolEvent.previewMemoryDoc', '这份长期资料暂未写入，确认后才会进入当前协作者的资料库。');
+      return localizeToolLabel(t, 'chat.toolEvent.previewMemoryDoc', '这份长期资料暂未写入，确认后才会进入当前角色的资料库。');
     }
     if ((tool.themeBatchCount ?? 0) > 1) {
       return localizeToolLabel(
@@ -139,10 +139,10 @@ export function toolEventCopy(tool: ToolInvocation, t?: ToolLabelTranslator) {
     return localizeToolLabel(t, 'chat.toolEvent.imageSaved', '这张图已经收进图片收藏卡了，可以回到房间继续看。');
   }
   if (tool.kind === 'writeMemory' && tool.status === 'executed') {
-    return localizeToolLabel(t, 'chat.toolEvent.memoryWritten', '这条偏好已经写进当前协作者记忆，后面对话会自然参考。');
+    return localizeToolLabel(t, 'chat.toolEvent.memoryWritten', '这条偏好已经写进当前角色记忆，后面对话会自然参考。');
   }
   if (tool.kind === 'writeMemoryDoc' && tool.status === 'executed') {
-    return localizeToolLabel(t, 'chat.toolEvent.memoryDocWritten', '这份长期资料已经写进当前协作者资料库，后面对话可以按需读取全文。');
+    return localizeToolLabel(t, 'chat.toolEvent.memoryDocWritten', '这份长期资料已经写进当前角色资料库，后面对话可以按需读取全文。');
   }
   if (tool.kind === 'startTask' && tool.status === 'executed') {
     return localizeToolLabel(t, 'chat.toolEvent.taskStarted', '任务已经立起来了，接下来会在同一个执行状态里继续推进。');

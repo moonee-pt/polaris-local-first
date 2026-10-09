@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Chat 运行和协作者、模型 provider、上下文、模型可见工具相关的对话工作流。
+Chat 运行和角色、模型 provider、上下文、模型可见工具相关的对话工作流。
 
 ## Owns
 

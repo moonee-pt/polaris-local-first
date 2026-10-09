@@ -379,7 +379,7 @@ describe('resolveRequestSemanticRecallPlan', () => {
       conversations: [
         conversation({
           id: 'other-persona',
-          title: '另一个协作者',
+          title: '另一个角色',
           collaboratorId: 'other',
           messages: [message('other-user', '供应商抽象层和记忆地基都提过。', 1)]
         })

@@ -41,7 +41,7 @@ describe('buildCollectionFileCards', () => {
       },
       {
         id: 'c-2',
-        title: '别的协作者',
+        title: '别的角色',
         collaboratorId: 'nova',
         pinnedAt: null,
         updatedAt: 20,

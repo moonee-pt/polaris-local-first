@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import type { ProviderProfile } from '../types/domain';
 import {
   createCustomProviderProfile,
   filterVisibleProviders,
@@ -188,5 +189,83 @@ describe('mergeProviderPatch', () => {
         thinking: true
       }
     });
+  });
+
+  it('converts built-in Polaris provider to custom when baseUrl is changed', () => {
+    const provider: ProviderProfile = {
+      id: 'provider-polaris-public',
+      name: 'Polaris',
+      protocol: 'openai-completions',
+      baseUrl: '/api',
+      path: '/chat/completions',
+      apiKey: 'polaris-public-free',
+      model: 'Polaris',
+      capabilities: {
+        images: false,
+        streaming: true,
+        thinking: false
+      }
+    };
+
+    const merged = mergeProviderPatch(provider, {
+      baseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
+      apiKey: 'sk-test-key',
+      model: 'deepseek-v4.1-flash'
+    });
+
+    expect(merged.id).not.toBe('provider-polaris-public');
+    expect(merged.baseUrl).toBe('https://dashscope.aliyuncs.com/compatible-mode/v1');
+    expect(merged.apiKey).toBe('sk-test-key');
+    expect(merged.model).toBe('deepseek-v4.1-flash');
+  });
+
+  it('converts built-in Polaris provider to custom when apiKey is changed', () => {
+    const provider: ProviderProfile = {
+      id: 'provider-polaris-public',
+      name: 'Polaris',
+      protocol: 'openai-completions',
+      baseUrl: '/api',
+      path: '/chat/completions',
+      apiKey: 'polaris-public-free',
+      model: 'Polaris',
+      capabilities: {
+        images: false,
+        streaming: true,
+        thinking: false
+      }
+    };
+
+    const merged = mergeProviderPatch(provider, {
+      apiKey: 'sk-custom-key'
+    });
+
+    expect(merged.id).not.toBe('provider-polaris-public');
+    expect(merged.apiKey).toBe('sk-custom-key');
+  });
+
+  it('keeps built-in Polaris provider when only model is changed within allowlist', () => {
+    const provider: ProviderProfile = {
+      id: 'provider-polaris-public',
+      name: 'Polaris',
+      protocol: 'openai-completions',
+      baseUrl: '/api',
+      path: '/chat/completions',
+      apiKey: 'polaris-public-free',
+      model: 'Polaris',
+      capabilities: {
+        images: false,
+        streaming: true,
+        thinking: false
+      }
+    };
+
+    const merged = mergeProviderPatch(provider, {
+      model: 'openai/gpt-oss-120b:free'
+    });
+
+    expect(merged.id).toBe('provider-polaris-public');
+    expect(merged.model).toBe('openai/gpt-oss-120b:free');
+    expect(merged.baseUrl).toBe('/api');
+    expect(merged.apiKey).toBe('polaris-public-free');
   });
 });

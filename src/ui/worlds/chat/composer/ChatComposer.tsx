@@ -41,7 +41,11 @@ function resolveThemeReviveSpell(input: string): 'restore-default' | 'revive-las
   return null;
 }
 
-export function ChatComposer() {
+type ChatComposerProps = {
+  onStartVoiceCall?: () => void;
+};
+
+export function ChatComposer({ onStartVoiceCall }: ChatComposerProps = {}) {
   const { t } = useI18n();
   const presentation = useChatPresentation();
   const composer = useChatComposer();
@@ -166,10 +170,10 @@ export function ChatComposer() {
     await handleAddAttachments(files);
   };
   const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (event.key !== 'Enter' || event.shiftKey || interactionLocked || hasUnsupportedPendingImages) return;
+    if (event.key !== 'Enter' || event.ctrlKey || interactionLocked || hasUnsupportedPendingImages) return;
     const prefersTouchInput =
       typeof window !== 'undefined' &&
-      (window.matchMedia('(pointer: coarse)').matches || navigator.maxTouchPoints > 0);
+      window.matchMedia('(pointer: coarse)').matches;
     if (prefersTouchInput || event.nativeEvent.isComposing) return;
     if (tryCastThemeReviveSpell()) {
       event.preventDefault();
@@ -286,6 +290,7 @@ export function ChatComposer() {
                 pickerOpen={attachmentPickerOpen}
                 interactionLocked={interactionLocked}
                 onSetPickerOpen={setAttachmentPickerOpen}
+                onStartVoiceCall={onStartVoiceCall}
               />
               <textarea
                 ref={textareaRef}
@@ -308,7 +313,7 @@ export function ChatComposer() {
                   || resolvedPendingCardReference
                     ? 'has-content'
                     : ''
-                }`}
+                }${hasSlashCommandDraft ? ' has-command' : ''}`}
                 disabled={hasUnsupportedPendingImages || interactionLocked}
                 aria-label={ui.sending ? t('chat.composer.stopGeneration') : hasSlashCommandDraft ? t('chat.composer.executeCommand') : t('chat.composer.sendMessage')}
                 onClick={(event) => {
@@ -318,7 +323,7 @@ export function ChatComposer() {
                   });
                 }}
               >
-                <Icon name={ui.sending ? 'x' : hasSlashCommandDraft ? 'check' : 'send'} size={16} />
+                <Icon name={ui.sending ? 'x' : hasSlashCommandDraft ? 'chevron' : 'send'} size={16} />
               </button>
             </div>
           </div>

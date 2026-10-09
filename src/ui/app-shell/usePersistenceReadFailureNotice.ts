@@ -39,13 +39,13 @@ export function derivePersistenceReadFailureNotice(
   const blockedStores = [
     !hydration.chatHydrated ? '对话' : null,
     !hydration.collectionHydrated ? '房间' : null,
-    !hydration.personaHydrated ? '协作者' : null,
+    !hydration.personaHydrated ? '角色' : null,
     !hydration.runtimeHydrated ? '设置' : null
   ].filter((item): item is string => Boolean(item));
   const isolated = error?.operation === 'read-isolated-row';
   const coreStoresHydrated = blockedStores.length === 0;
   const isolatedStore = error ? ({
-    chat: '对话', collection: '房间', persona: '协作者', runtime: '设置',
+    chat: '对话', collection: '房间', persona: '角色', runtime: '设置',
     space: '界面状态', document: '文档', asset: '附件'
   } as Record<string, string>)[error.store] : null;
 

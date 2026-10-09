@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Persona 定义协作者身份、行为设置，以及 chat/memory 功能使用的长期 reference heads。
+Persona 定义角色身份、行为设置，以及 chat/memory 功能使用的长期 reference heads。
 
 ## Owns
 

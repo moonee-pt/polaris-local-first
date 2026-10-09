@@ -20,6 +20,7 @@ export type IconName =
   | 'navInfo'
   | 'edit'
   | 'refresh'
+  | 'rollback'
   | 'more'
   | 'branch'
   | 'trash'
@@ -72,7 +73,9 @@ export type IconName =
   | 'inbox'
   | 'feather'
   | 'zap'
-  | 'compass';
+  | 'compass'
+  | 'phone'
+  | 'mic';
 
 type Props = {
   name: IconName;
@@ -131,6 +134,12 @@ export function Icon({ name, size = 18, color = 'currentColor' }: Props) {
   const strokeDetail = 1.38;
 
   const icons: Record<IconName, JSX.Element> = {
+    phone: <path d="M20.9 16.6v2.6a1.9 1.9 0 0 1-2.1 1.9 18.6 18.6 0 0 1-8.1-2.9 18.3 18.3 0 0 1-5.6-5.6A18.6 18.6 0 0 1 2.2 4.5 1.9 1.9 0 0 1 4.1 2.4h2.6a1.9 1.9 0 0 1 1.9 1.6c.1 1 .4 2 .7 2.9a1.9 1.9 0 0 1-.4 2L7.7 10.1a15 15 0 0 0 5.6 5.6l1.2-1.2a1.9 1.9 0 0 1 2-.4c.9.3 1.9.6 2.9.7a1.9 1.9 0 0 1 1.5 1.8Z" fill="none" stroke={color} strokeWidth={strokeSoft} strokeLinejoin="round" strokeLinecap="round"/>,
+    mic: <>
+      <path d="M12 3.9a2.7 2.7 0 0 1 2.7 2.7v4.9a2.7 2.7 0 1 1-5.4 0V6.6A2.7 2.7 0 0 1 12 3.9Z" fill="none" stroke={color} strokeWidth={strokeSoft} />
+      <path d="M6.4 11.2a5.6 5.6 0 0 0 11.2 0" fill="none" stroke={color} strokeWidth={strokeSoft} strokeLinecap="round" />
+      <path d="M12 17.4V20.1" fill="none" stroke={color} strokeWidth={strokeSoft} strokeLinecap="round" />
+    </>,
     search: <><circle cx="11" cy="11" r="6" fill="none" stroke={color} strokeWidth={stroke}/><line x1="16" y1="16" x2="20" y2="20" stroke={color} strokeWidth={stroke} strokeLinecap="round"/></>,
     editList: <>
       <rect x="4.2" y="5.1" width="4.9" height="4.9" rx="1.25" fill="none" stroke={color} strokeWidth={strokeSoft} />
@@ -141,7 +150,7 @@ export function Icon({ name, size = 18, color = 'currentColor' }: Props) {
     </>,
     plus: <><line x1="12" y1="5.5" x2="12" y2="18.5" stroke={color} strokeWidth={strokeBold} strokeLinecap="round"/><line x1="5.5" y1="12" x2="18.5" y2="12" stroke={color} strokeWidth={strokeBold} strokeLinecap="round"/></>,
     brush: <><path d="M18 4L8 14C7 15 6 17 7 18C8 19 10 18 11 17L20 6C20.5 5.5 20.5 4.5 20 4C19.5 3.5 18.5 3.5 18 4Z" fill="none" stroke={color} strokeWidth={stroke}/><circle cx="7" cy="18" r="2" fill="none" stroke={color} strokeWidth={stroke}/></>,
-    settings: <><circle cx="12" cy="12" r="3" fill="none" stroke={color} strokeWidth={stroke}/><path d="M12 2V4M12 20V22M2 12H4M20 12H22M4.9 4.9L6.3 6.3M17.7 17.7L19.1 19.1M4.9 19.1L6.3 17.7M17.7 6.3L19.1 4.9" stroke={color} strokeWidth={stroke} strokeLinecap="round"/></>,
+    settings: <><circle cx="12" cy="12" r="3.1" fill="none" stroke={color} strokeWidth={stroke}/><path d="M19.1 10.1L21.42 10.76 L21.42 13.24 L19.1 13.9 L18.37 15.68 L19.54 17.78 L17.78 19.54 L15.68 18.37 L13.9 19.1 L13.24 21.42 L10.76 21.42 L10.1 19.1 L8.33 18.37 L6.22 19.54 L4.46 17.78 L5.63 15.68 L4.9 13.9 L2.58 13.24 L2.58 10.76 L4.9 10.1 L5.63 8.32 L4.46 6.22 L6.22 4.46 L8.32 5.63 L10.1 4.9 L10.76 2.58 L13.24 2.58 L13.9 4.9 L15.68 5.63 L17.78 4.46 L19.54 6.22 L18.37 8.32Z" fill="none" stroke={color} strokeWidth={stroke} strokeLinejoin="round"/></>,
     send: <><path d="M22 2L11 13" stroke={color} strokeWidth={stroke} strokeLinecap="round"/><polygon points="22,2 15,22 11,13 2,9" fill="none" stroke={color} strokeWidth={stroke} strokeLinejoin="round"/></>,
     persona: <><circle cx="12" cy="8" r="4" fill="none" stroke={color} strokeWidth={stroke}/><path d="M5 20C5 17 8 14 12 14C16 14 19 17 19 20" fill="none" stroke={color} strokeWidth={stroke} strokeLinecap="round"/></>,
     personaCreate: <>
@@ -298,6 +307,7 @@ export function Icon({ name, size = 18, color = 'currentColor' }: Props) {
     </>,
     edit: <><path d="M5 19L5.5 15.5L15.2 5.8C15.9 5.1 17 5.1 17.7 5.8L18.2 6.3C18.9 7 18.9 8.1 18.2 8.8L8.5 18.5L5 19Z" fill="none" stroke={color} strokeWidth={stroke} strokeLinejoin="round"/><line x1="13.8" y1="7.2" x2="16.8" y2="10.2" stroke={color} strokeWidth={stroke} strokeLinecap="round"/></>,
     refresh: <><path d="M19 8.5A7 7 0 1 0 20 14" fill="none" stroke={color} strokeWidth={stroke} strokeLinecap="round"/><polyline points="15,4.5 19.5,8.5 14.5,11" fill="none" stroke={color} strokeWidth={stroke} strokeLinecap="round" strokeLinejoin="round"/></>,
+    rollback: <><polyline points="8,5 3.5,9.5 8,14" fill="none" stroke={color} strokeWidth={stroke} strokeLinecap="round" strokeLinejoin="round"/><path d="M3.5 9.5H14a5.5 5.5 0 0 1 0 11H9" fill="none" stroke={color} strokeWidth={stroke} strokeLinecap="round" strokeLinejoin="round"/></>,
     more: <><circle cx="6.5" cy="12" r="1.25" fill={color}/><circle cx="12" cy="12" r="1.25" fill={color}/><circle cx="17.5" cy="12" r="1.25" fill={color}/></>,
     branch: <><circle cx="7" cy="6.5" r="2" fill="none" stroke={color} strokeWidth={stroke}/><circle cx="17" cy="6.5" r="2" fill="none" stroke={color} strokeWidth={stroke}/><circle cx="12" cy="18" r="2" fill="none" stroke={color} strokeWidth={stroke}/><path d="M7 8.5V10C7 11.4 8.1 12.5 9.5 12.5H14.5C15.9 12.5 17 11.4 17 10V8.5" fill="none" stroke={color} strokeWidth={stroke} strokeLinecap="round"/><path d="M12 12.5V16" fill="none" stroke={color} strokeWidth={stroke} strokeLinecap="round"/></>,
     trash: <><path d="M5.5 7.5H18.5" fill="none" stroke={color} strokeWidth={stroke} strokeLinecap="round"/><path d="M9 7.5V5.5C9 4.9 9.4 4.5 10 4.5H14C14.6 4.5 15 4.9 15 5.5V7.5" fill="none" stroke={color} strokeWidth={stroke} strokeLinecap="round"/><path d="M7.5 7.5L8.3 18.2C8.4 19.2 9.2 20 10.2 20H13.8C14.8 20 15.6 19.2 15.7 18.2L16.5 7.5" fill="none" stroke={color} strokeWidth={stroke} strokeLinejoin="round"/><line x1="10" y1="10.5" x2="10.5" y2="16" stroke={color} strokeWidth={stroke} strokeLinecap="round"/><line x1="14" y1="10.5" x2="13.5" y2="16" stroke={color} strokeWidth={stroke} strokeLinecap="round"/></>,

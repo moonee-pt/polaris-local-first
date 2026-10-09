@@ -296,7 +296,7 @@ describe('submitMessage', () => {
     expect(createConversation).not.toHaveBeenCalled();
     expect(addMessage).not.toHaveBeenCalled();
     expect(requestReply).not.toHaveBeenCalled();
-    expect(setCommandStatus).toHaveBeenCalledWith('当前没有可用协作者，先新建一个协作者再继续聊天。', true);
+    expect(setCommandStatus).toHaveBeenCalledWith('当前没有可用角色，先新建一个角色再继续聊天。', true);
   });
 
   it('stops loudly before writing when the conversation body cannot become writable', async () => {

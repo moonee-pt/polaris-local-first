@@ -338,7 +338,7 @@ export function collectAssetReferenceOwners({
       recordOwnerAssetIds(sessionThemeAssetIds, {
         kind: 'theme',
         id: `theme:${collaboratorId}`,
-        label: `协作者皮肤 ${collaboratorId}`
+        label: `角色皮肤 ${collaboratorId}`
       }, ownersByAssetId);
     }
 
@@ -347,7 +347,7 @@ export function collectAssetReferenceOwners({
       recordOwnerAssetIds(sessionCustomizationAssetIds, {
         kind: 'runtime-customization',
         id: `runtime-customization:${collaboratorId}`,
-        label: `协作者自定义 ${collaboratorId}`
+        label: `角色自定义 ${collaboratorId}`
       }, ownersByAssetId);
     }
   });

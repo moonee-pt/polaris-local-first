@@ -38,7 +38,8 @@ const DEFAULT_MINIMAX_MODEL = 'speech-2.8-turbo';
 const DEFAULT_MINIMAX_VOICE = 'Chinese (Mandarin)_Warm_Girl';
 const DEFAULT_ELEVENLABS_MODEL = 'eleven_multilingual_v2';
 const DEFAULT_ELEVENLABS_VOICE = 'JBFqnCBsd6RMkjVDRZzb';
-const DEFAULT_FISHAUDIO_MODEL = 's2-pro';
+const DEFAULT_FISHAUDIO_MODEL = 's2.1-pro';
+const SPEECH_REQUEST_TIMEOUT_MS = 30_000;
 const ELEVENLABS_OUTPUT_FORMAT_BY_FORMAT: Partial<Record<VoiceGenerationFormat, string>> = {
   mp3: 'mp3_44100_128',
   opus: 'opus_48000_128',
@@ -342,19 +343,72 @@ export async function requestGeneratedSpeech(params: VoiceGenerationRequest): Pr
 
   const fetchImpl = params.fetchImpl ?? fetch;
   const useRelay = shouldUseAudioRelay(requestEndpoint);
-  const response = await fetchImpl(
-    useRelay ? buildInternalApiEndpoint('/api/provider-audio') : requestEndpoint,
-    {
-      method: 'POST',
-      headers: useRelay ? { 'Content-Type': 'application/json' } : headers,
-      body: JSON.stringify(useRelay ? { endpoint: requestEndpoint, headers, body } : body),
-      signal: params.signal
-    }
-  );
+  const relayUrl = useRelay ? buildInternalApiEndpoint('/api/provider-audio') : '';
+  const timeoutController = new AbortController();
+  const timeoutId = setTimeout(() => timeoutController.abort(), SPEECH_REQUEST_TIMEOUT_MS);
+  const forwardUserAbort = () => timeoutController.abort(params.signal?.reason);
+  if (params.signal) {
+    if (params.signal.aborted) forwardUserAbort();
+    else params.signal.addEventListener('abort', forwardUserAbort, { once: true });
+  }
+  const requestSignal = timeoutController.signal;
+  const sendDirect = () => fetchImpl(requestEndpoint, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(body),
+    signal: requestSignal
+  });
+  const sendRelay = () => fetchImpl(relayUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ endpoint: requestEndpoint, headers, body }),
+    signal: requestSignal
+  });
+  let response: Response;
+  const usedRelay = useRelay;
+  try {
+    response = useRelay ? await sendRelay() : await sendDirect();
+  } catch (error) {
+    if (params.signal?.aborted) throw error;
+    const timedOut = timeoutController.signal.aborted;
+    console.error('[voiceGeneration] 语音请求发送失败', {
+      providerType,
+      model,
+      voice,
+      requestUrl: usedRelay ? relayUrl : requestEndpoint,
+      upstreamEndpoint: usedRelay ? requestEndpoint : undefined,
+      usedRelay,
+      timedOut,
+      reason: error instanceof Error ? error.message : String(error)
+    });
+    throw new Error(timedOut
+      ? `语音生成超时（${Math.round(SPEECH_REQUEST_TIMEOUT_MS / 1000)} 秒没响应）。检查网络/代理后再试一次。`
+      : `语音请求发不出去：无法连接 ${usedRelay ? relayUrl : requestEndpoint}（${error instanceof Error ? error.message : String(error)}）。`);
+  } finally {
+    clearTimeout(timeoutId);
+    params.signal?.removeEventListener('abort', forwardUserAbort);
+  }
 
   if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`语音 API ${response.status}: ${text.slice(0, 180)}`);
+    const detail = (await response.text().catch(() => '')).trim().slice(0, 160);
+    console.error('[voiceGeneration] 语音接口返回错误', {
+      providerType,
+      model,
+      voice,
+      status: response.status,
+      requestUrl: usedRelay ? relayUrl : requestEndpoint,
+      upstreamEndpoint: usedRelay ? requestEndpoint : undefined,
+      usedRelay,
+      responseDetail: detail
+    });
+    if (usedRelay && response.status === 404) {
+      throw new Error(
+        `语音 API 404：请求发到了语音转发接口 ${relayUrl}，但该接口尚未部署或不可用，并没有访问到 ${requestEndpoint}。`
+      );
+    }
+    throw new Error(
+      `语音 API ${response.status}（${usedRelay ? `经转发 ${relayUrl} 访问 ` : '直连 '}${requestEndpoint}）：${detail || '无错误详情'}`
+    );
   }
 
   const responseMimeType = response.headers.get('content-type')?.split(';')[0]?.trim();

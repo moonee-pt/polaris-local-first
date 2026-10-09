@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useVoiceCallSession } from '../../app/call/voiceCallSession';
 import {
   getRunCodeSandboxProfile,
   lockRunCodeSandbox,
@@ -164,6 +165,18 @@ export function AppTopbar({
                 onClick={(event) => handleSelectionAction(actions.onOpenSettings, event.currentTarget)}
               >
                 <Icon name="settings" size={18} />
+              </button>
+            )}
+
+            {state.activeWorld === 'chat' && (
+              <button
+                type="button"
+                className="action-btn icon-btn topbar-call-btn"
+                onClick={(event) => handleSelectionAction(() => useVoiceCallSession.getState().open(), event.currentTarget)}
+                title={t('chat.composer.startCall')}
+                aria-label={t('chat.composer.startCall')}
+              >
+                <Icon name="phone" size={18} />
               </button>
             )}
 

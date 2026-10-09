@@ -36,7 +36,7 @@ export type LocalDataHealthBucket = {
 export const BUCKET_LABELS: Record<LocalDataHealthBucketId, string> = {
   chat: '对话',
   collection: '房间与工作区',
-  persona: '协作者',
+  persona: '角色',
   runtime: '服务与工具配置',
   space: '界面与主题',
   assets: '附件与图片',

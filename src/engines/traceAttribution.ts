@@ -55,7 +55,7 @@ function formatScopeLabel(attribution: TraceAttribution) {
 }
 
 export function formatActorMark(attribution: TraceAttribution, options: { includeScope?: boolean } = {}) {
-  const actorName = cleanLabel(attribution.actorName) ?? (attribution.actorKind === 'user' ? '你' : '协作者');
+  const actorName = cleanLabel(attribution.actorName) ?? (attribution.actorKind === 'user' ? '你' : '角色');
   if (options.includeScope === false) return `✦ ${actorName}`;
   return `✦ ${actorName} · ${formatScopeLabel(attribution)}`;
 }
@@ -93,7 +93,7 @@ export function traceAttributionForMessage(
   const speaker = resolvePersona(options.personas, message.speakerCollaboratorId);
   return {
     actorId: message.speakerCollaboratorId ?? null,
-    actorName: cleanLabel(speaker?.name) ?? cleanLabel(message.assistantName) ?? '协作者',
+    actorName: cleanLabel(speaker?.name) ?? cleanLabel(message.assistantName) ?? '角色',
     actorKind: message.speakerCollaboratorId || speaker || message.assistantName ? 'collaborator' : 'unknown',
     ...scope
   };
@@ -138,7 +138,7 @@ export function traceAttributionForCollectionItem(
 
   return {
     actorId: actorId ?? null,
-    actorName: cleanLabel(actor?.name) ?? '协作者',
+    actorName: cleanLabel(actor?.name) ?? '角色',
     actorKind: actorId ? 'collaborator' : 'unknown',
     ...scope
   };

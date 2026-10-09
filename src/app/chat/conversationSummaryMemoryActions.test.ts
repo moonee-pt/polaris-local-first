@@ -56,7 +56,7 @@ const provider: ProviderProfile = {
   }
 };
 
-function createConversation(content = '用户 想让每个协作者有自己的跨对话记忆。', id = 'c1'): Conversation {
+function createConversation(content = '用户 想让每个角色有自己的跨对话记忆。', id = 'c1'): Conversation {
   return {
     id,
     title: '记忆讨论',
@@ -157,7 +157,7 @@ describe('updateConversationSummaryMemoryForCollaborator', () => {
       hydrated: true,
       persistToDb: vi.fn(async () => undefined)
     });
-    seedLiveChatState(createConversation('用户 想让每个协作者有自己的跨对话记忆。'));
+    seedLiveChatState(createConversation('用户 想让每个角色有自己的跨对话记忆。'));
     const ensureFullConversationBodiesLoaded = vi.fn(async () => {
       throw new Error('derived work should not hydrate chat store');
     });
@@ -177,7 +177,7 @@ describe('updateConversationSummaryMemoryForCollaborator', () => {
 
   it('writes new small-model summaries to the target collaborator and preserves manual summaries', async () => {
     const requestReply = vi.fn<ConversationSummaryRequestReply>(async () => ({
-      content: '{"summaries":[{"kind":"relational_profile","title":"协作者记忆","content":"用户 希望跨对话记忆按协作者独立保存。"}]}'
+      content: '{"summaries":[{"kind":"relational_profile","title":"角色记忆","content":"用户 希望跨对话记忆按角色独立保存。"}]}'
     }));
 
     const result = await updateConversationSummaryMemoryForCollaborator('aa', {
@@ -190,7 +190,7 @@ describe('updateConversationSummaryMemoryForCollaborator', () => {
     expect(persona?.memory.conversationSummaries).toHaveLength(2);
     expect(persona?.memory.conversationSummaries.map((summary) => summary.content)).toEqual([
       '这条手写记忆应该保留。',
-      '用户 希望跨对话记忆按协作者独立保存。'
+      '用户 希望跨对话记忆按角色独立保存。'
     ]);
     expect(persona?.memory.conversationSummaries[1]).toMatchObject({
       generator: 'small_model',
@@ -202,7 +202,7 @@ describe('updateConversationSummaryMemoryForCollaborator', () => {
     expect(useChatStore.getState().ensureFullConversationBodiesLoaded).not.toHaveBeenCalled();
     expect(requestReply.mock.calls[0]?.[0].context.segments.flatMap((segment) =>
       segment.messages.map((message) => message.content)
-    ).join('\n')).toContain('用户 想让每个协作者有自己的跨对话记忆。');
+    ).join('\n')).toContain('用户 想让每个角色有自己的跨对话记忆。');
   });
 
   it('persists completed summary batches and resumes the missing batch after a failed run', async () => {

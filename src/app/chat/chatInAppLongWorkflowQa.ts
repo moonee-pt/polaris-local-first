@@ -142,7 +142,7 @@ export async function runInAppLongWorkflowQa({
 
   const collaboratorId = resolveQaCollaboratorId({ store, derived });
   if (!collaboratorId) {
-    ui.setCommandStatus('没有可用协作者，先新建或选择一个协作者再跑长任务 QA。', true);
+    ui.setCommandStatus('没有可用角色，先新建或选择一个角色再跑长任务 QA。', true);
     return;
   }
 

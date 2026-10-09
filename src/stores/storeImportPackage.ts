@@ -249,7 +249,7 @@ function validatePersonaState(value: unknown): PersistedPersonaState {
   for (const persona of payload.personas) {
     ensureObject(persona, 'persona');
     if (typeof persona.id !== 'string' || !persona.id.trim() || typeof persona.name !== 'string') {
-      throw new Error('persona store 包含无效协作者');
+      throw new Error('persona store 包含无效角色');
     }
   }
   return {

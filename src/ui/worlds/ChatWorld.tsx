@@ -1,6 +1,8 @@
 import type { DragEvent } from 'react';
-import { Suspense, lazy, useRef } from 'react';
+import { Suspense, lazy, useEffect, useRef } from 'react';
+import { useVoiceCallSession } from '../../app/call/voiceCallSession';
 import { loadThinkingSheetModule } from '../app-shell/appShellLazyModules';
+import { VoiceCallStage } from './call/VoiceCallStage';
 import { ChatComposer } from './chat/composer/ChatComposer';
 import { useComposerFileIngest } from './chat/composer/useComposerFileIngest';
 import { ChatProvider } from './chat/ChatProvider';
@@ -34,6 +36,14 @@ function ChatWorldLayout({ shell }: ChatWorldProps) {
   const actions = useChatActions();
   const addComposerFiles = useComposerFileIngest();
   const dragDepthRef = useRef(0);
+  const voiceCallActive = useVoiceCallSession((state) => state.active);
+  const openVoiceCall = useVoiceCallSession((state) => state.open);
+  const closeVoiceCall = useVoiceCallSession((state) => state.close);
+
+  useEffect(() => () => {
+    useVoiceCallSession.getState().close();
+  }, []);
+
   const thinkingSummaryMessage = ui.thinkingSummaryMessageId
     ? stablePayload.messages.find((message) => message.id === ui.thinkingSummaryMessageId) ?? null
     : null;
@@ -79,8 +89,11 @@ function ChatWorldLayout({ shell }: ChatWorldProps) {
         <MessageTimeline isWorldSettled={shell.isActiveWorld && !shell.isWorldSwitching} />
       </div>
       <div className="chat-dock">
-        <ChatComposer />
+        <ChatComposer onStartVoiceCall={openVoiceCall} />
       </div>
+      {voiceCallActive ? (
+        <VoiceCallStage onClose={closeVoiceCall} />
+      ) : null}
       {thinkingSummaryMessage ? (
         <Suspense fallback={null}>
           <ThinkingSheet

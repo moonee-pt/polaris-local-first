@@ -24,7 +24,7 @@ export type InheritedMemorySource = {
 function estimateMemorySegmentTokens(lines: string[]) {
   if (!lines.length) return 0;
   return estimateTextTokens([
-    '以下是当前协作者可调用的长期记忆线索。',
+    '以下是当前角色可调用的长期记忆线索。',
     '只在相关时自然使用，不要逐条复述，也不要把它们说成系统说明。',
     ...buildMemorySegmentLines(lines)
   ].join('\n'));

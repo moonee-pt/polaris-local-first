@@ -22,7 +22,7 @@ describe('derivePersistenceReadFailureNotice', () => {
     })).toEqual({
       visible: false,
       error: null,
-      blockedStores: ['对话', '房间', '协作者', '设置'],
+      blockedStores: ['对话', '房间', '角色', '设置'],
       reason: null
     });
   });
@@ -88,7 +88,7 @@ describe('derivePersistenceReadFailureNotice', () => {
     })).toEqual({
       visible: false,
       error: null,
-      blockedStores: ['对话', '协作者'],
+      blockedStores: ['对话', '角色'],
       reason: null
     });
   });
@@ -103,7 +103,7 @@ describe('derivePersistenceReadFailureNotice', () => {
     })).toEqual({
       visible: true,
       error,
-      blockedStores: ['对话', '协作者'],
+      blockedStores: ['对话', '角色'],
       reason: 'read-failure'
     });
   });

@@ -82,7 +82,7 @@ export function createChatMemoryActions({
     conversationId?: string | null
   ) => {
     const targetCollaborator = resolveTargetCollaborator(conversationId);
-    if (!targetCollaborator) return { ok: false as const, error: '当前没有可写入长期资料的协作者。' };
+    if (!targetCollaborator) return { ok: false as const, error: '当前没有可写入长期资料的角色。' };
 
     const title = doc.title.trim();
     const content = doc.content.trim();
@@ -162,7 +162,7 @@ export function createChatMemoryActions({
   ) => {
     const targetCollaborator = resolveTargetCollaborator(conversationId);
     if (!targetCollaborator) {
-      return { ok: false as const, error: '当前没有可搜索记忆的协作者。' };
+      return { ok: false as const, error: '当前没有可搜索记忆的角色。' };
     }
     const normalizedQuery = query.trim();
     if (!normalizedQuery) {
@@ -292,12 +292,12 @@ export function createChatMemoryActions({
         kind: 'writeMemory',
         status: didAppend ? 'executed' : 'failed',
         title: '写入记忆',
-        summary: didAppend ? `已写入 ${lowRisk.length} 条低风险记忆` : '当前没有可写入记忆的协作者。',
+        summary: didAppend ? `已写入 ${lowRisk.length} 条低风险记忆` : '当前没有可写入记忆的角色。',
         memoryItems: lowRisk,
         targetLabel: action.targetLabel,
         originMessageId: options?.beforeMessageId,
         toolCallId: options?.sourceToolCallId,
-        error: didAppend ? undefined : '当前没有可写入记忆的协作者。'
+        error: didAppend ? undefined : '当前没有可写入记忆的角色。'
       }, undefined, { beforeMessageId: options?.beforeMessageId });
     }
 
@@ -328,7 +328,7 @@ export function createChatMemoryActions({
         content: message.toolInvocation.memoryDocContent ?? ''
       }, conversationId);
       store.chat.updateMessage(target, message.id, {
-        content: didWrite.ok ? `${didWrite.created ? '已写入' : '已更新'}当前协作者长期资料。` : '写入失败。',
+        content: didWrite.ok ? `${didWrite.created ? '已写入' : '已更新'}当前角色长期资料。` : '写入失败。',
         toolInvocation: {
           ...message.toolInvocation,
           status: didWrite.ok ? 'applied' : 'failed',
@@ -346,11 +346,11 @@ export function createChatMemoryActions({
 
     const didAppend = appendCollaboratorMemories(items, conversationId);
     store.chat.updateMessage(target, message.id, {
-      content: didAppend ? '已写入当前协作者记忆。' : '写入失败。',
+      content: didAppend ? '已写入当前角色记忆。' : '写入失败。',
       toolInvocation: {
         ...message.toolInvocation,
         status: didAppend ? 'applied' : 'failed',
-        error: didAppend ? undefined : '当前没有可写入记忆的协作者。'
+        error: didAppend ? undefined : '当前没有可写入记忆的角色。'
       }
     });
     ui.setCommandStatus(didAppend ? '已确认写入记忆。' : '写入记忆失败。', !didAppend);

@@ -279,7 +279,7 @@ describe('convertKelivoBackupZip', () => {
     expect(personaState.personas).toEqual(expect.arrayContaining([
       expect.objectContaining({
         id: 'missing-assistant',
-        name: 'Kelivo 导入协作者 1'
+        name: 'Kelivo 导入角色 1'
       })
     ]));
     expect(chatCatalog.conversations?.[0]?.collaboratorId).toBe('missing-assistant');

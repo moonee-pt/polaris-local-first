@@ -73,7 +73,7 @@ function createToolContext(overrides: Partial<ToolContext> = {}): ToolContext {
     listProactiveMessageRules: vi.fn(() => ({
       ok: true as const,
       summary: '已查看主动消息规则 · 0 条',
-      detailText: '当前协作者还没有主动消息规则。',
+      detailText: '当前角色还没有主动消息规则。',
       triggerRules: []
     })),
     updateProactiveMessageRule: vi.fn(() => ({

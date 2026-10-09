@@ -15,7 +15,7 @@ export type StoreImportResult = {
 const DOMAIN_LABELS: Record<StoreImportDomainFailure['domain'], string> = {
   chat: '对话',
   collection: '房间',
-  persona: '协作者',
+  persona: '角色',
   runtime: '设置',
   space: '界面状态',
   asset: '附件',

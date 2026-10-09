@@ -217,13 +217,19 @@ export const useRuntimeStore = create<RuntimeState>((set, get) => ({
   setApiConfig: (patch) =>
     set((state) => {
       const targetId = state.activeProviderId ?? selectRuntimeApi(state).id;
-      const providers = state.providers.map((provider) =>
-        provider.id === targetId ? mergeProviderPatch(provider, patch) : provider
-      );
+      let nextActiveId = targetId;
+      const providers = state.providers.map((provider) => {
+        if (provider.id !== targetId) return provider;
+        const merged = mergeProviderPatch(provider, patch);
+        if (merged.id !== provider.id) {
+          nextActiveId = merged.id;
+        }
+        return merged;
+      });
 
       return {
         providers,
-        activeProviderId: targetId
+        activeProviderId: nextActiveId
       };
     }),
   setWebDavConfig: (patch) =>
@@ -504,12 +510,19 @@ export const useRuntimeStore = create<RuntimeState>((set, get) => ({
   },
   updateProvider: (providerId, patch) =>
     set((state) => {
-      const providers = state.providers.map((provider) =>
-        provider.id === providerId ? mergeProviderPatch(provider, patch) : provider
-      );
+      let nextActiveId = state.activeProviderId;
+      const providers = state.providers.map((provider) => {
+        if (provider.id !== providerId) return provider;
+        const merged = mergeProviderPatch(provider, patch);
+        if (merged.id !== provider.id && state.activeProviderId === provider.id) {
+          nextActiveId = merged.id;
+        }
+        return merged;
+      });
 
       return {
-        providers
+        providers,
+        activeProviderId: nextActiveId
       };
     }),
   deleteProvider: (providerId) =>

@@ -39,6 +39,8 @@ export const apiProvider = {
   'apiProvider.connection.namePlaceholder': 'For example OpenAI, OpenRouter, or local gateway',
   'apiProvider.connection.baseHelp': 'This is the request entry for the model route. Copy the Base URL from the provider docs. Polaris appends the API Path below, so do not put the model name or console URL here.',
   'apiProvider.connection.keyHelp': 'This key authorizes requests through this route. Route cards never include your key; anyone who imports one must add their own.',
+  'apiProvider.connection.showKey': 'Show key',
+  'apiProvider.connection.hideKey': 'Hide key',
   'apiProvider.connection.presetAdopted': '{name} template is filling route details',
   'apiProvider.connection.defaultPathNote': 'Polaris will fill the default path for the selected API format',
   'apiProvider.connection.collapseAdvanced': 'Hide advanced settings',

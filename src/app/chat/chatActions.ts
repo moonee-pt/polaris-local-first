@@ -1,5 +1,5 @@
 import type { MutableRefObject } from 'react';
-import type { ChatMessage, ChatMessageVoiceCache } from '../../types/domain';
+import type { ChatMessage, ChatMessageVoiceCache, ChatMessageVoiceCall } from '../../types/domain';
 import { createUid } from '../../engines/id';
 import type { ChatActionStoreBindings, ChatDerivedStatePort, ChatUiActionState } from './chatPorts';
 import {
@@ -137,7 +137,7 @@ export function createChatActionHandlers({
     }
   };
 
-  const commitMessageEdit = async (message: ChatMessage) => {
+  const commitMessageEdit = async (message: ChatMessage, mode: 'send' | 'save' = 'send') => {
     const activeConversation = derived.activeConversation;
     if (!activeConversation || ui.sending || !ui.editing) return;
 
@@ -170,6 +170,15 @@ export function createChatActionHandlers({
     }
     const messageIndex = writableConversation.messages.findIndex((candidate) => candidate.id === message.id);
     if (messageIndex === -1) return;
+    if (mode === 'save') {
+      const nextMessages = writableConversation.messages.map((candidate) =>
+        candidate.id === message.id ? nextUserMessage : candidate
+      );
+      store.chat.replaceConversationMessages(writableConversation, nextMessages);
+      ui.cancelEditingMessage();
+      ui.setCommandStatus('已保存这条消息。');
+      return;
+    }
     const nextMessages = [...writableConversation.messages.slice(0, messageIndex), nextUserMessage];
     store.chat.replaceConversationMessages(writableConversation, nextMessages);
     ui.cancelEditingMessage();
@@ -178,6 +187,70 @@ export function createChatActionHandlers({
       collaboratorId: derived.activeCollaboratorSourceId ?? activeConversation.collaboratorId,
       messages: nextMessages
     });
+  };
+
+  const deleteMessage = async (message: ChatMessage) => {
+    const activeConversation = derived.activeConversation;
+    if (!activeConversation || ui.sending) return;
+    if (!activeConversation.messages.some((candidate) => candidate.id === message.id)) return;
+    if (!ui.confirm('删除这条消息？删除后无法恢复。')) return;
+
+    const writableConversation = await store.chat.ensureConversationWritable(activeConversation.id);
+    if (!writableConversation) {
+      ui.setCommandStatus('读取当前对话历史失败，先别删除。', true);
+      return;
+    }
+    const nextMessages = writableConversation.messages.filter((candidate) => candidate.id !== message.id);
+    if (nextMessages.length === writableConversation.messages.length) return;
+    store.chat.replaceConversationMessages(writableConversation, nextMessages);
+    ui.setCommandStatus('已删除这条消息。');
+  };
+
+  const regenerateFromUserMessage = async (message: ChatMessage) => {
+    const activeConversation = derived.activeConversation;
+    if (!activeConversation || ui.sending || message.role !== 'user' || message.toolInvocation) return;
+
+    if (activeConversation.collaboratorId === null) {
+      ui.setCommandStatus('这条对话已经失去归属，只能查看历史，不能从这里重新生成。', true);
+      return;
+    }
+    if (isCompanionCollaboratorId(activeConversation.collaboratorId)) {
+      ui.setCommandStatus('电脑端 companion 这轮还不支持在手机上从这里重新生成。', true);
+      return;
+    }
+    if (!ui.confirm('从这里重新生成？这条之后的内容会被覆盖，无法恢复。')) return;
+
+    const writableConversation = await store.chat.ensureConversationWritable(activeConversation.id);
+    if (!writableConversation) {
+      ui.setCommandStatus('读取当前对话历史失败，先别重跑，避免用空历史继续。', true);
+      return;
+    }
+    const messageIndex = writableConversation.messages.findIndex((candidate) => candidate.id === message.id);
+    if (messageIndex === -1) return;
+    const nextMessages = writableConversation.messages.slice(0, messageIndex + 1);
+    store.chat.replaceConversationMessages(writableConversation, nextMessages);
+    await runReply({
+      conversationId: activeConversation.id,
+      collaboratorId: derived.activeCollaboratorSourceId ?? activeConversation.collaboratorId,
+      messages: nextMessages
+    });
+  };
+
+  const rollbackToMessage = async (message: ChatMessage) => {
+    const activeConversation = derived.activeConversation;
+    if (!activeConversation || ui.sending) return;
+    if (!ui.confirm('回退到这条消息之前？这条及其之后的内容都会被移除，无法恢复。')) return;
+
+    const writableConversation = await store.chat.ensureConversationWritable(activeConversation.id);
+    if (!writableConversation) {
+      ui.setCommandStatus('读取当前对话历史失败，先别回退。', true);
+      return;
+    }
+    const messageIndex = writableConversation.messages.findIndex((candidate) => candidate.id === message.id);
+    if (messageIndex <= -1) return;
+    const nextMessages = writableConversation.messages.slice(0, messageIndex);
+    store.chat.replaceConversationMessages(writableConversation, nextMessages);
+    ui.setCommandStatus(messageIndex === 0 ? '已回退到对话开头。' : '已回退到这条消息之前。');
   };
 
   const retryLatestAssistant = async (message: ChatMessage) => {
@@ -251,6 +324,37 @@ export function createChatActionHandlers({
       });
   };
 
+  const markVoiceCall = (params: {
+    conversationId: string;
+    messageIds: string[];
+    startedAt: number;
+    endedAt: number;
+    turnCount: number;
+  }) => {
+    if (params.messageIds.length === 0) return;
+
+    const voiceCall: ChatMessageVoiceCall = {
+      sessionId: createUid('voice-call'),
+      startedAt: params.startedAt,
+      endedAt: params.endedAt,
+      turnCount: params.turnCount
+    };
+
+    void store.chat.ensureConversationWritable(params.conversationId)
+      .then((writableConversation) => {
+        if (!writableConversation) return;
+        for (const messageId of params.messageIds) {
+          store.chat.updateMessage(writableConversation, messageId, { voiceCall });
+        }
+        void store.chat.persistToDb?.().catch((error) => {
+          reportPersistenceError({ label: '[chat:voice-call]', store: 'chat', operation: 'flush-voice-call' }, error);
+        });
+      })
+      .catch((error) => {
+        reportPersistenceError({ label: '[chat:voice-call]', store: 'chat', operation: 'prepare-voice-call' }, error);
+      });
+  };
+
   const forkConversationFromMessage = async (message: ChatMessage) => {
     const activeConversation = derived.activeConversation;
     if (!activeConversation || ui.sending || message.toolInvocation) return;
@@ -291,7 +395,7 @@ export function createChatActionHandlers({
     if (isCompanionCollaboratorId(collaboratorId)) {
       const connection = store.runtime.companionConnections.find((entry) => entry.collaboratorId === collaboratorId) ?? null;
       if (!connection) {
-        ui.setCommandStatus('这个电脑端协作者已经失联了。', true);
+        ui.setCommandStatus('这个电脑端角色已经失联了。', true);
         return;
       }
       store.space.setFrontstageCollaboratorId(collaboratorId);
@@ -337,7 +441,7 @@ export function createChatActionHandlers({
     }
     const activeConversation = derived.activeConversation;
     const persona = store.persona.personas.find((candidate) => candidate.id === collaboratorId);
-    if (!persona || !ui.confirm(`确认删除 ${persona.name}？TA 的历史对话会保留在“全部”里，但不再归属于任何协作者。`)) return;
+    if (!persona || !ui.confirm(`确认删除 ${persona.name}？TA 的历史对话会保留在“全部”里，但不再归属于任何角色。`)) return;
 
     const nextPersonas = store.persona.personas.filter((candidate) => candidate.id !== collaboratorId);
     const wasActivePersona = store.persona.activeCollaboratorId === collaboratorId;
@@ -365,7 +469,7 @@ export function createChatActionHandlers({
     }
     const nextPersonaName = cleanup.nextCollaboratorId
       ? nextPersonas.find((candidate) => candidate.id === cleanup.nextCollaboratorId)?.name ?? '默认人格'
-      : '暂无协作者';
+      : '暂无角色';
     const orphanedConversationHint = cleanup.orphanedConversationIds.length > 0
       ? `，并留下了 ${cleanup.orphanedConversationIds.length} 条未归属历史`
       : '';
@@ -389,7 +493,7 @@ export function createChatActionHandlers({
       latestSpaceState.frontstageCollaboratorId ?? latestPersonaState.activeCollaboratorId
     );
     if (!collaboratorId) {
-      ui.setCommandStatus('当前没有可用协作者，先新建一个协作者再开始对话。', true);
+      ui.setCommandStatus('当前没有可用角色，先新建一个角色再开始对话。', true);
       return;
     }
     const conversationId = store.chat.createConversation(collaboratorId);
@@ -401,9 +505,13 @@ export function createChatActionHandlers({
   return {
     handleSubmit,
     commitMessageEdit,
+    deleteMessage,
+    regenerateFromUserMessage,
+    rollbackToMessage,
     retryLatestAssistant,
     updateAssistantMessage,
     cacheAssistantSpeech,
+    markVoiceCall,
     forkConversationFromMessage,
     selectPersona,
     deleteCollaborator,

@@ -131,7 +131,7 @@ export function buildUiContextPrompt(context: AssistantToolContext | undefined):
   if (!ui) return '';
   const collectionShelfLabel =
     ui.collectionShelf === 'info'
-      ? '协作者信息'
+      ? '角色信息'
       : ui.collectionShelf === 'dialogue'
       ? '对话收藏'
       : ui.collectionShelf === 'image'
@@ -140,9 +140,9 @@ export function buildUiContextPrompt(context: AssistantToolContext | undefined):
   const lines = [
     `当前界面：${ui.activeWorld === 'chat' ? '对话区' : '收藏区'}${ui.activeWorld === 'collection' ? ` · ${collectionShelfLabel}` : ''}`,
     ui.activeConversationTitle
-      ? `当前对话：${ui.activeConversationTitle}${ui.activeCollaboratorName ? ` · 协作者=${ui.activeCollaboratorName}` : ''}`
+      ? `当前对话：${ui.activeConversationTitle}${ui.activeCollaboratorName ? ` · 角色=${ui.activeCollaboratorName}` : ''}`
       : ui.activeCollaboratorName
-        ? `当前协作者：${ui.activeCollaboratorName}`
+        ? `当前角色：${ui.activeCollaboratorName}`
         : null,
     ui.activeWorld === 'chat' && ui.chatAvatarLayoutEnabled
       ? '当前对话开启了对话式头像布局：界面会显示双方头像并调整消息位置，但回复正文仍然渲染在同一个助手气泡里。闲聊可以自然分段；代码、列表、表格、工具说明或任务账本这类结构化内容保持整段，不要硬拆。'

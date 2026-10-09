@@ -17,7 +17,7 @@
   min-width: 0;
   margin-bottom: 10px;
   padding: 10px;
-  border-radius: 10px;
+  border-radius: var(--radius-chip);
   border: 1px solid color-mix(in srgb, var(--border) 68%, transparent);
   background: color-mix(in srgb, var(--surface) 42%, transparent);
 }
@@ -46,7 +46,7 @@
 .usage-model-row {
   min-width: 0;
   padding: 10px;
-  border-radius: 9px;
+  border-radius: var(--radius-chip);
   background: color-mix(in srgb, var(--surface-solid) 36%, transparent);
 }
 .usage-model-head {
@@ -124,7 +124,7 @@
   min-width: 0;
   margin-bottom: 10px;
   padding: 12px;
-  border-radius: 10px;
+  border-radius: var(--radius-chip);
   border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--border) 62%);
   background: color-mix(in srgb, var(--surface-solid) 42%, transparent);
 }
@@ -166,7 +166,7 @@
 .usage-metric-tile {
   min-width: 0;
   padding: 12px;
-  border-radius: 10px;
+  border-radius: var(--radius-chip);
   border: 1px solid color-mix(in srgb, var(--border) 72%, transparent);
   background: color-mix(in srgb, var(--surface) 50%, transparent);
 }
@@ -217,7 +217,7 @@
 .usage-entry-row {
   min-width: 0;
   padding: 12px;
-  border-radius: 10px;
+  border-radius: var(--radius-chip);
   border: 1px solid color-mix(in srgb, var(--border) 68%, transparent);
   background: color-mix(in srgb, var(--surface) 38%, transparent);
 }
@@ -233,7 +233,7 @@
 .usage-trend-row {
   min-width: 0;
   padding: 12px;
-  border-radius: 10px;
+  border-radius: var(--radius-chip);
   border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--border) 62%);
   background:
     linear-gradient(
@@ -253,7 +253,7 @@
 .usage-trend-row summary:focus-visible {
   outline: 2px solid color-mix(in srgb, var(--accent) 52%, transparent);
   outline-offset: 4px;
-  border-radius: 8px;
+  border-radius: var(--radius-chip);
 }
 .usage-trend-stats {
   display: grid;
@@ -263,7 +263,7 @@
 .usage-trend-stats span {
   min-width: 0;
   padding: 6px 8px;
-  border-radius: 8px;
+  border-radius: var(--radius-chip);
   background: color-mix(in srgb, var(--surface-solid) 38%, transparent);
   color: var(--sheet-readable-muted);
   font-size: var(--type-caption);
@@ -334,7 +334,7 @@
 .usage-trend-history-row {
   min-width: 0;
   padding: 10px;
-  border-radius: 9px;
+  border-radius: var(--radius-chip);
   background: color-mix(in srgb, var(--surface-solid) 34%, transparent);
 }
 .usage-trend-history-head {
@@ -367,7 +367,7 @@
 .usage-trend-history-meta span {
   min-width: 0;
   padding: 5px 7px;
-  border-radius: 7px;
+  border-radius: var(--radius-chip);
   background: color-mix(in srgb, var(--surface) 36%, transparent);
   color: var(--sheet-readable-muted);
   font-size: 10px;
@@ -451,7 +451,7 @@
 .usage-judgement-row span {
   min-width: 0;
   padding: 6px 8px;
-  border-radius: 8px;
+  border-radius: var(--radius-chip);
   background: color-mix(in srgb, var(--surface-solid) 38%, transparent);
   color: var(--sheet-readable-muted);
   font-size: var(--type-caption);
@@ -479,7 +479,7 @@
 .usage-cache-breakpoint {
   min-width: 0;
   padding: 8px;
-  border-radius: 8px;
+  border-radius: var(--radius-chip);
   border: 1px solid color-mix(in srgb, var(--border) 64%, transparent);
   background: color-mix(in srgb, var(--surface-solid) 34%, transparent);
 }
@@ -523,7 +523,7 @@
   min-width: 0;
   max-width: 100%;
   padding: 7px 8px;
-  border-radius: 8px;
+  border-radius: var(--radius-chip);
   border: 1px solid color-mix(in srgb, var(--border) 62%, transparent);
   background: color-mix(in srgb, var(--surface-solid) 30%, transparent);
 }
@@ -563,7 +563,7 @@
 .usage-shrink-plan {
   min-width: 0;
   padding: 8px;
-  border-radius: 8px;
+  border-radius: var(--radius-chip);
   border: 1px dashed color-mix(in srgb, var(--border) 70%, transparent);
   background: color-mix(in srgb, var(--surface-solid) 30%, transparent);
 }
@@ -607,7 +607,7 @@
   gap: 5px;
   min-width: 0;
   padding: 5px 7px;
-  border-radius: 8px;
+  border-radius: var(--radius-chip);
   background: color-mix(in srgb, var(--surface-solid) 42%, transparent);
   color: var(--sheet-readable-muted);
   font-size: var(--type-caption);
@@ -625,7 +625,7 @@
 }
 .usage-empty-state {
   padding: 12px;
-  border-radius: 10px;
+  border-radius: var(--radius-chip);
   border: 1px dashed color-mix(in srgb, var(--border) 74%, transparent);
   color: var(--sheet-readable-muted);
   font-size: var(--type-caption);

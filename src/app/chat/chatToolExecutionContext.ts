@@ -317,7 +317,7 @@ export function buildDirectToolExecutionContext({
     searchCollaboratorMemory: (query, mode, maxResults) =>
       memoryActions.searchCollaboratorMemory
         ? memoryActions.searchCollaboratorMemory(query, mode, maxResults, conversationId)
-        : { ok: false, error: '当前没有可搜索记忆的协作者。' },
+        : { ok: false, error: '当前没有可搜索记忆的角色。' },
     openMemorySource: (sourceConversationId, sourceMessageIds, maxChars) =>
       memoryActions.openMemorySource
         ? memoryActions.openMemorySource(sourceConversationId, sourceMessageIds, maxChars, conversationId)

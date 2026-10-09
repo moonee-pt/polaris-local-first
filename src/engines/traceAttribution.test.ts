@@ -43,7 +43,7 @@ describe('traceAttributionForMessage', () => {
     });
 
     expect(attribution.actorKind).toBe('unknown');
-    expect(formatActorMark(attribution)).toBe('✦ 协作者 · 群聊「群聊」');
+    expect(formatActorMark(attribution)).toBe('✦ 角色 · 群聊「群聊」');
   });
 });
 

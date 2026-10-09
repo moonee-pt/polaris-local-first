@@ -79,7 +79,7 @@ function preparedChunk(seed: {
     title: '跨对话向量边界',
     keywords: ['跨对话', '向量索引'],
     summary: '用户希望向量索引只在跨对话开启时存在。',
-    semanticText: '跨对话记忆开启时可以有向量索引，关闭后清理该协作者的索引状态。',
+    semanticText: '跨对话记忆开启时可以有向量索引，关闭后清理该角色的索引状态。',
     sourceCharCount: 42,
     generator: 'small_model',
     generatedAt: 100,
@@ -132,7 +132,7 @@ describe('memoryVectorIndexStorage', () => {
       collaboratorId: 'pharos',
       conversationId: 'conversation-1',
       sourceMessageIds: ['u1', 'a1'],
-      semanticText: '跨对话记忆开启时可以有向量索引，关闭后清理该协作者的索引状态。'
+      semanticText: '跨对话记忆开启时可以有向量索引，关闭后清理该角色的索引状态。'
     });
     expect(entries[0]?.sourceRefs.map((ref) => ref.messageId)).toEqual(['u1', 'a1']);
     expect(await readMemoryVectorIndexMetadata('pharos')).toEqual(metadata);

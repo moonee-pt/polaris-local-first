@@ -307,7 +307,7 @@ export function buildRegexTriggerContext(messages: ChatMessage[], rulesInput: st
 
   return [
     '[正则触发]',
-    '当前对话上下文命中了以下协作者世界书触发规则。把这些内容作为本轮额外上下文参考；不要改写用户原文，也不要把触发规则当作工具开关。',
+    '当前对话上下文命中了以下角色世界书触发规则。把这些内容作为本轮额外上下文参考；不要改写用户原文，也不要把触发规则当作工具开关。',
     ...matches.map((rule) => {
       const source = rule.alwaysOn ? '常驻' : `/${rule.pattern}/${rule.flags ?? ''}`;
       return `- ${source}：${rule.prompt}`;

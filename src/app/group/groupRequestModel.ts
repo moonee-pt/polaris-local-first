@@ -195,7 +195,7 @@ export function labelRequestMessagesForMember(args: {
       continue;
     }
     if (!message.content.trim()) continue;
-    const speakerName = (speakerId ? nameById.get(speakerId) : null) ?? message.assistantName ?? '协作者';
+    const speakerName = (speakerId ? nameById.get(speakerId) : null) ?? message.assistantName ?? '角色';
     labeled.push({
       ...message,
       requestRole: 'user',

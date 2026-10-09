@@ -1,4 +1,9 @@
-import type { ChatMessage } from '../../../../types/domain';
+import type { ChatMessage, ChatMessageVoiceCall } from '../../../../types/domain';
+
+export type TimelineVoiceCallGroup = {
+  meta: ChatMessageVoiceCall;
+  messages: ChatMessage[];
+};
 
 export type TimelineRenderItem = {
   message: ChatMessage;
@@ -7,6 +12,7 @@ export type TimelineRenderItem = {
   userBubbleIndex?: number;
   isAssistantContinuation: boolean;
   isTerminalAssistantInUserTurn: boolean;
+  voiceCall?: TimelineVoiceCallGroup;
 };
 
 const EMPTY_TOOL_MESSAGES: ChatMessage[] = [];
@@ -33,9 +39,25 @@ function buildToolMessagesByOriginId(messages: ChatMessage[]) {
   return toolMessagesByOriginId;
 }
 
+function buildVoiceCallGroups(messages: ChatMessage[]) {
+  const groups = new Map<string, ChatMessage[]>();
+
+  messages.forEach((message) => {
+    const sessionId = message.voiceCall?.sessionId;
+    if (!sessionId) return;
+    const bucket = groups.get(sessionId) ?? [];
+    bucket.push(message);
+    groups.set(sessionId, bucket);
+  });
+
+  return groups;
+}
+
 export function buildTimelineRenderItems(messages: ChatMessage[]): TimelineRenderItem[] {
   const items: TimelineRenderItem[] = [];
   const toolMessagesByOriginId = buildToolMessagesByOriginId(messages);
+  const voiceCallGroups = buildVoiceCallGroups(messages);
+  const emittedVoiceCallSessionIds = new Set<string>();
   let cycleIndex = 0;
   let userBubbleIndex = 0;
   let hasAssistantInCurrentUserTurn = false;
@@ -43,6 +65,25 @@ export function buildTimelineRenderItems(messages: ChatMessage[]): TimelineRende
   messages.forEach((message, messageIndex) => {
     if (message.role === 'system' && message.origin === 'trigger-runtime') {
       hasAssistantInCurrentUserTurn = false;
+      return;
+    }
+
+    // Messages exchanged during one call collapse into a single call record.
+    const voiceCallMeta = message.voiceCall;
+    if (voiceCallMeta) {
+      if (emittedVoiceCallSessionIds.has(voiceCallMeta.sessionId)) return;
+      emittedVoiceCallSessionIds.add(voiceCallMeta.sessionId);
+      items.push({
+        message,
+        toolMessages: EMPTY_TOOL_MESSAGES,
+        messageCycleIndex: null,
+        isAssistantContinuation: false,
+        isTerminalAssistantInUserTurn: false,
+        voiceCall: {
+          meta: voiceCallMeta,
+          messages: voiceCallGroups.get(voiceCallMeta.sessionId) ?? [message]
+        }
+      });
       return;
     }
 

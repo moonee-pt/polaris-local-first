@@ -11,7 +11,7 @@ type MessageEditInlineProps = {
   message: ChatMessage;
   onRemoveEditingAttachment: (attachmentId: string) => void;
   onUpdateEditingDraft: (value: string) => void;
-  onCommitEdit: (message: ChatMessage) => Promise<void>;
+  onCommitEdit: (message: ChatMessage, mode?: 'send' | 'save') => Promise<void>;
   onCancelEdit: () => void;
 };
 
@@ -117,7 +117,10 @@ export function MessageEditInline({
         <button type="button" className="btn-secondary compact" onClick={onCancelEdit}>
           {t('chat.messageActions.cancel')}
         </button>
-        <button type="button" className="btn-secondary compact active" onClick={() => void onCommitEdit(message)}>
+        <button type="button" className="btn-secondary compact" onClick={() => void onCommitEdit(message, 'save')}>
+          {t('chat.messageEdit.saveOnly')}
+        </button>
+        <button type="button" className="btn-secondary compact active" onClick={() => void onCommitEdit(message, 'send')}>
           {t('chat.messageEdit.saveAndRetry')}
         </button>
       </div>

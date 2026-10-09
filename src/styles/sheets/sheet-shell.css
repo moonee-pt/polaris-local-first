@@ -68,7 +68,7 @@
 }
 @media (max-width: 640px) {
   .app-global-overlays .menu-overlay > .settings-sheet.menu-sheet {
-    padding: max(64px, calc(env(safe-area-inset-top, 0px) + 18px)) 16px max(22px, calc(env(safe-area-inset-bottom, 0px) + 18px));
+    padding: calc(14px + env(safe-area-inset-top, 0px)) 16px max(22px, calc(env(safe-area-inset-bottom, 0px) + 18px));
   }
 }
 .persona-fullscreen {

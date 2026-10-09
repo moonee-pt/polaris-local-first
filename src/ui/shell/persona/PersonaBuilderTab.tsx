@@ -42,7 +42,7 @@ export function PersonaBuilderTab({
       <div className="pb-hero">
         <div>
           <div className="pb-header-label">Persona Prompt Builder</div>
-          <h3>新建协作者</h3>
+          <h3>新建角色</h3>
           <p>写名字，选倾向，生成提示词</p>
         </div>
       </div>

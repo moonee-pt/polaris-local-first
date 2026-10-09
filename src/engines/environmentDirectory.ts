@@ -175,7 +175,7 @@ function buildDirectory(snapshot: EnvironmentDirectorySnapshot): DirectoryIndex 
     parentId: ROOT_NODE_ID,
     kind: 'scene',
     title: '当前现场',
-    summary: '用户此刻所在的世界、活动对话、协作者和前台卡片。',
+    summary: '用户此刻所在的世界、活动对话、角色和前台卡片。',
     status: snapshot.activeConversation?.title ?? '没有活动对话标题',
     childIds: [],
     actions: [],
@@ -338,7 +338,7 @@ function buildDirectory(snapshot: EnvironmentDirectorySnapshot): DirectoryIndex 
     parentId: ROOT_NODE_ID,
     kind: 'directory',
     title: '房间卡目录',
-    summary: '当前协作者可见的房间卡、工具卡和图片素材。',
+    summary: '当前角色可见的房间卡、工具卡和图片素材。',
     status: `${snapshot.cards.length} 张房间卡 · ${snapshot.imageCards.length} 个图片素材`,
     childIds: [
       ...snapshot.cards.map((card) => `environment/room/card/${card.id}`),
@@ -572,7 +572,7 @@ function buildDirectory(snapshot: EnvironmentDirectorySnapshot): DirectoryIndex 
     parentId: ROOT_NODE_ID,
     kind: 'tool-lane',
     title: '记忆与长期资料',
-    summary: '当前协作者长期资料、主动回忆和原文锚点。',
+    summary: '当前角色长期资料、主动回忆和原文锚点。',
     status: `${snapshot.memoryDocs.length} 份长期资料`,
     childIds: snapshot.memoryDocs.map((doc) => `environment/memory/doc/${doc.id}`),
     actions: [

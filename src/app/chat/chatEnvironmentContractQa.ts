@@ -476,7 +476,7 @@ export async function runEnvironmentContractQa({
 
   const collaboratorId = resolveQaCollaboratorId({ store, derived });
   if (!collaboratorId) {
-    ui.setCommandStatus('没有可用协作者，先新建或选择一个协作者再跑环境契约 QA。', true);
+    ui.setCommandStatus('没有可用角色，先新建或选择一个角色再跑环境契约 QA。', true);
     return;
   }
 

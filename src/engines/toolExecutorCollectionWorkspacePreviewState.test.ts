@@ -33,7 +33,7 @@ describe('executeCollectionWorkspacePreviewStateAction', () => {
       projectId: 'project-1'
     }, ctx)).resolves.toEqual({
       ok: false,
-      error: '这个工作区没有允许协作者读取预览状态。请先在工作区设置里打开权限。'
+      error: '这个工作区没有允许角色读取预览状态。请先在工作区设置里打开权限。'
     });
     expect(ctx.readCodeCardState).not.toHaveBeenCalled();
   });

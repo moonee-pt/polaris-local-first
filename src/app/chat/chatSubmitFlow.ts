@@ -118,7 +118,7 @@ export async function submitMessage(state: SubmitMessageState, handlers: SubmitM
     }
   );
   if (!conversationSession) {
-    handlers.setCommandStatus('当前没有可用协作者，先新建一个协作者再继续聊天。', true);
+    handlers.setCommandStatus('当前没有可用角色，先新建一个角色再继续聊天。', true);
     if (state.activeConversationId) {
       finishChatSendPerformanceTrace(state.activeConversationId, 'failed', {
         extra: ['no collaborator']
@@ -155,7 +155,7 @@ export async function submitMessage(state: SubmitMessageState, handlers: SubmitM
     return;
   }
   if (conversationForSelectedCollaborator?.collaboratorId === null) {
-    handlers.setCommandStatus('原协作者已删除，已为当前协作者新开对话继续聊天。');
+    handlers.setCommandStatus('原角色已删除，已为当前角色新开对话继续聊天。');
   }
   const userMessage = createMessage(
     'user',

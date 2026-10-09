@@ -108,7 +108,7 @@ export function PromptCoreSettingsPage({
     return (
       <div className="ps-field prompt-settings-field">
         <div className="ps-field-head ps-field-head--inline-action">
-          <span className="ps-field-label">协作者提示词</span>
+          <span className="ps-field-label">角色提示词</span>
           <span className="ps-field-hint">内建人格</span>
           {pharosReadable ? (
             <button
@@ -146,7 +146,7 @@ export function PromptCoreSettingsPage({
   const promptPreviewContext = buildTemplateContext({
     modelId: activePersona?.advanced.modelOverride.trim() || '当前模型',
     modelName: activePersona?.advanced.modelOverride.trim() || '当前模型',
-    assistantName: activePersona?.name || '协作者',
+    assistantName: activePersona?.name || '角色',
     nickname: activePersona?.userName
   });
   const promptPreview = resolveSystemPromptVars(promptSource, promptPreviewContext);
@@ -158,7 +158,7 @@ export function PromptCoreSettingsPage({
       className={`ps-field prompt-settings-field ps-field--prompt-editor ${promptExpanded ? 'ps-field--expanded' : ''}`}
     >
       <div className="ps-field-head ps-field-head--inline-action">
-        <span className="ps-field-label">协作者提示词</span>
+        <span className="ps-field-label">角色提示词</span>
         <button
           type="button"
           className="ps-field-expand-btn"

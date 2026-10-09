@@ -5,7 +5,7 @@ export const request = {
   'request.settings.mcpSection': 'MCP',
   'request.settings.pageNavLabel': '请求设置分页',
   'request.settings.providerLabel': '固定供应商',
-  'request.settings.providerHint': '从设置里已填写的 API 供应商中选择；固定后不跟随其他协作者',
+  'request.settings.providerHint': '从设置里已填写的 API 供应商中选择；固定后不跟随其他角色',
   'request.settings.followGlobalProvider': '跟随全局供应商',
   'request.settings.followGlobal': '跟随全局',
   'request.settings.openProviderSettings': '前往设置供应商',
@@ -42,7 +42,7 @@ export const request = {
   'request.mcp.createServer': '新建 MCP',
   'request.mcp.noAvailableServers': '总设置里没有可添加的 MCP。',
   'request.mcp.toolsBadge': '工具 {count}',
-  'request.mcp.removeServer': '从这个协作者移除 {name}',
-  'request.mcp.emptyTitle': '这个协作者还没有单独 MCP',
+  'request.mcp.removeServer': '从这个角色移除 {name}',
+  'request.mcp.emptyTitle': '这个角色还没有单独 MCP',
   'request.mcp.emptyDetail': '从总设置里选一个，或者新建一条服务。',
 } as const;

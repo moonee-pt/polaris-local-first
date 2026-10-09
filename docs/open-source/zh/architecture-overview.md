@@ -48,7 +48,7 @@ flowchart TD
 | Layout surfaces | `src/app/shell/appLayoutSurface.ts`, `src/ui/app-shell/useAppLayoutSurface.ts`, `src/app/bootstrap/appLayoutSurfaceBootstrap.ts` | phone/tablet/desktop 排布、sidebar 条件、布局 bootstrap 事实 |
 | Chat | `src/ui/worlds/ChatWorld.tsx`, `src/app/chat/`, `src/engines/chat-api/` | 对话生命周期、请求生命周期、工具生命周期、上下文使用、消息展示 |
 | Collection | `src/ui/worlds/CollectionWorld.tsx`, `src/app/collection/` | 保存卡片、资产、项目工作区、导入导出面 |
-| Persona | `src/app/persona/`, `src/config/persona/personaBuilder.ts` | 协作者身份、persona 设置、长期 reference heads |
+| Persona | `src/app/persona/`, `src/config/persona/personaBuilder.ts` | 角色身份、persona 设置、长期 reference heads |
 | Runtime/provider | `src/engines/provider-runtime/`, `src/engines/request/` | provider profile、模型能力、直连/relay/native transport |
 | Tool protocol | `src/engines/tool-protocol/` | 模型可见 schema、解析、执行、结果投影 |
 | LocalData | `src/engines/localData/` | 持久应用事实、row state、commit validation、import/promotion invariant |

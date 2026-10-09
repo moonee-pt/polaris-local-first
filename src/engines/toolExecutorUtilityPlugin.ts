@@ -169,7 +169,7 @@ async function executeUtilityToolAction(
         return { ok: false, error: '没有可写入的记忆内容。' };
       }
       if (!ctx.appendCollaboratorMemories(items)) {
-        return { ok: false, error: '当前没有可写入记忆的协作者。' };
+        return { ok: false, error: '当前没有可写入记忆的角色。' };
       }
       return { ok: true, memoryCount: items.length };
     }
@@ -225,7 +225,7 @@ async function executeUtilityToolAction(
     }
     case 'searchMemory': {
       if (!ctx.searchCollaboratorMemory) {
-        return { ok: false, error: '当前没有可搜索记忆的协作者。' };
+        return { ok: false, error: '当前没有可搜索记忆的角色。' };
       }
       return ctx.searchCollaboratorMemory(action.query, action.mode, action.maxResults);
     }

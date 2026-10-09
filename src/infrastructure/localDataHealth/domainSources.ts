@@ -41,7 +41,7 @@ const DOMAIN_SOURCE_LABELS: Record<LocalDataDomain, string> = {
   chat: '对话',
   collection: '作品与资料',
   document: '长正文',
-  persona: '协作者',
+  persona: '角色',
   runtime: '服务配置',
   space: '界面状态'
 };

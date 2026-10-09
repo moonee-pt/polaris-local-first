@@ -9,7 +9,7 @@
 - `messages`
   当前对话消息流。
 - `persona`
-  当前对话实际使用的协作者。
+  当前对话实际使用的角色。
 
 ## `presentation`
 

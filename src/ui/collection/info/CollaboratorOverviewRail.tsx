@@ -141,12 +141,22 @@ export function CollaboratorOverviewRail({
                   </span>
                   <p>{item.summary}</p>
                 </div>
-                <div className="collaborator-overview-card-metrics">
-                  <span>{t(countKey('collection', item.collectionCount), { count: formatNumber(item.collectionCount) })}</span>
-                  <span>{t(countKey('image', item.imageCount), { count: formatNumber(item.imageCount) })}</span>
-                  <span>{t(countKey('conversation', item.conversationCount), { count: formatNumber(item.conversationCount) })}</span>
-                  <span>{t(countKey('memory', item.memoryCount), { count: formatNumber(item.memoryCount) })}</span>
-                </div>
+                {item.collectionCount + item.imageCount + item.conversationCount + item.memoryCount > 0 ? (
+                  <div className="collaborator-overview-card-metrics">
+                    {item.collectionCount > 0 ? (
+                      <span>{t(countKey('collection', item.collectionCount), { count: formatNumber(item.collectionCount) })}</span>
+                    ) : null}
+                    {item.imageCount > 0 ? (
+                      <span>{t(countKey('image', item.imageCount), { count: formatNumber(item.imageCount) })}</span>
+                    ) : null}
+                    {item.conversationCount > 0 ? (
+                      <span>{t(countKey('conversation', item.conversationCount), { count: formatNumber(item.conversationCount) })}</span>
+                    ) : null}
+                    {item.memoryCount > 0 ? (
+                      <span>{t(countKey('memory', item.memoryCount), { count: formatNumber(item.memoryCount) })}</span>
+                    ) : null}
+                  </div>
+                ) : null}
               </div>
             </button>
           </div>

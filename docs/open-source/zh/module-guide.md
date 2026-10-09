@@ -26,7 +26,7 @@
 
 ## Chat
 
-**Purpose:** 和协作者、模型、上下文、工具一起运行对话工作流。
+**Purpose:** 和角色、模型、上下文、工具一起运行对话工作流。
 
 **Owns:** submit、stop、retry、edit、fork、message timeline、request lifecycle、tool invocation lifecycle、memory/context use。
 
@@ -48,7 +48,7 @@
 
 ## Persona
 
-**Purpose:** 定义协作者身份、行为设置和长期 reference heads。
+**Purpose:** 定义角色身份、行为设置和长期 reference heads。
 
 **Owns:** persona directory、persona settings、persona builder、reference document 的产品层所有权。
 

@@ -10,13 +10,12 @@
   flex: 0 0 auto;
   width: 28px;
   height: 28px;
-  border-radius: 10px;
+  border-radius: var(--radius-flat);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   background: color-mix(in srgb, var(--accent-soft) 72%, rgba(255,255,255,0.18));
   color: color-mix(in srgb, var(--accent) 76%, var(--text) 24%);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.18);
 }
 .settings-item-copy { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .settings-item-copy strong { display: block; font-family: var(--font-ui); font-size: var(--type-small); font-weight: 600; color: var(--sheet-readable-text); }
@@ -25,8 +24,8 @@
 .settings-item-progress-fill { position: absolute; inset: 0 auto 0 0; width: 0; border-radius: inherit; background: var(--accent); transition: width 180ms ease; }
 .settings-item-arrow { flex: 0 0 auto; color: var(--sheet-readable-muted); font-size: 16px; line-height: 1; }
 .menu-language-selector { align-items: center; }
-.menu-language-options { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 6px; padding: 4px; border: 1px solid color-mix(in srgb, var(--border) 78%, transparent); border-radius: 14px; background: color-mix(in srgb, var(--surface-deep) 58%, transparent); }
-.menu-language-option { min-height: 30px; padding: 0 10px; border: 0; border-radius: 10px; background: transparent; color: var(--sheet-readable-muted); font: inherit; font-size: var(--type-caption); font-weight: 600; cursor: pointer; }
+.menu-language-options { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 6px; padding: 4px; border: 1px solid color-mix(in srgb, var(--border) 78%, transparent); border-radius: var(--radius-control); background: transparent; }
+.menu-language-option { min-height: 30px; padding: 0 10px; border: 0; border-radius: var(--radius-chip); background: transparent; color: var(--sheet-readable-muted); font: inherit; font-size: var(--type-caption); font-weight: 600; cursor: pointer; }
 .menu-language-option:hover, .menu-language-option:focus-visible { color: var(--sheet-readable-text); outline: none; }
 .menu-language-option.active { background: color-mix(in srgb, var(--accent-soft) 84%, rgba(255,255,255,0.18)); color: var(--accent); box-shadow: inset 0 1px 0 rgba(255,255,255,0.24); }
 .menu-language-note { margin-top: 4px; }
@@ -94,13 +93,8 @@
   gap: 8px;
   padding: 0 14px;
   border: 1px solid color-mix(in srgb, var(--border) 82%, rgba(255,255,255,0.16));
-  border-radius: 14px;
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, rgba(255,255,255,0.32) 24%, var(--surface) 76%),
-      color-mix(in srgb, var(--surface) 90%, rgba(255,255,255,0.08))
-    );
+  border-radius: var(--radius-control);
+  background: transparent;
   color: var(--sheet-readable-soft);
   font: inherit;
   font-size: var(--type-small);
@@ -155,7 +149,7 @@
 
 .provider-stack { margin-bottom: 12px; display: flex; flex-direction: column; gap: 10px; }
 .provider-strip { display: flex; gap: 8px; padding-bottom: 2px; }
-.provider-chip { min-width: 132px; display: flex; flex-direction: column; gap: 3px; padding: 11px 12px; border-radius: 16px; border: 1px solid var(--border); background: color-mix(in srgb, var(--surface) 74%, transparent); text-align: left; color: var(--sheet-readable-soft); cursor: pointer; font-family: inherit; }
+.provider-chip { min-width: 132px; display: flex; flex-direction: column; gap: 3px; padding: 11px 12px; border-radius: var(--radius-control); border: 1px solid var(--border); background: transparent; text-align: left; color: var(--sheet-readable-soft); cursor: pointer; font-family: inherit; }
 .provider-chip strong { font-size: var(--type-small); font-weight: 500; color: var(--sheet-readable-text); }
 .provider-chip span { font-size: var(--type-caption); color: color-mix(in srgb, var(--sheet-readable-text) 58%, var(--sheet-readable-muted)); }
 .provider-chip.active { border-color: color-mix(in srgb, var(--border-hover) 92%, transparent); background: color-mix(in srgb, var(--accent-soft) 88%, transparent); }
@@ -276,8 +270,8 @@
   flex-direction: column;
   gap: 7px;
   padding: 10px 12px;
-  border-radius: 14px;
-  background: color-mix(in srgb, var(--surface-deep) 56%, transparent);
+  border-radius: var(--radius-chip);
+  background: transparent;
   border: 1px solid color-mix(in srgb, var(--border) 72%, transparent);
 }
 

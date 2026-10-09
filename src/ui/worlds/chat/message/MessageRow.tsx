@@ -47,8 +47,11 @@ export type MessageRowState = {
 export type MessageRowActions = {
   removeEditingAttachment: (attachmentId: string) => void;
   updateEditingDraft: (value: string) => void;
-  commitEdit: (message: ChatMessage) => Promise<void>;
+  commitEdit: (message: ChatMessage, mode?: 'send' | 'save') => Promise<void>;
   cancelEdit: () => void;
+  deleteMessage: (message: ChatMessage) => Promise<void>;
+  regenerateFromMessage: (message: ChatMessage) => Promise<void>;
+  rollbackToMessage: (message: ChatMessage) => Promise<void>;
   toggleThinkingCollapsed: (messageId: string) => void;
   openThinkingSummary: (message: ChatMessage) => void;
   saveImageAttachment: (message: ChatMessage, attachment: ChatAttachment) => void;
@@ -153,6 +156,7 @@ function MessageRowComponent({
   const [userActionMenuOpen, setUserActionMenuOpen] = useState(false);
   const longPressTimerRef = useRef<number | null>(null);
   const bubbleFrameRef = useRef<HTMLDivElement>(null);
+  const userActionRef = useRef<HTMLDivElement>(null);
   const toolProductCardActivationBlockedUntilRef = useRef(0);
   const { label: codeCardActionLabel, progressLabel: codeCardProgressLabel } = resolveCodeCardActionCopy(
     state.codeCardActionMode,
@@ -257,7 +261,7 @@ function MessageRowComponent({
     const handlePointerDownOutside = (event: globalThis.PointerEvent) => {
       const target = event.target;
       if (!(target instanceof Node)) return;
-      if (bubbleFrameRef.current?.contains(target)) return;
+      if (userActionRef.current?.contains(target)) return;
       setUserActionMenuOpen(false);
     };
 
@@ -289,12 +293,45 @@ function MessageRowComponent({
     setUserActionMenuOpen(false);
   };
 
-  const editUserMessage = () => {
-    runSelectionAction(() => {
-      setUserActionMenuOpen(false);
-      actions.editMessage(message);
-    }, { settle: 'none' });
-  };
+  const userMessageActions = isUserMessage && !state.editing && state.canEdit ? (
+    <div className="message-inline-actions user">
+      <button
+        type="button"
+        className="micro-action-btn"
+        onClick={(event) => {
+          runSelectionAction(() => actions.editMessage(message), { element: event.currentTarget, settle: 'none' });
+        }}
+        aria-label={t('chat.userMessageActions.edit')}
+        title={t('chat.userMessageActions.edit')}
+      >
+        <Icon name="edit" size={14} />
+      </button>
+      <button
+        type="button"
+        className="micro-action-btn"
+        onClick={(event) => {
+          runSelectionAction(() => void copyUserMessage(), { element: event.currentTarget, settle: 'none' });
+        }}
+        aria-label={t('chat.messageActions.copy')}
+        title={t('chat.messageActions.copy')}
+      >
+        <Icon name="copy" size={14} />
+      </button>
+      <button
+        type="button"
+        className={`micro-action-btn ${userActionMenuOpen ? 'active' : ''}`}
+        onClick={(event) => {
+          runSelectionAction(() => setUserActionMenuOpen((open) => !open), { element: event.currentTarget, settle: 'none' });
+        }}
+        aria-label={t('chat.messageActions.more')}
+        title={t('chat.messageActions.more')}
+        aria-haspopup="menu"
+        aria-expanded={userActionMenuOpen}
+      >
+        <Icon name="more" size={14} />
+      </button>
+    </div>
+  ) : null;
 
   const handleBubblePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (!isUserMessage || state.editing || !state.canEdit) return;
@@ -381,18 +418,6 @@ function MessageRowComponent({
           </>
         )}
       </div>
-      {isUserMessage && !state.editing && state.canEdit && userActionMenuOpen ? (
-        <div className="user-bubble-action-menu" role="menu" aria-label={t('chat.messageActions.userMenuAria')}>
-          <button type="button" className="user-bubble-action-btn" role="menuitem" onClick={() => { void copyUserMessage(); }}>
-            <Icon name="copy" size={14} />
-            <span>{t('chat.messageActions.copy')}</span>
-          </button>
-          <button type="button" className="user-bubble-action-btn" role="menuitem" onClick={editUserMessage}>
-            <Icon name="edit" size={14} />
-            <span>{t('chat.messageActions.editAndRetry')}</span>
-          </button>
-        </div>
-      ) : null}
     </div>
   );
 
@@ -489,7 +514,43 @@ function MessageRowComponent({
           <div className="message-turn-body user">
             <div className="message-turn-stack user">
               {messageBubble}
-              {messageActions}
+              <div className="user-action-dock" ref={userActionRef}>
+                {userMessageActions}
+                {isUserMessage && !state.editing && state.canEdit && userActionMenuOpen ? (
+                  <div className="user-bubble-action-menu" role="menu" aria-label={t('chat.messageActions.userMenuAria')}>
+                    <button
+                      type="button"
+                      className="user-bubble-action-btn"
+                      role="menuitem"
+                      aria-label={t('chat.userMessageActions.regenerate')}
+                      title={t('chat.userMessageActions.regenerate')}
+                      onClick={() => { setUserActionMenuOpen(false); void actions.regenerateFromMessage(message); }}
+                    >
+                      <Icon name="refresh" size={16} />
+                    </button>
+                    <button
+                      type="button"
+                      className="user-bubble-action-btn"
+                      role="menuitem"
+                      aria-label={t('chat.userMessageActions.rollback')}
+                      title={t('chat.userMessageActions.rollback')}
+                      onClick={() => { setUserActionMenuOpen(false); void actions.rollbackToMessage(message); }}
+                    >
+                      <Icon name="rollback" size={16} />
+                    </button>
+                    <button
+                      type="button"
+                      className="user-bubble-action-btn danger"
+                      role="menuitem"
+                      aria-label={t('chat.userMessageActions.delete')}
+                      title={t('chat.userMessageActions.delete')}
+                      onClick={() => { setUserActionMenuOpen(false); void actions.deleteMessage(message); }}
+                    >
+                      <Icon name="trash" size={16} />
+                    </button>
+                  </div>
+                ) : null}
+              </div>
             </div>
             {showChatAvatars ? (
               <div className="message-avatar-slot user">

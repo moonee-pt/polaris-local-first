@@ -98,6 +98,7 @@ export function useAppShellController() {
       const projectTitleById = new Map(roomProjects.map((project) => [project.id, project.title.trim() || t('common.untitledWorkspace')]));
       return conversations
         .filter((conversation) => conversationMatchesCollaboratorScope(conversation, frontstageCollaboratorId, collaboratorIds))
+        .filter((conversation) => conversation.id === activeConversationId || conversation.messages.length > 0 || !loadedMessageConversationIds.includes(conversation.id))
         .map((conversation) => {
           const summary = buildConversationCardSummary(conversation);
           return {
@@ -106,7 +107,7 @@ export function useAppShellController() {
           };
         });
     },
-    [collaboratorIds, conversations, frontstageCollaboratorId, roomProjects, t]
+    [activeConversationId, collaboratorIds, conversations, frontstageCollaboratorId, loadedMessageConversationIds, roomProjects, t]
   );
   const desktopSidebarShelfItems = useMemo(
     () => [
@@ -179,7 +180,7 @@ export function useAppShellController() {
     activeConversationMessageCount,
     collectionRenderItemCount,
     labels: {
-      collectionWorld: t('common.room'),
+      collectionWorld: t('common.collaborator'),
       chatWorld: t('common.conversation'),
       unnamedConversation: t('chat.untitledConversation')
     }

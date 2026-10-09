@@ -17,7 +17,7 @@ export function describeMemoryToolAction(action: MemoryToolAction): ToolActionDe
       return {
         kind: action.kind,
         title: '写入记忆',
-        summary: `${action.targetLabel || '当前协作者'} · 追加 ${action.memory.length} 条记忆`,
+        summary: `${action.targetLabel || '当前角色'} · 追加 ${action.memory.length} 条记忆`,
         targetLabel: action.targetLabel,
         memoryItems: action.memory
       };
@@ -25,7 +25,7 @@ export function describeMemoryToolAction(action: MemoryToolAction): ToolActionDe
       return {
         kind: action.kind,
         title: action.docId ? '更新长期资料' : '写入长期资料',
-        summary: `${action.targetLabel || '当前协作者'} · ${action.docId ? '更新' : '新增'} ${action.title}`,
+        summary: `${action.targetLabel || '当前角色'} · ${action.docId ? '更新' : '新增'} ${action.title}`,
         targetLabel: action.targetLabel || action.title
       };
     case 'readMemoryDoc':

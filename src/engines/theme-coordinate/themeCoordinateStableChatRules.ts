@@ -24,7 +24,7 @@ export function buildChatTypographyRules(preview: ThemeCoordinatePreview) {
   const bubbleLine = lerp(1.5, 1.76, airy * 0.52 + restrained * 0.18).toFixed(2);
   const paragraphGap = `${lerp(0.4, 0.68, airy * 0.42 + restrained * 0.18).toFixed(2)}em`;
 
-  const composerSize = `${lerp(14.2, 16.1, airy * 0.44 + energetic * 0.22).toFixed(2)}px`;
+  const composerSize = `${lerp(13.5, 15.2, airy * 0.44 + energetic * 0.22).toFixed(2)}px`;
   const composerWeight = Math.round(lerp(400, 520, energetic * 0.56));
   const composerTracking = `${(0.002 + airy * 0.01 + restrained * 0.006 - energetic * 0.003).toFixed(3)}em`;
   const composerLine = lerp(1.44, 1.68, airy * 0.46 + restrained * 0.14).toFixed(2);

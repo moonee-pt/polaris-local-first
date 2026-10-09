@@ -9,6 +9,7 @@ function isSupportedImageGenerationPath(pathname: string) {
   return (
     normalized.endsWith('/images/generations')
     || normalized.endsWith('/image_generation')
+    || normalized.endsWith('/services/aigc/multimodal-generation/generation')
   );
 }
 
@@ -29,7 +30,15 @@ export function isProviderImageGenerationRequestBody(value: unknown): value is R
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
   const record = value as Record<string, unknown>;
   if (typeof record.model !== 'string' || !record.model.trim()) return false;
-  if (typeof record.prompt !== 'string' || !record.prompt.trim()) return false;
+
+  const hasOpenAiPrompt = typeof record.prompt === 'string' && record.prompt.trim().length > 0;
+  const hasDashScopeInput = record.input !== undefined
+    && typeof record.input === 'object'
+    && !Array.isArray(record.input)
+    && Array.isArray((record.input as Record<string, unknown>).messages);
+
+  if (!hasOpenAiPrompt && !hasDashScopeInput) return false;
+
   if (record.size !== undefined && (typeof record.size !== 'string' || !record.size.trim())) return false;
   if (record.aspect_ratio !== undefined && (typeof record.aspect_ratio !== 'string' || !record.aspect_ratio.trim())) return false;
   if (record.response_format !== undefined && (typeof record.response_format !== 'string' || !record.response_format.trim())) return false;

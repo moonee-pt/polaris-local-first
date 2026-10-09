@@ -112,6 +112,6 @@ export function getPersonaPromptVariants(persona: Persona | null | undefined) {
       ? '当前主运行时优先使用你手写或保存过的 compiledPrompt。'
       : generatedPromptEnabled
         ? '当前主运行时直接使用 VNext 编译结果。'
-        : '当前主运行时不注入协作者人格提示词。'
+        : '当前主运行时不注入角色人格提示词。'
   };
 }

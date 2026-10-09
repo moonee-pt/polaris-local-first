@@ -49,7 +49,7 @@ describe('codeCollectionSource', () => {
     );
 
     expect(prompt).toContain('继续沿着《旧对话》里那条来源消息往下写这张卡。');
-    expect(prompt).toContain('来源协作者：Pharos');
+    expect(prompt).toContain('来源角色：Pharos');
     expect(prompt).toContain('优先增量续写或修改');
     expect(prompt).toContain('不要一次重发完整新版');
   });

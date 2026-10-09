@@ -2,14 +2,14 @@ body[data-polaris-preset='paper-butter'] .app-shell.collection {
   --collection-dialogue-card-isolation: isolate;
   --collection-dialogue-card-padding: 13px 12px 13px 15px;
   --collection-dialogue-card-padding-search-closed: 10px 12px 10px 15px;
-  --collection-dialogue-card-radius: 12px;
-  --collection-dialogue-card-radius-search-open: 14px;
-  --collection-dialogue-card-radius-search-closed: 10px;
+  --collection-dialogue-card-radius: 0;
+  --collection-dialogue-card-radius-search-open: 0;
+  --collection-dialogue-card-radius-search-closed: 0;
   --collection-dialogue-card-margin-search-closed: 0;
   --collection-dialogue-card-border: 1px solid transparent;
   --collection-dialogue-card-background: transparent;
   --collection-dialogue-card-shadow: none;
-  --collection-dialogue-card-divider-display: none;
+  --collection-dialogue-card-divider-display: block;
   --collection-dialogue-card-thread-display: none;
   --collection-dialogue-card-copy-padding-left: 5px;
   --collection-dialogue-card-hover-transform: none;

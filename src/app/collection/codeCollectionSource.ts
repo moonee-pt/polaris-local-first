@@ -69,7 +69,7 @@ export function buildChatPromptFromCard(card: CodeChatPromptSeed | null | undefi
 export function buildChatPromptFromSourceCard(card: CodeCard, sourceContext: CodeCardSourceContext) {
   return [
     `继续沿着《${sourceContext.conversationTitle}》里那条来源消息往下写这张卡。`,
-    `来源协作者：${sourceContext.collaboratorName}`,
+    `来源角色：${sourceContext.collaboratorName}`,
     sourceContext.blockLabel ? `来源代码：${sourceContext.blockLabel}` : null,
     `来源片段：${sourceContext.messagePreview}`,
     '优先增量续写或修改；内容很长时分小块推进，不要一次重发完整新版。'
@@ -99,6 +99,6 @@ export function codeCardSourceContext(
     messageTimestamp: message.timestamp,
     collaboratorName:
       collaborators.find((collaborator) => collaborator.id === resolveOwnerCollaboratorId(card, conversations))?.name
-      ?? '未知协作者'
+      ?? '未知角色'
   };
 }

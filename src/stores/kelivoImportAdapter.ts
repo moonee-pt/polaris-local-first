@@ -614,7 +614,7 @@ function buildPersonas(
 
     return createPersonaTemplate({
       id,
-      name: readString(assistant.name) || `Kelivo 协作者 ${index + 1}`,
+      name: readString(assistant.name) || `Kelivo 角色 ${index + 1}`,
       description: '从 Kelivo 备份迁移',
       assistantAvatarAssetId: readBoolean(assistant.useAssistantAvatar, true) ? assistantAvatarAssetId : null,
       userAvatarAssetId,
@@ -665,9 +665,9 @@ function buildPersonas(
 function createRecoveredKelivoPersona(id: string, index: number, userName: string): Persona {
   return createPersonaTemplate({
     id,
-    name: `Kelivo 导入协作者 ${index + 1}`,
+    name: `Kelivo 导入角色 ${index + 1}`,
     description: '从 Kelivo 备份恢复',
-    purpose: 'Kelivo 备份里的对话仍然指向这个 assistant id，但 assistants 列表里没有对应角色。Polaris 为它补建了可编辑协作者，避免导入后的对话悬空。',
+    purpose: 'Kelivo 备份里的对话仍然指向这个 assistant id，但 assistants 列表里没有对应角色。Polaris 为它补建了可编辑角色，避免导入后的对话悬空。',
     userName,
     baseId: 'custom',
     relationship: 'partner',

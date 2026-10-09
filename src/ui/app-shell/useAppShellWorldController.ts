@@ -124,7 +124,7 @@ export function useAppShellWorldController({
     shell: {
       isActiveWorld: activeWorld === 'group',
       isWorldSwitching,
-      // 退出群聊回到"选人"的动作里：打开切换房间抽屉，而不是落进某个协作者房间
+      // 退出群聊回到"选人"的动作里：打开切换房间抽屉，而不是落进某个角色房间
       onExitToRoomSwitch: () => collection.setCollaboratorSwitchOpen(true)
     },
     ui: chatUi

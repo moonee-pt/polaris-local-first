@@ -15,7 +15,7 @@ type UtilityToolKind = Extract<
 
 const PROACTIVE_MESSAGE_RULES = [
   '- 只有用户打开“主动消息”工具组后，这些工具才会出现在当前请求里。',
-  '- 这些工具只管理当前协作者的主动消息规则；不要跨协作者替别人查看、修改或取消。',
+  '- 这些工具只管理当前角色的主动消息规则；不要跨角色替别人查看、修改或取消。',
   '- 修改或取消前如果不知道 ruleId，先用 listProactiveMessageRules 查看。'
 ];
 
@@ -336,7 +336,7 @@ export const UTILITY_TOOL_DEFINITION_MAP = {
     brief: '写入长期资料',
     schema: {
       name: 'writeMemoryDoc',
-      description: '新建或更新当前协作者的长期资料文档。适合写较长背景、设定、关系资料、项目资料或长期日志；短偏好仍用 writeMemory。',
+      description: '新建或更新当前角色的长期资料文档。适合写较长背景、设定、关系资料、项目资料或长期日志；短偏好仍用 writeMemory。',
       parameters: objectParameters({
         docId: stringProperty('可选。要更新的长期资料 docId；不填则新建一份资料。'),
         title: stringProperty('资料标题。'),
@@ -347,7 +347,7 @@ export const UTILITY_TOOL_DEFINITION_MAP = {
     },
     rules: [
       '写入长期资料动作：',
-      '1. writeMemoryDoc：新建或更新当前协作者的长期资料文档。',
+      '1. writeMemoryDoc：新建或更新当前角色的长期资料文档。',
       '- 资料适合长背景、设定、关系资料、项目资料或长期日志；短偏好和一句话事实继续用 writeMemory。',
       '- 如果要更新已有资料，使用长期资料目录里的 docId；如果没有明确目标，就新建一份标题清楚的资料。'
     ]
@@ -378,7 +378,7 @@ export const UTILITY_TOOL_DEFINITION_MAP = {
     brief: '搜索过往摘要和原文锚点',
     schema: {
       name: 'searchMemory',
-      description: '按查询搜索当前协作者的跨对话摘要和语义原文锚点。它只返回候选、摘要和 source ids；需要确认原文时再调用 openMemorySource。',
+      description: '按查询搜索当前角色的跨对话摘要和语义原文锚点。它只返回候选、摘要和 source ids；需要确认原文时再调用 openMemorySource。',
       parameters: objectParameters({
         query: stringProperty('要查找的记忆线索、人物、主题、说法或事件。'),
         mode: stringProperty('可选。auto 同时搜索摘要和原文；summary 只搜摘要；source 只搜原文锚点。', {
@@ -508,15 +508,15 @@ export const UTILITY_TOOL_DEFINITION_MAP = {
     brief: '创建主动消息规则',
     schema: {
       name: 'createProactiveMessageRule',
-      description: '为当前协作者创建一条主动消息规则。规则会保存到设置里的主动消息列表，之后按时间触发，让协作者主动开口。',
+      description: '为当前角色创建一条主动消息规则。规则会保存到设置里的主动消息列表，之后按时间触发，让角色主动开口。',
       parameters: objectParameters({
-        prompt: stringProperty('触发时交给协作者的提示词，写清楚到点后要主动说什么、以什么语气/目标开口。'),
+        prompt: stringProperty('触发时交给角色的提示词，写清楚到点后要主动说什么、以什么语气/目标开口。'),
         scheduleKind: stringProperty('触发时间类型。daily 表示每天固定时间；interval 表示每隔一段时间。', {
           enum: ['daily', 'interval']
         }),
         time: stringProperty('scheduleKind=daily 时填写，24 小时制 HH:mm，例如 09:30。'),
         everyMinutes: numberProperty('scheduleKind=interval 时填写，每隔多少分钟触发一次。'),
-        conversationMode: stringProperty('fixed 表示固定投递到当前对话；follow-latest 表示投递到这个协作者最近的对话。默认 fixed。', {
+        conversationMode: stringProperty('fixed 表示固定投递到当前对话；follow-latest 表示投递到这个角色最近的对话。默认 fixed。', {
           enum: ['fixed', 'follow-latest']
         }),
         name: stringProperty('可选规则名，会显示在设置里的主动消息列表。'),
@@ -525,11 +525,11 @@ export const UTILITY_TOOL_DEFINITION_MAP = {
     },
     rules: [
       '主动消息动作：',
-      '1. createProactiveMessageRule：为当前协作者创建一条主动消息规则，之后由 Polaris 按规则让 TA 主动开口。',
+      '1. createProactiveMessageRule：为当前角色创建一条主动消息规则，之后由 Polaris 按规则让 TA 主动开口。',
       ...PROACTIVE_MESSAGE_RULES,
       '- 只有用户明确想让你以后主动找 TA、按时间提醒、定期问候或设置主动消息时，才使用它。',
       '- 这个工具创建的是设置里的普通主动消息规则；用户之后可以在设置 → 主动消息里关闭、修改或删除。',
-      '- 默认投递到当前对话；如果用户想“无论我之后在哪个对话都由这个协作者主动说”，conversationMode 用 follow-latest。',
+      '- 默认投递到当前对话；如果用户想“无论我之后在哪个对话都由这个角色主动说”，conversationMode 用 follow-latest。',
       '- 不要为了普通回答、一次性补充、你自己想延伸话题或未经用户同意的自启动而创建规则。'
     ]
   },
@@ -540,13 +540,13 @@ export const UTILITY_TOOL_DEFINITION_MAP = {
     brief: '查看主动消息规则',
     schema: {
       name: 'listProactiveMessageRules',
-      description: '查看当前协作者已有的主动消息规则，返回 ruleId、名称、时间、目标和提示词摘要。',
+      description: '查看当前角色已有的主动消息规则，返回 ruleId、名称、时间、目标和提示词摘要。',
       parameters: objectParameters({
         targetLabel: stringProperty('可选目标说明。')
       })
     },
     rules: [
-      '2. listProactiveMessageRules：查看当前协作者已有的主动消息规则。',
+      '2. listProactiveMessageRules：查看当前角色已有的主动消息规则。',
       ...PROACTIVE_MESSAGE_RULES
     ]
   },
@@ -557,7 +557,7 @@ export const UTILITY_TOOL_DEFINITION_MAP = {
     brief: '修改主动消息规则',
     schema: {
       name: 'updateProactiveMessageRule',
-      description: '修改当前协作者的一条主动消息规则。只传要改的字段；不传的字段保持原样。',
+      description: '修改当前角色的一条主动消息规则。只传要改的字段；不传的字段保持原样。',
       parameters: objectParameters({
         ruleId: stringProperty('要修改的主动消息规则 id。先用 listProactiveMessageRules 查看。'),
         prompt: stringProperty('可选。新的触发提示词。'),
@@ -566,7 +566,7 @@ export const UTILITY_TOOL_DEFINITION_MAP = {
         }),
         time: stringProperty('scheduleKind=daily 时填写，24 小时制 HH:mm，例如 21:30。'),
         everyMinutes: numberProperty('scheduleKind=interval 时填写，每隔多少分钟触发一次。'),
-        conversationMode: stringProperty('可选。fixed 表示固定投递到当前对话；follow-latest 表示投递到这个协作者最近的对话。', {
+        conversationMode: stringProperty('可选。fixed 表示固定投递到当前对话；follow-latest 表示投递到这个角色最近的对话。', {
           enum: ['fixed', 'follow-latest']
         }),
         name: stringProperty('可选。新的规则名。'),
@@ -574,7 +574,7 @@ export const UTILITY_TOOL_DEFINITION_MAP = {
       }, ['ruleId'])
     },
     rules: [
-      '3. updateProactiveMessageRule：修改当前协作者的一条主动消息规则。',
+      '3. updateProactiveMessageRule：修改当前角色的一条主动消息规则。',
       ...PROACTIVE_MESSAGE_RULES,
       '- 用户让你改频率、改时间、改提示词、改投递目标时，用它；不需要先取消再新建。'
     ]
@@ -586,14 +586,14 @@ export const UTILITY_TOOL_DEFINITION_MAP = {
     brief: '取消主动消息规则',
     schema: {
       name: 'deleteProactiveMessageRule',
-      description: '取消当前协作者的一条主动消息规则。',
+      description: '取消当前角色的一条主动消息规则。',
       parameters: objectParameters({
         ruleId: stringProperty('要取消的主动消息规则 id。先用 listProactiveMessageRules 查看。'),
         targetLabel: stringProperty('可选目标说明。')
       }, ['ruleId'])
     },
     rules: [
-      '4. deleteProactiveMessageRule：取消当前协作者的一条主动消息规则。',
+      '4. deleteProactiveMessageRule：取消当前角色的一条主动消息规则。',
       ...PROACTIVE_MESSAGE_RULES,
       '- 用户说“别再主动发这个了”“取消这个提醒”“你自己把这条收掉”时，用它。'
     ]

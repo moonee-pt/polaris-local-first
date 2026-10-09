@@ -223,38 +223,34 @@
   -webkit-appearance: none;
   flex: 0 0 auto;
   min-height: 30px;
-  padding: 6px 11px;
-  border: 1px solid var(--collection-dialogue-card-micro-border);
-  border-radius: 999px;
-  background: var(--collection-dialogue-card-micro-fill);
+  padding: 6px 6px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
   color: var(--collection-dialogue-card-micro-color);
-  box-shadow: var(--collection-dialogue-card-micro-shadow);
+  box-shadow: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 5px;
   font-family: inherit;
-  font-size: var(--type-caption);
-  font-weight: 620;
+  font-size: 12px;
+  font-weight: 500;
   line-height: 1;
   cursor: pointer;
-  transition: border-color var(--duration-fast) ease, background var(--duration-fast) ease, color var(--duration-fast) ease, transform var(--duration-fast) ease;
+  transition: background var(--duration-fast) ease, color var(--duration-fast) ease;
 }
 
 .dialogue-export-action:hover,
 .dialogue-export-action:focus-visible {
-  border-color: var(--collection-dialogue-card-micro-hover-border);
-  background: var(--collection-dialogue-card-micro-hover-fill);
-  color: var(--collection-dialogue-card-micro-hover-color);
+  background: color-mix(in srgb, var(--collection-card-border) 12%, transparent);
+  color: var(--collection-card-text-soft);
   outline: none;
-  transform: translateY(-1px);
 }
 
 .dialogue-export-action:active {
-  border-color: var(--collection-dialogue-card-micro-active-border);
-  background: var(--collection-dialogue-card-micro-active-fill);
-  color: var(--collection-dialogue-card-micro-active-color);
-  transform: translateY(0);
+  background: color-mix(in srgb, var(--collection-card-border) 20%, transparent);
+  color: var(--collection-card-text);
 }
 
 .dialogue-export-action:disabled {

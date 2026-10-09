@@ -37,7 +37,7 @@ describe('resolveConversationSummarySourceBatches', () => {
         conversation({
           id: 'ignored-collaborator',
           collaboratorId: 'other',
-          messages: [message('other-user', 'user', '别的协作者不进来。', 1)]
+          messages: [message('other-user', 'user', '别的角色不进来。', 1)]
         }),
         conversation({
           id: 'main',
@@ -64,7 +64,7 @@ describe('resolveConversationSummarySourceBatches', () => {
     expect(batches[0]?.text).toContain('main · 用户 ·');
     expect(batches[0]?.text).toContain('main · Pharos ·');
     expect(batches[0]?.text).not.toContain('上一条回答在中途停住');
-    expect(batches[0]?.text).not.toContain('assistant / 当前协作者');
+    expect(batches[0]?.text).not.toContain('assistant / 当前角色');
     expect(batches[0]?.text).not.toContain('user / 用户');
     expect(batches[0]?.text).not.toContain('const x');
     expect(batches.some((batch) => batch.text.includes('工具结果'))).toBe(false);

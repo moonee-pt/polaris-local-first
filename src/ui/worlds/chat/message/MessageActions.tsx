@@ -288,6 +288,7 @@ export function MessageActions({
       void playConfiguredSpeech(text);
       return;
     }
+    onSetCommandStatus(t('chat.messageActions.systemVoiceFallback'));
     playNativeSpeech(text);
   };
 
@@ -393,7 +394,7 @@ export function MessageActions({
               <button
                 type="button"
                 className="assistant-message-memory-back"
-                onClick={() => setAssistantSheetMode('menu')}
+                onClick={closeAssistantSheet}
                 aria-label={t('chat.messageActions.backToActions')}
               >
                 <Icon name="chevron" size={16} />
@@ -418,7 +419,7 @@ export function MessageActions({
               autoFocus
             />
             <div className="assistant-message-edit-actions">
-              <button type="button" className="assistant-message-edit-btn secondary" onClick={() => setAssistantSheetMode('menu')}>{t('chat.messageActions.cancel')}</button>
+              <button type="button" className="assistant-message-edit-btn secondary" onClick={closeAssistantSheet}>{t('chat.messageActions.cancel')}</button>
               <button type="button" className="assistant-message-edit-btn primary" onClick={saveAssistantDraft} disabled={!assistantDraft.trim()}>{t('chat.messageActions.confirmEdit')}</button>
             </div>
           </div>
@@ -447,20 +448,6 @@ export function MessageActions({
           aria-pressed={speaking || speechLoading}
         >
           <Icon name={speaking || speechLoading ? 'pause' : 'voice'} size={14} />
-        </button>
-      ) : null}
-      {taskReceiptAction ? (
-        <button
-          type="button"
-          className={`micro-action-btn task-receipt ${taskReceiptAction.status} ${taskReceiptAction.expanded ? 'active' : ''}`}
-          onClick={(event) => {
-            runSelectionAction(taskReceiptAction.onToggle, { element: event.currentTarget });
-          }}
-          aria-label={taskReceiptAction.expanded ? t('chat.messageActions.collapseTask') : t('chat.messageActions.viewTask')}
-          title={taskReceiptAction.expanded ? t('chat.messageActions.collapseTaskTitle') : t('chat.messageActions.viewTaskTitle')}
-          aria-expanded={taskReceiptAction.expanded}
-        >
-          <Icon name={taskReceiptAction.status === 'completed' ? 'check' : 'task'} size={14} />
         </button>
       ) : null}
       {canOpenThinkingSummary && (
@@ -492,26 +479,93 @@ export function MessageActions({
           {codeCardProgressLabel && <span className="message-inline-progress">{codeCardProgressLabel}</span>}
         </>
       )}
-      {hasAssistantMore ? (
-        <>
-          <button
-            type="button"
-            className={`micro-action-btn ${assistantSheetOpen ? 'active' : ''}`}
-            onClick={(event) => {
-              runSelectionAction(() => {
-                setAssistantSheetOpen(true);
-                setAssistantSheetMode('menu');
-              }, { element: event.currentTarget });
-            }}
-            aria-label={t('chat.messageActions.moreAssistantActions')}
-            title={t('chat.messageActions.more')}
-            aria-expanded={assistantSheetOpen}
-          >
-            <Icon name="more" size={15} />
-          </button>
-          {assistantSheet}
-        </>
+      {canEditAssistant && (
+        <button
+          type="button"
+          className="micro-action-btn"
+          onClick={(event) => {
+            runSelectionAction(() => {
+              setAssistantDraft(messageContent);
+              setAssistantSheetMode('edit');
+              setAssistantSheetOpen(true);
+            }, { element: event.currentTarget });
+          }}
+          aria-label={t('chat.messageActions.editAssistant')}
+          title={t('chat.messageActions.edit')}
+        >
+          <Icon name="edit" size={14} />
+        </button>
+      )}
+      {canForkAssistant && (
+        <button
+          type="button"
+          className="micro-action-btn"
+          onClick={(event) => {
+            runSelectionAction(() => onForkAssistant(), { element: event.currentTarget });
+          }}
+          aria-label={t('chat.messageActions.forkFromHere')}
+          title={t('chat.messageActions.forkFromHere')}
+        >
+          <Icon name="branch" size={14} />
+        </button>
+      )}
+      {canRetryAssistant && (
+        <button
+          type="button"
+          className="micro-action-btn"
+          onClick={(event) => {
+            runSelectionAction(() => onRetryLatestAssistant(), { element: event.currentTarget });
+          }}
+          aria-label={resolvedRetryAssistantLabel}
+          title={resolvedRetryAssistantLabel}
+        >
+          <Icon name="refresh" size={14} />
+        </button>
+      )}
+      {hasMemoryEvidence && memoryEvidence && (
+        <button
+          type="button"
+          className="micro-action-btn"
+          onClick={(event) => {
+            runSelectionAction(() => {
+              setAssistantSheetMode('memory');
+              setAssistantSheetOpen(true);
+            }, { element: event.currentTarget });
+          }}
+          aria-label={t('chat.messageActions.memorySources')}
+          title={t('chat.messageActions.memorySources')}
+        >
+          <Icon name="memoryMap" size={14} />
+        </button>
+      )}
+      {speechCache?.assetId && (
+        <button
+          type="button"
+          className="micro-action-btn"
+          onClick={(event) => {
+            runSelectionAction(() => { void downloadCachedSpeech(speechCache); }, { element: event.currentTarget });
+          }}
+          aria-label={t('chat.messageActions.exportSpeechCache')}
+          title={t('chat.messageActions.exportSpeechCache')}
+        >
+          <Icon name="download" size={14} />
+        </button>
+      )}
+      {taskReceiptAction ? (
+        <button
+          type="button"
+          className={`micro-action-btn task-receipt ${taskReceiptAction.status} ${taskReceiptAction.expanded ? 'active' : ''}`}
+          onClick={(event) => {
+            runSelectionAction(taskReceiptAction.onToggle, { element: event.currentTarget });
+          }}
+          aria-label={taskReceiptAction.expanded ? t('chat.messageActions.collapseTask') : t('chat.messageActions.viewTask')}
+          title={taskReceiptAction.expanded ? t('chat.messageActions.collapseTaskTitle') : t('chat.messageActions.viewTaskTitle')}
+          aria-expanded={taskReceiptAction.expanded}
+        >
+          <Icon name={taskReceiptAction.status === 'completed' ? (taskReceiptAction.expanded ? 'chevronUp' : 'chevronDown') : 'task'} size={14} />
+        </button>
       ) : null}
+      {assistantSheet}
     </div>
   );
 }

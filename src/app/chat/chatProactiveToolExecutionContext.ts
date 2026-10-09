@@ -38,7 +38,7 @@ export function buildProactiveToolExecutionContext(args: {
     createProactiveMessageRule: (action) => {
       const collaboratorId = ownerCollaboratorId?.trim();
       if (!collaboratorId) {
-        return { ok: false, error: '当前对话没有绑定协作者，不能创建主动消息规则。' };
+        return { ok: false, error: '当前对话没有绑定角色，不能创建主动消息规则。' };
       }
       const prompt = action.prompt.trim();
       if (!prompt) {
@@ -58,7 +58,7 @@ export function buildProactiveToolExecutionContext(args: {
         }
       });
       const scheduleLabel = formatTriggerScheduleLabel(action);
-      const targetLabel = conversationMode === 'fixed' ? '当前对话' : '这个协作者的最近对话';
+      const targetLabel = conversationMode === 'fixed' ? '当前对话' : '这个角色的最近对话';
       return {
         ok: true,
         summary: `已创建主动消息规则 · ${action.name?.trim() || scheduleLabel}`,
@@ -74,7 +74,7 @@ export function buildProactiveToolExecutionContext(args: {
     listProactiveMessageRules: () => {
       const collaboratorId = ownerCollaboratorId?.trim();
       if (!collaboratorId) {
-        return { ok: false, error: '当前对话没有绑定协作者，不能查看主动消息规则。' };
+        return { ok: false, error: '当前对话没有绑定角色，不能查看主动消息规则。' };
       }
       const rules = listOwnerTriggerRules();
       const detailText = rules.length
@@ -86,7 +86,7 @@ export function buildProactiveToolExecutionContext(args: {
             `target=${formatRuleTargetLabel(rule)}`,
             `prompt=${rule.action.prompt}`
           ].join('\n')).join('\n\n')
-        : '当前协作者还没有主动消息规则。';
+        : '当前角色还没有主动消息规则。';
       return {
         ok: true,
         summary: `已查看主动消息规则 · ${rules.length} 条`,
@@ -97,7 +97,7 @@ export function buildProactiveToolExecutionContext(args: {
     updateProactiveMessageRule: (action) => {
       const rule = findOwnerTriggerRule(action.ruleId);
       if (!rule) {
-        return { ok: false, error: `没有找到当前协作者的主动消息规则：${action.ruleId}` };
+        return { ok: false, error: `没有找到当前角色的主动消息规则：${action.ruleId}` };
       }
       const conversationMode = action.conversationMode;
       runtime.updateTriggerRule(rule.id, {
@@ -140,7 +140,7 @@ export function buildProactiveToolExecutionContext(args: {
     deleteProactiveMessageRule: (action) => {
       const rule = findOwnerTriggerRule(action.ruleId);
       if (!rule) {
-        return { ok: false, error: `没有找到当前协作者的主动消息规则：${action.ruleId}` };
+        return { ok: false, error: `没有找到当前角色的主动消息规则：${action.ruleId}` };
       }
       runtime.deleteTriggerRule(rule.id);
       return {

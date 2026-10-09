@@ -167,10 +167,20 @@ export function normalizeProviders(
 }
 
 export function mergeProviderPatch(provider: ProviderProfile, patch: Partial<ProviderProfile>): ProviderProfile {
-  if (isPolarisPublicProvider(provider)) {
-    return normalizePolarisPublicProvider({
+  const wasBuiltIn = isPolarisBuiltInProvider(provider);
+  const isModifyingBuiltInRoute = patch.baseUrl !== undefined || patch.apiKey !== undefined;
+
+  if (wasBuiltIn && !isModifyingBuiltInRoute) {
+    if (isPolarisPublicProvider(provider)) {
+      return normalizePolarisPublicProvider({
+        model: patch.model ?? provider.model
+      });
+    }
+    return {
+      ...provider,
+      ...patch,
       model: patch.model ?? provider.model
-    });
+    };
   }
 
   const previousPreset = findProviderPreset(provider.baseUrl, provider.path);
@@ -208,9 +218,12 @@ export function mergeProviderPatch(provider: ProviderProfile, patch: Partial<Pro
     ? normalizeImageUnderstandingSettings(patch.imageUnderstanding)
     : provider.imageUnderstanding;
 
+  const shouldReassignId = wasBuiltIn && isModifyingBuiltInRoute;
+
   return {
     ...provider,
     ...patch,
+    ...(shouldReassignId ? { id: createUid('provider') } : {}),
     name: nextName,
     protocol: nextProtocol,
     baseUrl: nextBaseUrl,

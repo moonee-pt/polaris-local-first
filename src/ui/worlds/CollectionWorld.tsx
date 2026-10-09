@@ -110,6 +110,8 @@ export function CollectionWorld({
         onCreateFromBuilder={onOpenCollaboratorBuilderForCreate}
         onCreateCustomCollaborator={onCreateCustomCollaborator}
         onOpenSettings={onOpenSettings}
+        onDeleteCollaborator={onDeleteCollaborator}
+        onOpenCollaboratorInfo={controller.onOpenCollaboratorInfo}
       />
 
       <div className={`surface-motion-local-stage collection-shelf-stage ${searchOpen ? 'collection-shelf-stage--controls-open' : ''}`}>

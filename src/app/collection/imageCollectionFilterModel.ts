@@ -26,7 +26,7 @@ export function buildImageCollaboratorOptions(
   return Array.from(counts.entries())
     .map(([collaboratorId, count]) => ({
       id: collaboratorId,
-      label: collaborators.find((collaborator) => collaborator.id === collaboratorId)?.name ?? '未知协作者',
+      label: collaborators.find((collaborator) => collaborator.id === collaboratorId)?.name ?? '未知角色',
       count
     }))
     .sort((left, right) => right.count - left.count || left.label.localeCompare(right.label));

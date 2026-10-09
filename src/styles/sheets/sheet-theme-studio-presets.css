@@ -87,7 +87,7 @@
 .theme-custom-base-card .theme-preset-badges small { background: rgba(125, 124, 142, 0.10); }
 
 @media (max-width: 640px) {
-  .menu-section { padding: 14px; border-radius: 18px; }
+  .menu-section { padding: var(--radius-flat) 0 0; border-radius: var(--radius-flat); }
 }
 .theme-preset-swatches { display: flex; gap: 6px; margin-top: 10px; }
 .theme-preset-swatches span { width: 16px; height: 16px; border-radius: 7px; border: 1px solid color-mix(in srgb, var(--surface-deep) 72%, transparent); }

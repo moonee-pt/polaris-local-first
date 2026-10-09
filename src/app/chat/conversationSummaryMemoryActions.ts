@@ -132,7 +132,7 @@ async function updateConversationSummaryMemoryForCollaboratorNow(
   const persona = personaState.personas.find((item) => item.id === collaboratorId);
 
   if (!persona) {
-    throw new Error('找不到要更新跨对话总结的协作者。');
+    throw new Error('找不到要更新跨对话总结的角色。');
   }
 
   options.onProgress?.({

@@ -1,14 +1,14 @@
 .task-runtime-card {
-  --task-bg: #09090b;
-  --task-surface: rgba(255, 255, 255, 0.03);
-  --task-surface-strong: rgba(255, 255, 255, 0.055);
-  --task-border: rgba(255, 255, 255, 0.065);
-  --task-text: rgba(255, 255, 255, 0.88);
-  --task-secondary: rgba(255, 255, 255, 0.48);
-  --task-tertiary: rgba(255, 255, 255, 0.28);
-  --task-green: #2ef5a0;
-  --task-blue: #5eaaff;
-  --task-yellow: #f5c542;
+  --task-bg: var(--surface-solid);
+  --task-surface: color-mix(in srgb, var(--text) 4%, transparent);
+  --task-surface-strong: color-mix(in srgb, var(--text) 7%, transparent);
+  --task-border: color-mix(in srgb, var(--border) 82%, transparent);
+  --task-text: var(--text);
+  --task-secondary: var(--text-muted);
+  --task-tertiary: color-mix(in srgb, var(--text-muted) 72%, transparent);
+  --task-green: #16a06a;
+  --task-blue: #2f7de0;
+  --task-yellow: #c9871a;
   position: relative;
   z-index: 2;
   display: flex;
@@ -17,14 +17,11 @@
   margin: 0 0 4px;
   padding: 0;
   overflow: hidden;
-  border-radius: 16px;
+  border-radius: 12px;
   border: 1px solid var(--task-border);
-  background: color-mix(in srgb, var(--task-bg) 94%, transparent);
+  background: var(--task-bg);
   color: var(--task-text);
-  backdrop-filter: blur(40px) saturate(1.06);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.03) inset,
-    0 24px 80px rgba(0, 0, 0, 0.42);
+  box-shadow: 0 10px 28px rgba(103, 122, 171, 0.12);
 }
 .task-runtime-card.inline {
   margin-bottom: 4px;
@@ -67,12 +64,12 @@
   font-size: 11px;
   letter-spacing: 0;
   text-transform: none;
-  color: rgba(221, 228, 242, 0.7);
+  color: var(--task-secondary);
 }
 .task-runtime-card-kicker-icon {
   display: inline-flex;
   align-items: center;
-  color: rgba(181, 200, 255, 0.84);
+  color: var(--accent);
   transform-origin: center;
 }
 .task-runtime-card-kicker-icon-spinning {
@@ -106,37 +103,37 @@
   background: currentColor;
 }
 .task-runtime-card-status.running {
-  background: rgba(94, 170, 255, 0.1);
-  border-color: rgba(94, 170, 255, 0.16);
+  background: color-mix(in srgb, var(--task-blue) 12%, transparent);
+  border-color: color-mix(in srgb, var(--task-blue) 22%, transparent);
   color: var(--task-blue);
 }
 .task-runtime-card-status.running::before {
-  box-shadow: 0 0 7px rgba(94, 170, 255, 0.55);
+  box-shadow: 0 0 7px color-mix(in srgb, var(--task-blue) 55%, transparent);
   animation: softPulse 2s ease-in-out infinite;
 }
 .task-runtime-card-status.completed {
-  background: rgba(46, 245, 160, 0.12);
-  border-color: rgba(46, 245, 160, 0.16);
+  background: color-mix(in srgb, var(--task-green) 14%, transparent);
+  border-color: color-mix(in srgb, var(--task-green) 24%, transparent);
   color: var(--task-green);
 }
 .task-runtime-card-status.blocked {
-  background: rgba(245, 197, 66, 0.1);
-  border-color: rgba(245, 197, 66, 0.13);
+  background: color-mix(in srgb, var(--task-yellow) 14%, transparent);
+  border-color: color-mix(in srgb, var(--task-yellow) 24%, transparent);
   color: var(--task-yellow);
 }
 .task-runtime-card-status.cancelled {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.34);
+  background: var(--task-surface);
+  border-color: var(--task-border);
+  color: var(--task-tertiary);
 }
 .task-runtime-card-collapse {
   width: 24px;
   height: 24px;
   padding: 0;
-  border: 1px solid rgba(232, 240, 255, 0.14);
+  border: 1px solid var(--task-border);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(221, 228, 242, 0.7);
+  background: var(--task-surface);
+  color: var(--task-secondary);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -146,9 +143,9 @@
 .task-runtime-card-collapse:hover,
 .task-runtime-card-collapse:focus-visible {
   transform: translateY(-1px);
-  border-color: rgba(232, 240, 255, 0.24);
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(247, 249, 255, 0.94);
+  border-color: color-mix(in srgb, var(--border-hover) 70%, transparent);
+  background: var(--task-surface-strong);
+  color: var(--task-text);
 }
 .task-runtime-card-title {
   font-size: 15px;

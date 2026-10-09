@@ -40,7 +40,7 @@ describe('resolveRequestMemoryPlan', () => {
     const withoutGlobal = resolveRequestMemoryPlan({
       memory: createMemory({
         inheritGlobal: false,
-        personalMemories: ['只读当前协作者。']
+        personalMemories: ['只读当前角色。']
       }),
       inheritedMemorySources: [
         {
@@ -53,60 +53,60 @@ describe('resolveRequestMemoryPlan', () => {
       maxTokens: null
     });
 
-    expect(withoutGlobal.selectedLines).toEqual(['只读当前协作者。']);
+    expect(withoutGlobal.selectedLines).toEqual(['只读当前角色。']);
 
     const withExcludedSource = resolveRequestMemoryPlan({
       memory: createMemory({
         excludedGlobalIds: ['nova'],
-        personalMemories: ['当前协作者记忆。']
+        personalMemories: ['当前角色记忆。']
       }),
       inheritedMemorySources: [
         {
           id: 'nova',
           memory: createMemory({
-            personalMemories: ['被排除的协作者记忆。']
+            personalMemories: ['被排除的角色记忆。']
           })
         },
         {
           id: 'mimo',
           memory: createMemory({
-            personalMemories: ['未排除的协作者记忆。']
+            personalMemories: ['未排除的角色记忆。']
           })
         }
       ],
       maxTokens: null
     });
 
-    expect(withExcludedSource.selectedLines).toContain('当前协作者记忆。');
-    expect(withExcludedSource.selectedLines).toContain('未排除的协作者记忆。');
-    expect(withExcludedSource.selectedLines).not.toContain('被排除的协作者记忆。');
+    expect(withExcludedSource.selectedLines).toContain('当前角色记忆。');
+    expect(withExcludedSource.selectedLines).toContain('未排除的角色记忆。');
+    expect(withExcludedSource.selectedLines).not.toContain('被排除的角色记忆。');
   });
 
   it('does not inherit memories from collaborators excluded from global memory', () => {
     const plan = resolveRequestMemoryPlan({
       memory: createMemory({
-        personalMemories: ['当前协作者记忆。']
+        personalMemories: ['当前角色记忆。']
       }),
       inheritedMemorySources: [
         {
           id: 'private',
           memory: createMemory({
             excludeFromGlobal: true,
-            personalMemories: ['不进入全局的协作者记忆。']
+            personalMemories: ['不进入全局的角色记忆。']
           })
         },
         {
           id: 'shared',
           memory: createMemory({
-            personalMemories: ['允许进入全局的协作者记忆。']
+            personalMemories: ['允许进入全局的角色记忆。']
           })
         }
       ],
       maxTokens: null
     });
 
-    expect(plan.selectedLines).toContain('当前协作者记忆。');
-    expect(plan.selectedLines).toContain('允许进入全局的协作者记忆。');
-    expect(plan.selectedLines).not.toContain('不进入全局的协作者记忆。');
+    expect(plan.selectedLines).toContain('当前角色记忆。');
+    expect(plan.selectedLines).toContain('允许进入全局的角色记忆。');
+    expect(plan.selectedLines).not.toContain('不进入全局的角色记忆。');
   });
 });

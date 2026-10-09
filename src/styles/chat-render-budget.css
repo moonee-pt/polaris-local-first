@@ -226,20 +226,6 @@
   border-color: transparent;
 }
 
-.world-chat.timeline-heavy .message-inline-actions.assistant .micro-action-btn.task-receipt {
-  border-color: color-mix(in srgb, var(--border) 34%, transparent);
-  background:
-    radial-gradient(circle at 28% 18%, color-mix(in srgb, var(--surface-solid) 72%, transparent), transparent 58%),
-    color-mix(in srgb, var(--surface-muted) 68%, rgba(255,255,255,0.34));
-}
-
-.world-chat.timeline-heavy .message-inline-actions.assistant .micro-action-btn.task-receipt.completed {
-  border-color: color-mix(in srgb, #9fd8ab 46%, transparent);
-  background:
-    radial-gradient(circle at 30% 18%, color-mix(in srgb, #e8f8ed 72%, transparent), transparent 62%),
-    color-mix(in srgb, #d8f4df 44%, var(--surface-solid) 56%);
-}
-
 .world-chat.timeline-heavy .message-code-card-tags span,
 .world-chat.timeline-heavy .tool-event-chip-row span,
 .world-chat.timeline-heavy .tool-event-memory-list span {

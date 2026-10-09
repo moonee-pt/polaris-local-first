@@ -32,6 +32,7 @@ type ComposerQuickActionsProps = {
   pickerOpen: boolean;
   interactionLocked: boolean;
   onSetPickerOpen: (open: boolean) => void;
+  onStartVoiceCall?: () => void;
 };
 
 const FILE_ACCEPT =
@@ -40,7 +41,8 @@ const FILE_ACCEPT =
 export function ComposerQuickActions({
   pickerOpen,
   interactionLocked,
-  onSetPickerOpen
+  onSetPickerOpen,
+  onStartVoiceCall
 }: ComposerQuickActionsProps) {
   const { t } = useI18n();
 
@@ -62,6 +64,20 @@ export function ComposerQuickActions({
       >
         <Icon name="plus" size={15} />
       </button>
+      {onStartVoiceCall ? (
+        <button
+          type="button"
+          className="composer-slot-btn composer-slot-btn-call"
+          title={t('chat.composer.startCall')}
+          aria-label={t('chat.composer.startCall')}
+          disabled={interactionLocked}
+          onClick={(event) => {
+            runSelectionAction(onStartVoiceCall, { element: event.currentTarget });
+          }}
+        >
+          <Icon name="phone" size={15} />
+        </button>
+      ) : null}
     </div>
   );
 }

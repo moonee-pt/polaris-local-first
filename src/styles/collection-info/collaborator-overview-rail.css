@@ -1,7 +1,7 @@
 .collaborator-overview-rail {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 0;
   width: min(720px, calc(100% - 28px));
   margin: 2px auto 0;
   padding: 0 0 8px;
@@ -44,14 +44,9 @@
   min-width: 0;
   min-height: 42px;
   padding: 0 14px;
-  border: 1px solid color-mix(in srgb, var(--border) 80%, rgba(255,255,255,0.18));
-  border-radius: 14px;
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, rgba(255,255,255,0.34) 24%, var(--surface) 76%),
-      color-mix(in srgb, var(--surface-solid) 88%, rgba(255,255,255,0.08))
-    );
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  background: transparent;
   color: var(--sheet-readable-soft);
   font: inherit;
   font-size: var(--type-small);
@@ -60,23 +55,13 @@
   text-align: center;
   text-decoration: none;
   cursor: pointer;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.48),
-    0 8px 18px rgba(76, 88, 120, 0.06);
-  backdrop-filter: blur(12px) saturate(1.04);
-  -webkit-backdrop-filter: blur(12px) saturate(1.04);
-  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, color 0.18s ease;
+  transition: border-color 0.18s ease, background 0.18s ease, color 0.18s ease;
 }
 
 .collaborator-overview-empty-actions .btn-secondary:first-child {
-  border-color: color-mix(in srgb, var(--accent) 28%, var(--border) 72%);
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--accent-soft) 48%, rgba(255,255,255,0.28)),
-      color-mix(in srgb, var(--surface-solid) 86%, var(--accent-soft) 14%)
-    );
-  color: color-mix(in srgb, var(--accent) 70%, var(--sheet-readable-text) 30%);
+  border-color: color-mix(in srgb, var(--accent) 30%, var(--border) 70%);
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
+  color: var(--sheet-readable-text);
 }
 
 .collaborator-overview-empty-actions .btn-secondary span {
@@ -92,14 +77,9 @@
 
 .collaborator-overview-empty-actions .btn-secondary:hover,
 .collaborator-overview-empty-actions .btn-secondary:focus-visible {
-  transform: translateY(-1px);
-  border-color: color-mix(in srgb, var(--accent) 34%, var(--border-hover) 66%);
+  border-color: color-mix(in srgb, var(--accent) 38%, var(--border-hover) 62%);
   color: var(--sheet-readable-text);
   outline: none;
-}
-
-.collaborator-overview-empty-actions .btn-secondary:active {
-  transform: translateY(0) scale(0.98);
 }
 
 .collaborator-overview-card {
@@ -108,40 +88,42 @@
   position: relative;
   display: block;
   width: 100%;
-  min-height: 0;
-  padding: 15px 17px;
-  border: 1px solid color-mix(in srgb, var(--border) 72%, transparent);
-  border-radius: 16px;
-  background: color-mix(in srgb, var(--surface-solid) 94%, rgba(255, 255, 255, 0.52));
-  box-shadow: 0 6px 14px rgba(100, 115, 160, 0.03);
+  min-height: 54px;
+  padding: 12px 0;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 88%, transparent);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
   color: inherit;
   font: inherit;
   text-align: left;
   cursor: pointer;
-  transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+  transition: background 0.16s ease;
 }
 
-.collaborator-overview-card:hover {
-  transform: translateY(-1px);
-  border-color: color-mix(in srgb, var(--accent) 24%, var(--border) 76%);
-  box-shadow: 0 9px 18px rgba(100, 115, 160, 0.04);
+.collaborator-overview-slot:last-child .collaborator-overview-card {
+  border-bottom: 0;
 }
 
-.collaborator-overview-card.pinned {
-  border-color: color-mix(in srgb, var(--border) 72%, transparent);
-  background:
-    radial-gradient(circle at 16px 14px, color-mix(in srgb, var(--accent-soft) 58%, transparent), transparent 42px),
-    linear-gradient(135deg, color-mix(in srgb, var(--accent-soft) 24%, var(--surface-solid) 76%), color-mix(in srgb, var(--surface-solid) 94%, rgba(255,255,255,0.52)));
-  box-shadow: 0 10px 22px color-mix(in srgb, var(--accent) 6%, transparent);
+.collaborator-overview-card:hover,
+.collaborator-overview-card:focus-visible {
+  background: color-mix(in srgb, var(--text) 3.5%, transparent);
+}
+
+.collaborator-overview-card:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 52%, transparent);
+  outline-offset: -2px;
 }
 
 .collaborator-overview-card.editing {
   cursor: default;
-  padding-left: 22px;
+  padding-left: 24px;
 }
 
-.collaborator-overview-card.editing:hover {
-  transform: none;
+.collaborator-overview-card[aria-disabled='true']:hover,
+.collaborator-overview-card[aria-disabled='true']:focus-visible {
+  background: transparent;
 }
 
 .collaborator-overview-pin {
@@ -161,26 +143,21 @@
   justify-content: flex-end;
   gap: 10px;
   width: 100%;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .collaborator-overview-card-model,
 .collaborator-overview-card-metrics span {
-  font-size: 9px;
-  letter-spacing: 0.03em;
-}
-
-.collaborator-overview-card-model,
-.collaborator-overview-card-metrics span {
-  color: color-mix(in srgb, var(--text) 76%, var(--text-soft) 24%);
+  font-size: 11.5px;
+  letter-spacing: 0.01em;
+  color: var(--text-muted);
 }
 
 .collaborator-overview-card-model {
   display: inline-flex;
   align-items: center;
   max-width: 108px;
-  padding: 2px 0;
-  border-radius: 999px;
+  padding: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -189,7 +166,7 @@
 .collaborator-overview-card-main {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   width: 100%;
 }
 
@@ -198,34 +175,27 @@
   height: var(--collaborator-overview-avatar-size);
   margin-top: -1px;
   border: 0;
-  overflow: visible;
-  background:
-    radial-gradient(
-      circle at 50% 48%,
-      rgba(255,255,255,0.82) 0 38%,
-      color-mix(in srgb, var(--surface-solid) 52%, transparent) 54%,
-      transparent 76%
-    );
+  overflow: hidden;
+  background: transparent;
   box-shadow: none;
 }
 
 .collaborator-overview-card-avatar .collaborator-sigil {
-  background:
-    radial-gradient(circle at 50% 46%, rgba(255,255,255,0.92), rgba(255,255,255,0.24) 58%, transparent 76%);
-  filter: drop-shadow(0 4px 9px color-mix(in srgb, currentColor 16%, transparent));
+  background: transparent;
+  filter: none;
 }
 
 .collaborator-overview-card-avatar.persona-avatar--image {
   overflow: hidden;
   background: transparent;
-  box-shadow: 0 6px 16px rgba(100, 115, 160, 0.06);
+  box-shadow: none;
 }
 
 .collaborator-overview-card-copy {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
   padding-top: 0;
 }
 
@@ -267,9 +237,9 @@
 .collaborator-overview-card p {
   margin: 0;
   padding-left: var(--collaborator-overview-title-indent);
-  font-size: 10px;
-  line-height: 1.25;
-  color: var(--text-soft);
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--text-muted);
   display: -webkit-box;
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
@@ -280,8 +250,9 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
-  gap: 4px 8px;
+  gap: 3px 9px;
   max-width: none;
+  margin-top: 1px;
   padding-left: var(--collaborator-overview-title-indent);
 }
 
@@ -289,7 +260,6 @@
   display: inline-flex;
   align-items: center;
   padding: 0;
-  border-radius: 999px;
 }
 
 .collaborator-info-shelf-empty {

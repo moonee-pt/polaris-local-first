@@ -101,7 +101,7 @@ export function createDirectToolActionExecutor({
     const description = describeToolAction(action);
     const toolMessageId = createUid('tool');
     const conversation = chat.findConversation(conversationId);
-    // 群聊里产出的归属人是正在发言的成员，不是聊天世界台前的协作者
+    // 群聊里产出的归属人是正在发言的成员，不是聊天世界台前的角色
     const isGroupScope = conversation?.kind === 'group';
     const ownerCollaboratorId = resolveChatCollaboratorOwnerId({
       frontstageCollaboratorId: isGroupScope ? null : space.frontstageCollaboratorId,

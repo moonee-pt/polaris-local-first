@@ -60,7 +60,7 @@ export function resolveConversationSummarySourceBatches(args: {
   const targetSourceChars = normalizeSourceCharTarget(args.targetSourceChars);
   const labels: ConversationSummarySourceRoleLabels = {
     userLabel: normalizeSourceLabel(args.userLabel, '用户'),
-    collaboratorName: normalizeSourceLabel(args.currentCollaboratorName, '协作者')
+    collaboratorName: normalizeSourceLabel(args.currentCollaboratorName, '角色')
   };
   const sourceEntries = args.conversations
     .filter((conversation) => (

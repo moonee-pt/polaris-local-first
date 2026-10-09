@@ -4,7 +4,7 @@ import { buildAssistantPromptParts } from './requestPromptLayers';
 describe('buildAssistantPromptParts', () => {
   it('prepends system identity before persona and capability layers', () => {
     const parts = buildAssistantPromptParts({
-      personaPrompt: '你是一个温柔的协作者。',
+      personaPrompt: '你是一个温柔的角色。',
       personaPromptSource: 'custom',
       templateContext: {
         cur_date: '2026-04-06',
@@ -43,7 +43,7 @@ describe('buildAssistantPromptParts', () => {
 
   it('adds current local time as dynamic request context when enabled', () => {
     const parts = buildAssistantPromptParts({
-      personaPrompt: '你是一个温柔的协作者。',
+      personaPrompt: '你是一个温柔的角色。',
       personaPromptSource: 'custom',
       includeRuntimeClockContext: true,
       templateContext: {
@@ -73,7 +73,7 @@ describe('buildAssistantPromptParts', () => {
 
   it('includes the current task runtime contract before tool capabilities', () => {
     const parts = buildAssistantPromptParts({
-      personaPrompt: '你是一个温柔的协作者。',
+      personaPrompt: '你是一个温柔的角色。',
       personaPromptSource: 'custom',
       templateContext: {
         cur_date: '2026-04-06',
@@ -152,7 +152,7 @@ describe('buildAssistantPromptParts', () => {
 
   it('adds regex trigger context when the latest user message matches a collaborator trigger', () => {
     const parts = buildAssistantPromptParts({
-      personaPrompt: '你是一个温柔的协作者。',
+      personaPrompt: '你是一个温柔的角色。',
       personaPromptSource: 'custom',
       templateContext: {
         cur_date: '2026-04-06',
@@ -186,7 +186,7 @@ describe('buildAssistantPromptParts', () => {
 
   it('adds a narrow direct-execution hint for Mimo 2.5 when a write target is already visible', () => {
     const parts = buildAssistantPromptParts({
-      personaPrompt: '你是一个温柔的协作者。',
+      personaPrompt: '你是一个温柔的角色。',
       personaPromptSource: 'custom',
       templateContext: {
         cur_date: '2026-04-06',
@@ -245,7 +245,7 @@ describe('buildAssistantPromptParts', () => {
 
   it('does not add the Mimo direct-execution hint for other models', () => {
     const parts = buildAssistantPromptParts({
-      personaPrompt: '你是一个温柔的协作者。',
+      personaPrompt: '你是一个温柔的角色。',
       personaPromptSource: 'custom',
       templateContext: {
         cur_date: '2026-04-06',
@@ -295,7 +295,7 @@ describe('buildAssistantPromptParts', () => {
 
   it('adds a read-only work context before the task becomes active', () => {
     const parts = buildAssistantPromptParts({
-      personaPrompt: '你是一个温柔的协作者。',
+      personaPrompt: '你是一个温柔的角色。',
       personaPromptSource: 'custom',
       templateContext: {
         cur_date: '2026-04-06',

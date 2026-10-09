@@ -243,7 +243,7 @@ export function describeWorkspaceToolAction(action: WorkspaceToolAction): ToolAc
       return {
         kind: action.kind,
         title: '读取房间卡目录',
-        summary: `读取当前协作者房间卡目录${action.targetLabel ? ` · ${action.targetLabel}` : ''}`,
+        summary: `读取当前角色房间卡目录${action.targetLabel ? ` · ${action.targetLabel}` : ''}`,
         targetLabel: action.targetLabel
       };
     case 'readCodeCard':

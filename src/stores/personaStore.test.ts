@@ -134,7 +134,7 @@ describe('migratePersistedPersonas', () => {
     expect(assistant?.compiledPrompt).toContain('我先给你写张小卡片试试');
     expect(assistant?.compiledPrompt).toContain('用户正在输入框里和你说话时，通常是在聊天世界');
     expect(assistant?.compiledPrompt).toContain('房间世界是点顶栏切换过去的收藏空间');
-    expect(assistant?.compiledPrompt).toContain('一个协作者对应一个房间');
+    expect(assistant?.compiledPrompt).toContain('一个角色对应一个房间');
     expect(assistant?.compiledPrompt).toContain('Pharos（灯塔）');
     expect(assistant?.compiledPrompt).toContain('任务模式。原理是给当前对话挂一个任务面板和持续工作状态');
     expect(assistant?.compiledPrompt).toContain('原理是粒度不同');

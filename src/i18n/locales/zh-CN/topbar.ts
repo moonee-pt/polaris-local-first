@@ -1,6 +1,6 @@
 export const topbar = {
   'topbar.switchRoom': '切换房间',
-  'topbar.switchCollaboratorSpace': '切换协作者空间',
+  'topbar.switchCollaboratorSpace': '切换角色空间',
   'topbar.previewActive': '试穿中',
   'topbar.secretPromptExperimental': '实验沙箱已打开。\n输入口令可保持实验模式；留空会收回到安全模式。',
   'topbar.secretPromptLocked': '输入隐藏口令。\n口令正确会打开实验沙箱。',

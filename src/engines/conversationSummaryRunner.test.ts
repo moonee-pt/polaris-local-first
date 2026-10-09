@@ -58,15 +58,15 @@ describe('parseConversationSummaryModelOutput', () => {
   it('parses readable draft sections into summary records', () => {
     expect(parseConversationSummaryModelOutput([
       '长期关系：',
-      '- 用户希望跨对话记忆按协作者独立保存，不要混进其他协作者。',
+      '- 用户希望跨对话记忆按角色独立保存，不要混进其他角色。',
       '',
       '近期主题：',
       '- 正在调整记忆页，把跨对话总结、长期资料、向量索引分成更清楚的子页。'
     ].join('\n'))).toEqual([
       {
         kind: 'relational_profile',
-        title: '用户希望跨对话记忆按协作者独立保存，…',
-        content: '用户希望跨对话记忆按协作者独立保存，不要混进其他协作者。'
+        title: '用户希望跨对话记忆按角色独立保存，不…',
+        content: '用户希望跨对话记忆按角色独立保存，不要混进其他角色。'
       },
       {
         kind: 'recent_topic',
@@ -104,16 +104,16 @@ describe('runConversationSummaryMemory', () => {
     const requestReply = vi.fn<ConversationSummaryRequestReply>(async (params) => {
       const prompt = params.context.segments[params.context.segments.length - 1]?.messages[0]?.content;
       expect(typeof prompt === 'string' ? prompt : '').toContain('用户想把记忆系统搭起来');
-      expect(typeof prompt === 'string' ? prompt : '').not.toContain('其他协作者的对话');
+      expect(typeof prompt === 'string' ? prompt : '').not.toContain('其他角色的对话');
       expect(typeof prompt === 'string' ? prompt : '').toContain('名字表：用户 = 历史来源中 role:user 的说话人');
       expect(typeof prompt === 'string' ? prompt : '').toContain('先做对象确认');
-      expect(typeof prompt === 'string' ? prompt : '').toContain('不要用“我/你/他/她/用户/助手/协作者”指代关系主体');
+      expect(typeof prompt === 'string' ? prompt : '').toContain('不要用“我/你/他/她/用户/助手/角色”指代关系主体');
       return {
         content: JSON.stringify({
           summaries: [{
             kind: 'relational_profile',
             title: '记忆偏好',
-            content: '用户希望跨对话记忆按协作者单独保存。',
+            content: '用户希望跨对话记忆按角色单独保存。',
             sourceConversationIds: ['forged']
           }]
         })
@@ -128,7 +128,7 @@ describe('runConversationSummaryMemory', () => {
       }),
       conversations: [
         createConversation('c1', 'pharos', '用户想把记忆系统搭起来。'),
-        createConversation('c2', 'other', '其他协作者的对话不应该进来。')
+        createConversation('c2', 'other', '其他角色的对话不应该进来。')
       ],
       settings: {
         enabled: true,
@@ -148,7 +148,7 @@ describe('runConversationSummaryMemory', () => {
     expect(result.summaries[0]).toMatchObject({
       kind: 'relational_profile',
       title: '记忆偏好',
-      content: '用户希望跨对话记忆按协作者单独保存。',
+      content: '用户希望跨对话记忆按角色单独保存。',
       sourceConversationIds: ['c1'],
       sourceMessageIds: ['c1-m1'],
       subjectCollaboratorId: 'pharos',
@@ -169,7 +169,7 @@ describe('runConversationSummaryMemory', () => {
       const prompt = String(params.context.segments[params.context.segments.length - 1]?.messages[0]?.content ?? '');
       expect(prompt).toContain('Nova Previous Chat · Nova ·');
       expect(prompt).toContain('Nova Previous Chat · 用户 ·');
-      expect(prompt).not.toContain('assistant / 当前协作者');
+      expect(prompt).not.toContain('assistant / 当前角色');
       expect(prompt).not.toContain('user / 用户');
       expect(prompt).toContain('名字表：用户 = 历史来源中 role:user 的说话人；Nova = 历史来源中 role:assistant 的说话人。');
       expect(prompt).toContain('总结必须使用名字表里的明确名字：“用户”、“Nova”、“双方”');

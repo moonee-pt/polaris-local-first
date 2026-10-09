@@ -106,7 +106,7 @@ describe('normalizeMemorySemanticPreparations', () => {
           title: '跨对话向量边界',
           keywords: ['跨对话', '向量索引', '跨对话'],
           summary: '用户希望向量索引只在跨对话开启时存在。',
-          semanticText: '跨对话记忆开启时可以有向量索引；关闭后不再保留该协作者的向量索引状态。'
+          semanticText: '跨对话记忆开启时可以有向量索引；关闭后不再保留该角色的向量索引状态。'
         },
         {
           chunkId: 'model-invented-chunk',
@@ -126,7 +126,7 @@ describe('normalizeMemorySemanticPreparations', () => {
       title: '跨对话向量边界',
       keywords: ['跨对话', '向量索引'],
       summary: '用户希望向量索引只在跨对话开启时存在。',
-      semanticText: '跨对话记忆开启时可以有向量索引；关闭后不再保留该协作者的向量索引状态。',
+      semanticText: '跨对话记忆开启时可以有向量索引；关闭后不再保留该角色的向量索引状态。',
       generator: 'small_model',
       generatedAt: 100
     });

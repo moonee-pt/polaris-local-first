@@ -357,7 +357,7 @@ describe('requestGeneratedSpeech', () => {
     expect(requestInit?.headers).toEqual({
       'Content-Type': 'application/json',
       Authorization: 'Bearer sk-test',
-      model: 's2-pro'
+      model: 's2.1-pro'
     });
     expect(requestBody).toEqual({
       text: '晚安。',

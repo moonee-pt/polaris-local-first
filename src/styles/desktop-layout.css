@@ -60,10 +60,6 @@
   max-width: min(100%, 520px);
 }
 
-.app-shell.app-layout-wide .message-task-receipt-panel {
-  width: min(100%, 680px);
-}
-
 .app-shell.app-layout-wide .world-collection,
 .app-shell.app-layout-wide .collection-card-token-scope {
   --collection-shell-inline-pad: clamp(24px, 3vw, 44px);

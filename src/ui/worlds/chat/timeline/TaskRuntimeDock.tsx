@@ -2,7 +2,6 @@ import { Icon } from '../../../Icon';
 import { runImpactAction } from '../../../haptics';
 import { useI18n, type I18nTranslator } from '../../../../i18n';
 import type { ConversationTaskState } from '../../../../types/domain';
-import { TaskRuntimeCard, type TaskRuntimeExecutionSegment } from './TaskRuntimeCard';
 import { JumpToLatest } from './JumpToLatest';
 import { JumpToTop } from './JumpToTop';
 
@@ -12,7 +11,7 @@ function resolveTaskButtonLabel(t: Translate, task: ConversationTaskState | null
   if (!task) {
     return collapsed
       ? (taskModeEnabled ? t('chat.taskDock.expandArmed') : t('chat.taskDock.expandEntry'))
-      : t('chat.taskDock.collapseArmed');
+      : t('chat.taskDock.collapseCurrent');
   }
   if (task.status === 'completed') {
     return collapsed ? t('chat.taskDock.expandCompleted') : t('chat.taskDock.collapseCurrent');
@@ -26,11 +25,11 @@ function resolveTaskButtonLabel(t: Translate, task: ConversationTaskState | null
   return collapsed ? t('chat.taskDock.expandCurrent') : t('chat.taskDock.collapseCurrent');
 }
 
-function TaskModeArmedCard({ onCollapse }: { onCollapse?: (() => void) | null }) {
+export function TaskModeArmedCard({ onCollapse }: { onCollapse?: (() => void) | null }) {
   const { t } = useI18n();
 
   return (
-    <section className="task-runtime-card task-runtime-card-armed floating" aria-label={t('chat.taskDock.armedAria')}>
+    <section className="task-runtime-card task-runtime-card-armed" aria-label={t('chat.taskDock.armedAria')}>
       <div className="task-runtime-card-head">
         <div className="task-runtime-card-kicker">
           <span className="task-runtime-card-kicker-icon task-runtime-card-kicker-icon-spinning" aria-hidden="true">
@@ -64,7 +63,6 @@ function TaskModeArmedCard({ onCollapse }: { onCollapse?: (() => void) | null })
 export function TaskRuntimeDock({
   task,
   taskModeEnabled,
-  executionSegments,
   collapsed,
   justArmed,
   justCompleted,
@@ -76,7 +74,6 @@ export function TaskRuntimeDock({
 }: {
   task: ConversationTaskState | null;
   taskModeEnabled: boolean;
-  executionSegments: TaskRuntimeExecutionSegment[];
   collapsed: boolean;
   justArmed: boolean;
   justCompleted: boolean;
@@ -87,42 +84,21 @@ export function TaskRuntimeDock({
   onJumpToTop: () => void;
 }) {
   const { t } = useI18n();
-  const buttonIcon = task?.status === 'completed' && justCompleted ? 'check' : 'task';
+  const buttonIcon = task?.status === 'completed' && justCompleted ? (collapsed ? 'chevronDown' : 'chevronUp') : 'task';
   const buttonStatus = task?.status === 'completed' && !justCompleted
     ? 'armed'
     : (task?.status ?? (taskModeEnabled ? 'armed' : 'idle'));
+  const buttonLabel = resolveTaskButtonLabel(t, task, taskModeEnabled, collapsed);
 
   return (
-    <>
-      {!collapsed ? (
-        <button
-          type="button"
-          className="task-runtime-dock-dismiss-layer"
-          aria-label={t('chat.taskDock.collapseCurrent')}
-          onClick={onToggleCollapsed}
-        />
-      ) : null}
-      <div className="chat-floating-controls" aria-live="polite">
-        {!collapsed ? (
-          <div className={`task-runtime-dock-panel ${task ? 'active' : 'armed'} ${justArmed ? 'attention-fresh' : ''}`}>
-            {task ? (
-              <TaskRuntimeCard
-                task={task}
-                executionSegments={executionSegments}
-                floating
-                onCollapse={onToggleCollapsed}
-              />
-            ) : (
-              <TaskModeArmedCard onCollapse={onToggleCollapsed} />
-            )}
-          </div>
-        ) : null}
-        <div className="chat-floating-controls-stack">
+    <div className="chat-floating-controls">
+      <div className="chat-floating-controls-stack">
+        {showJumpToLatest ? (
           <button
             type="button"
             className={`task-runtime-fab ${buttonStatus} ${collapsed ? 'collapsed' : 'expanded'} ${justArmed ? 'attention-fresh' : ''} ${justCompleted ? 'completed-fresh' : ''}`}
-            aria-label={resolveTaskButtonLabel(t, task, taskModeEnabled, collapsed)}
-            title={resolveTaskButtonLabel(t, task, taskModeEnabled, collapsed)}
+            aria-label={buttonLabel}
+            title={buttonLabel}
             aria-pressed={!collapsed}
             onClick={(event) => {
               runImpactAction(onToggleCollapsed, { element: event.currentTarget });
@@ -134,10 +110,10 @@ export function TaskRuntimeDock({
               </span>
             </span>
           </button>
-          {showJumpToTop ? <JumpToTop onClick={onJumpToTop} className="chat-floating-jump-btn" /> : null}
-          {showJumpToLatest ? <JumpToLatest onClick={onJumpToLatest} className="chat-floating-jump-btn" /> : null}
-        </div>
+        ) : null}
+        {showJumpToTop ? <JumpToTop onClick={onJumpToTop} className="chat-floating-jump-btn" /> : null}
+        {showJumpToLatest ? <JumpToLatest onClick={onJumpToLatest} className="chat-floating-jump-btn" /> : null}
       </div>
-    </>
+    </div>
   );
 }

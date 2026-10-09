@@ -179,7 +179,7 @@ describe('createChatMemoryActions', () => {
       target,
       'memory-preview-message',
       expect.objectContaining({
-        content: '已写入当前协作者记忆。',
+        content: '已写入当前角色记忆。',
         toolInvocation: expect.objectContaining({ status: 'applied' })
       })
     );

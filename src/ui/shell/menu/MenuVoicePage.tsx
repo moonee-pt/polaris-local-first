@@ -23,6 +23,9 @@ type VoicePreset = {
 
 const CUSTOM_VOICE_VALUE = '__custom_voice__';
 
+const FISHAUDIO_DEFAULT_VOICE_ID = '1a67d897dd7f40e1a5b469c8852103af';
+const FISHAUDIO_DEFAULT_VOICE_LABEL = '磁性情感男声';
+
 const VOICE_PRESETS: Record<VoiceGenerationProviderType, VoicePreset[]> = {
   'openai-compatible': [
     { value: 'alloy', label: 'Alloy' },
@@ -38,7 +41,9 @@ const VOICE_PRESETS: Record<VoiceGenerationProviderType, VoicePreset[]> = {
   elevenlabs: [
     { value: 'JBFqnCBsd6RMkjVDRZzb', label: 'Default multilingual' }
   ],
-  fishaudio: []
+  fishaudio: [
+    { value: FISHAUDIO_DEFAULT_VOICE_ID, label: FISHAUDIO_DEFAULT_VOICE_LABEL }
+  ]
 };
 
 export function MenuVoicePage({
@@ -176,15 +181,24 @@ export function MenuVoicePage({
       }
     }
     if (providerType === 'fishaudio') {
-      if (!voiceGeneration.model?.trim() || voiceGeneration.model === 'speech-2.8-turbo' || voiceGeneration.model === 'eleven_multilingual_v2') {
-        patch.model = 's2-pro';
+      if (!voiceGeneration.baseUrl?.trim()) {
+        patch.baseUrl = 'https://api.fish.audio/v1';
       }
       if (
-        voiceGeneration.voice === 'alloy'
+        !voiceGeneration.model?.trim()
+        || voiceGeneration.model === 'speech-2.8-turbo'
+        || voiceGeneration.model === 'eleven_multilingual_v2'
+        || voiceGeneration.model === 's2-pro'
+      ) {
+        patch.model = 's2.1-pro';
+      }
+      if (
+        !voiceGeneration.voice?.trim()
+        || voiceGeneration.voice === 'alloy'
         || voiceGeneration.voice === 'Chinese (Mandarin)_Warm_Girl'
         || voiceGeneration.voice === 'JBFqnCBsd6RMkjVDRZzb'
       ) {
-        patch.voice = '';
+        patch.voice = FISHAUDIO_DEFAULT_VOICE_ID;
       }
       if (voiceGeneration.format && !fishAudioVoiceFormatOptions.some((option) => option.value === voiceGeneration.format)) {
         patch.format = 'mp3';

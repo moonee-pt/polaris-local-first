@@ -24,10 +24,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--chat-send-active-text);
+  color: var(--accent);
   background:
     radial-gradient(circle at 32% 28%, color-mix(in srgb, var(--surface-solid) 32%, transparent), transparent 58%),
-    var(--chat-send-active-fill);
+    color-mix(in srgb, var(--accent) 14%, transparent);
   box-shadow:
     0 10px 24px color-mix(in srgb, var(--accent-soft) 26%, transparent),
     inset 0 1px 0 color-mix(in srgb, var(--surface-solid) 42%, transparent);
@@ -117,12 +117,13 @@ html[data-keyboard-open='true'] .chat-box-shell { box-shadow: var(--chat-compose
   width: 30px;
 }
 .hidden-file-input { display: none; }
-.chat-box textarea { flex: 1; min-width: 0; min-height: 28px; max-height: 104px; border: 0; outline: none; background: transparent; font-size: 16px; color: var(--text); font-family: inherit; line-height: 1.42; resize: none; overflow-y: auto; padding: 5px 1px 1px; }
+.chat-box textarea { flex: 1; min-width: 0; min-height: 28px; max-height: 104px; border: 0; outline: none; background: transparent; font-size: 15px; color: var(--text); font-family: inherit; line-height: 1.42; resize: none; overflow-y: auto; padding: 4px 1px; }
 .chat-box textarea::placeholder { color: var(--text-muted); }
 .send-btn { width: 36px; height: 36px; flex: 0 0 auto; border-radius: 14px; border: none; background: color-mix(in srgb, var(--surface) 18%, transparent); color: var(--accent); cursor: default; font-size: 14px; transition: all var(--duration-normal) ease; display: flex; align-items: center; justify-content: center; transform: translateZ(0); box-shadow: none; }
-.send-btn.has-content { background: var(--chat-send-active-fill); color: var(--chat-send-active-text); cursor: pointer; }
+.send-btn.has-content { background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent); cursor: pointer; }
+.send-btn.has-command { background: color-mix(in srgb, var(--accent) 18%, transparent); color: color-mix(in srgb, var(--accent) 80%, var(--text) 20%); }
 .send-btn.has-content:hover,
-.send-btn.has-content:focus-visible { transform: translateY(-1px) scale(1.02); box-shadow: 0 10px 20px color-mix(in srgb, var(--accent-soft) 22%, transparent); }
+.send-btn.has-content:focus-visible { background: color-mix(in srgb, var(--accent) 18%, transparent); transform: translateY(-1px) scale(1.02); box-shadow: 0 6px 16px color-mix(in srgb, var(--accent-soft) 18%, transparent); }
 .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
 @keyframes chatSubmitFlight {

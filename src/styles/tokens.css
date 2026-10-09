@@ -176,6 +176,13 @@
   --radius-pill: 20px;
   --radius-panel: 24px;
 
+  /* ── Radius Contract ── */
+  --radius-flat: 0px;
+  --radius-chip: 2px;
+  --radius-control: 6px;
+  --radius-surface: 10px;
+  --radius-round: 999px;
+
   /* ── Motion ── */
   --duration-instant: 0.15s;
   --duration-fast: 0.25s;

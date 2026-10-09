@@ -71,10 +71,20 @@ export type ChatContextActionsValue = {
   editMessage: (message: ChatMessage) => void;
   editAssistantMessage: (message: ChatMessage, content: string) => void;
   cacheAssistantSpeech: (message: ChatMessage, voiceCache: ChatMessageVoiceCache) => void;
+  markVoiceCall: (params: {
+    conversationId: string;
+    messageIds: string[];
+    startedAt: number;
+    endedAt: number;
+    turnCount: number;
+  }) => void;
   forkFromMessage: (message: ChatMessage) => void;
   updateEditingDraft: (value: string) => void;
   removeEditingAttachment: (attachmentId: string) => void;
-  commitEdit: (message: ChatMessage) => Promise<void>;
+  commitEdit: (message: ChatMessage, mode?: 'send' | 'save') => Promise<void>;
+  deleteMessage: (message: ChatMessage) => Promise<void>;
+  regenerateFromMessage: (message: ChatMessage) => Promise<void>;
+  rollbackToMessage: (message: ChatMessage) => Promise<void>;
   cancelEdit: () => void;
   toggleThinkingCollapsed: (messageId: string) => void;
   openThinkingSummary: (message: ChatMessage) => void;

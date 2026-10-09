@@ -309,7 +309,7 @@ describe('runMemoryVectorIndexPreparation', () => {
     const requestReply = vi.fn<MemoryVectorIndexPreparationRequestReply>(async (params) => {
       const prompt = params.context.segments.flatMap((segment) => segment.messages.map((message) => message.content)).join('\n');
       const chunkIds = Array.from(prompt.matchAll(/chunkId: ([^\n]+)/g)).map((match) => match[1]);
-      expect(prompt).not.toContain('其他协作者不该进来');
+      expect(prompt).not.toContain('其他角色不该进来');
       return {
         content: JSON.stringify({
           chunks: chunkIds.map((chunkId) => ({
@@ -328,7 +328,7 @@ describe('runMemoryVectorIndexPreparation', () => {
       conversations: [
         conversation({ id: 'c1', collaboratorId: 'aa', content: '第一条需要整理的旧对话。', timestamp: 1 }),
         conversation({ id: 'c2', collaboratorId: 'aa', content: '第二条需要整理的旧对话。', timestamp: 2 }),
-        conversation({ id: 'c3', collaboratorId: 'other', content: '其他协作者不该进来。', timestamp: 3 })
+        conversation({ id: 'c3', collaboratorId: 'other', content: '其他角色不该进来。', timestamp: 3 })
       ],
       settings: {
         enabled: true,

@@ -16,7 +16,7 @@ export function buildWorkspaceContextPrompt(context: AssistantToolContext | unde
     lines.push('桌面工作区同步是显式动作，不会自动把电脑文件回灌到手机；需要立即改真实电脑文件或运行命令时，仍使用本机文件工具和该 rootId。读入或送到电脑前，遇到同一文件两边都改过的覆盖风险必须先向用户确认，不能自行把 allowOverwrite 设为 true。');
   }
   if (context.activeProject.previewStateAccess?.assistantReadEnabled) {
-    lines.push('当前工作区允许协作者读取托管预览状态；用户问预览里刚填了什么、当前页面状态或 PolarisRoom/localStorage 数据时，使用 readWorkspacePreviewState 读取宿主已保存的状态。');
+    lines.push('当前工作区允许角色读取托管预览状态；用户问预览里刚填了什么、当前页面状态或 PolarisRoom/localStorage 数据时，使用 readWorkspacePreviewState 读取宿主已保存的状态。');
   }
 
   lines.push('这轮默认继续复用这个工作区。');

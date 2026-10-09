@@ -65,7 +65,7 @@ export function CompanionSetupSheet({ open, onClose }: CompanionSetupSheetProps)
         <div className="ps-topbar">
           <div className="ps-topbar-left">
             <span className="ps-topbar-title">连接电脑端</span>
-            <span className="ps-topbar-sub">特殊协作者入口</span>
+            <span className="ps-topbar-sub">特殊角色入口</span>
           </div>
           <button type="button" className="ps-topbar-close" onClick={onClose}>✕</button>
         </div>
@@ -197,7 +197,7 @@ export function CompanionSetupSheet({ open, onClose }: CompanionSetupSheetProps)
                   })
                     .then(() => {
                       setPairCode('');
-                      setCommandStatus({ text: '已经连上了，现在它会作为一个特殊协作者出现在聊天里。', isError: false });
+                      setCommandStatus({ text: '已经连上了，现在它会作为一个特殊角色出现在聊天里。', isError: false });
                       onClose();
                     })
                     .catch((error) => {
@@ -262,7 +262,7 @@ export function CompanionSetupSheet({ open, onClose }: CompanionSetupSheetProps)
             <section className="ps-section companion-provider-card companion-provider-card--priority">
               <div className="companion-provider-card-head">
                 <span className="companion-provider-kicker">已连接</span>
-                <strong>电脑端协作者</strong>
+                <strong>电脑端角色</strong>
               </div>
               <div className="companion-connected-list">
                 {sortedConnections.map((connection) => {
@@ -303,7 +303,7 @@ export function CompanionSetupSheet({ open, onClose }: CompanionSetupSheetProps)
                             setDisconnectingConnectionId(connection.id);
                             void disconnectCompanionConnection(connection.id)
                               .then(() => {
-                                setCommandStatus({ text: '已经断开这个电脑端协作者了。', isError: false });
+                                setCommandStatus({ text: '已经断开这个电脑端角色了。', isError: false });
                               })
                               .catch((error) => {
                                 setCommandStatus({

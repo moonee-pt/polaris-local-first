@@ -38,6 +38,7 @@ export function AppShell() {
       {shouldShowWorldSwitchVeil(controller.activeWorld) ? (
         <WorldSwitchVeil
           activeWorld={controller.activeWorld}
+          placement={controller.activeWorld === 'chat' ? 'topbar' : 'edge'}
           canReviveTheme={controller.canReviveTheme}
           onToggleWorld={controller.topbarProps.actions.onToggleWorld}
           onReviveLastSkin={controller.restoreLastThemeSkin}

@@ -48,7 +48,7 @@ export const theme = {
   'theme.toolMode.feedback.stable': '已切回稳态：之后会更稳地换一版全局风格。',
   'theme.toolMode.feedback.creative': '已切到开放：上限看 AI 能力，也可能有意想不到的后果，长按右侧侧边星星可复活。',
   'theme.toolMode.panel.off': '完全关掉换肤工具。之后普通聊天不会再自动滑进换肤，更适合先安静说话。',
-  'theme.toolMode.panel.stable': '让协作者更稳定地更换整页全局风格，适合先拿到完整、协调、可继续精修的一版。',
+  'theme.toolMode.panel.stable': '让角色更稳定地更换整页全局风格，适合先拿到完整、协调、可继续精修的一版。',
   'theme.toolMode.panel.creative': '把自由度完全交给 AI。上限看 AI 能力，也可能有意想不到的后果，长按右侧侧边星星可复活。',
   'theme.toolMode.inlineTitle': '换肤模式',
   'theme.toolMode.inlineHelp': '换肤工具开启后，只在稳态和开放之间选择；要完全关闭换肤，用这张卡右侧的总开关。',

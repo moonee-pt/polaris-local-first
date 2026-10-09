@@ -899,3 +899,65 @@ body[data-polaris-preset='polaris-night'] .collection .pulse-dot {
     transform: scale(1.01);
   }
 }
+
+/* 手机版 · 聊天世界：世界切换从右侧贴边竖条改成顶栏左上角的返回箭头 */
+.app-shell.app-layout-phone ~ .world-switch-veil-host.chat {
+  --world-switch-veil-inline-inset: 20px;
+  --world-switch-veil-anchor-y: calc(max(9px, calc(env(safe-area-inset-top, 0px) - 4px)) + 22px);
+}
+
+.app-shell.app-layout-phone ~ .world-switch-veil-host.chat .world-switch-veil--inline {
+  left: var(--world-switch-veil-inline-inset);
+  right: auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: color-mix(in srgb, var(--text-soft) 88%, var(--text-muted) 12%);
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.app-shell.app-layout-phone ~ .world-switch-veil-host.chat .world-switch-veil--inline:hover,
+.app-shell.app-layout-phone ~ .world-switch-veil-host.chat .world-switch-veil--inline:focus-visible,
+.app-shell.app-layout-phone ~ .world-switch-veil-host.chat .world-switch-veil--inline:active {
+  background: color-mix(in srgb, var(--text) 6%, transparent);
+  color: var(--text);
+}
+
+.app-shell.app-layout-phone ~ .world-switch-veil-host.chat .world-switch-veil--inline.revive-open {
+  transform: translateY(-50%);
+}
+
+.app-shell.app-layout-phone ~ .world-switch-veil-host.chat .world-switch-veil--inline .world-switch-veil-halo,
+.app-shell.app-layout-phone ~ .world-switch-veil-host.chat .world-switch-veil--inline .world-switch-veil-core,
+.app-shell.app-layout-phone ~ .world-switch-veil-host.chat .world-switch-veil--inline .world-switch-veil-sheen {
+  display: none;
+}
+
+.app-shell.app-layout-phone ~ .world-switch-veil-host.chat .world-switch-veil--inline .world-switch-veil-icon {
+  position: static;
+  inset: auto;
+  opacity: 1;
+  color: inherit;
+  transform: none;
+}
+
+.app-shell.app-layout-phone ~ .world-switch-veil-host.chat .world-switch-veil--inline .world-switch-veil-icon svg {
+  display: block;
+  transform: rotate(180deg);
+}
+
+.app-shell.app-layout-phone ~ .world-switch-veil-host.chat .world-switch-revive-popover {
+  left: var(--world-switch-veil-inline-inset);
+  right: auto;
+  top: calc(max(9px, calc(env(safe-area-inset-top, 0px) - 4px)) + 52px);
+  transform: none;
+}
+
+@media (max-width: 640px) {
+  .app-shell.app-layout-phone ~ .world-switch-veil-host.chat {
+    --world-switch-veil-inline-inset: 16px;
+  }
+}

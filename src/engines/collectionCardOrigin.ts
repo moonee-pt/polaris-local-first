@@ -8,8 +8,8 @@ export function codeCardBlockLabel(card: CodeCard) {
 }
 
 function resolveOwnerDisplayName(ownerCollaboratorId: string | null, personas: Persona[]) {
-  if (!ownerCollaboratorId) return '未知协作者';
-  return personas.find((persona) => persona.id === ownerCollaboratorId)?.name ?? '未知协作者';
+  if (!ownerCollaboratorId) return '未知角色';
+  return personas.find((persona) => persona.id === ownerCollaboratorId)?.name ?? '未知角色';
 }
 
 export function codeCardLineageLabel(card: CodeCard, conversations: Conversation[]) {
