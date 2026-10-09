@@ -104,3 +104,18 @@ export async function readMessageSpeechCacheBlob(cache: ChatMessageVoiceCache): 
   }
   return blob;
 }
+
+/**
+ * True only when the saved clip was synthesised from exactly this text. A clip made
+ * before the spoken-line rules changed would read the whole reply, so it has to be
+ * regenerated instead of replayed.
+ */
+export async function messageSpeechCacheMatchesText(
+  cache: ChatMessageVoiceCache | null | undefined,
+  text: string
+): Promise<boolean> {
+  const normalizedText = text.trim();
+  if (!cache?.assetId || !normalizedText) return false;
+  if (cache.textLength !== normalizedText.length) return false;
+  return (await hashText(normalizedText)) === cache.textHash;
+}

@@ -22,6 +22,7 @@ import { MessageGeneratedImages } from './MessageGeneratedImages';
 import { MessageToolEvent } from './MessageToolEvent';
 import { isProjectedCodeToolName } from './projectedCodeTools';
 import { buildAssistantSpeechText } from './messageSpeechText';
+import { messageSpeechCacheMatchesText } from '../../../../app/chat/messageSpeechCache';
 import {
   buildVisibleToolProductCardMessageIds,
   nextToolProductCardActivationBlockedUntil,
@@ -172,6 +173,21 @@ function MessageRowComponent({
     () => (isAssistantReply ? buildAssistantSpeechText(message.content) : ''),
     [isAssistantReply, message.content]
   );
+  const [speechCacheMatches, setSpeechCacheMatches] = useState(false);
+  useEffect(() => {
+    const cache = message.voiceCache;
+    if (!isAssistantReply || !cache?.assetId) {
+      setSpeechCacheMatches(false);
+      return;
+    }
+    let cancelled = false;
+    void messageSpeechCacheMatchesText(cache, speechContent).then((matches) => {
+      if (!cancelled) setSpeechCacheMatches(matches);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [isAssistantReply, message.voiceCache, speechContent]);
   const currentInteractionTimeMs = () => (
     typeof performance !== 'undefined' && typeof performance.now === 'function'
       ? performance.now()
@@ -244,7 +260,7 @@ function MessageRowComponent({
       isThinkingActive={isStreamingLike}
       messageContent={message.content}
       speechContent={speechContent}
-      speechCache={message.voiceCache ?? null}
+      speechCache={speechCacheMatches ? message.voiceCache ?? null : null}
       role={message.role === 'assistant' ? 'assistant' : 'user'}
       onSetCommandStatus={actions.setCommandStatus}
       onCodeCardAction={() => actions.codeCardAction(message)}
