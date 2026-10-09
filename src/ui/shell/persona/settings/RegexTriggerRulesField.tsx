@@ -207,6 +207,7 @@ export function RegexTriggerRulesField({
   const [importingWorldBook, setImportingWorldBook] = useState(false);
   const [worldBookImportMessage, setWorldBookImportMessage] = useState<string | null>(null);
   const [worldBookImportError, setWorldBookImportError] = useState<string | null>(null);
+  const [worldBookPasteText, setWorldBookPasteText] = useState('');
   const worldBookFileInputRef = useRef<HTMLInputElement | null>(null);
   const worldBookImportAccept = resolveDocumentFilePickerAccept(WORLD_BOOK_IMPORT_ACCEPT);
 
@@ -331,6 +332,28 @@ export function RegexTriggerRulesField({
     worldBookFileInputRef.current?.click();
   };
 
+  const confirmWorldBookPaste = () => {
+    const raw = worldBookPasteText.trim();
+    if (!raw) return;
+
+    const result = parseWorldBookRegexTriggers(raw);
+    if (!result.rules.length) {
+      setWorldBookImportMessage(null);
+      setWorldBookImportError('没读到条目。一行一条，写成「关键词,关键词 => 命中后补充的正文」。');
+      return;
+    }
+
+    persistRegexTriggers([...regexTriggers, ...result.rules.map((rule) => createRegexTriggerDraft(rule))]);
+    setEditingTrigger(null);
+    setWorldBookPasteText('');
+    setWorldBookImportError(null);
+    setWorldBookImportMessage(
+      result.skippedCount > 0
+        ? `已添加 ${result.rules.length} 条世界书，${result.skippedCount} 行没读懂`
+        : `已添加 ${result.rules.length} 条世界书`
+    );
+  };
+
   return (
     <div className="ps-field">
       <div className="ps-field-head ps-field-head--meta-right">
@@ -368,6 +391,28 @@ export function RegexTriggerRulesField({
       {worldBookImportError ? (
         <div className="memory-doc-import-error">{worldBookImportError}</div>
       ) : null}
+
+      <div className="ps-rx-paste">
+        <textarea
+          className="ps-rx-input ps-rx-paste-area"
+          value={worldBookPasteText}
+          onChange={(event) => setWorldBookPasteText(event.target.value)}
+          rows={4}
+          aria-label="直接粘贴或打字的世界书内容"
+          placeholder={'直接粘贴或打字，一行一条：\n关键词,关键词 => 命中后补充给模型的正文'}
+        />
+        <div className="ps-rx-paste-actions">
+          <span className="ps-rx-field-label">{'一行一条 · 关键词 => 正文'}</span>
+          <button
+            type="button"
+            className="ps-rx-paste-confirm"
+            onClick={confirmWorldBookPaste}
+            disabled={!worldBookPasteText.trim()}
+          >
+            确认添加
+          </button>
+        </div>
+      </div>
 
       <div className="ps-rx-list">
         {regexTriggers.map((rule) => (
