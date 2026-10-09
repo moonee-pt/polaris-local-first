@@ -38,7 +38,7 @@ const DEFAULT_MINIMAX_MODEL = 'speech-2.8-turbo';
 const DEFAULT_MINIMAX_VOICE = 'Chinese (Mandarin)_Warm_Girl';
 const DEFAULT_ELEVENLABS_MODEL = 'eleven_multilingual_v2';
 const DEFAULT_ELEVENLABS_VOICE = 'JBFqnCBsd6RMkjVDRZzb';
-const DEFAULT_FISHAUDIO_MODEL = 's2.1-pro';
+const DEFAULT_FISHAUDIO_MODEL = 's2.1-pro-free';
 const SPEECH_REQUEST_TIMEOUT_MS = 30_000;
 const ELEVENLABS_OUTPUT_FORMAT_BY_FORMAT: Partial<Record<VoiceGenerationFormat, string>> = {
   mp3: 'mp3_44100_128',

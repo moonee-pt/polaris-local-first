@@ -72,7 +72,7 @@ export const settings = {
   'settings.voice.modelPlaceholder': '例如 tts-1 / gpt-4o-mini-tts',
   'settings.voice.modelPlaceholderMiniMax': '例如 speech-2.8-turbo / speech-2.8-hd',
   'settings.voice.modelPlaceholderElevenLabs': '例如 eleven_multilingual_v2 / eleven_flash_v2_5',
-  'settings.voice.modelPlaceholderFishAudio': '例如 s2.1-pro / drama-3',
+  'settings.voice.modelPlaceholderFishAudio': '例如 s2.1-pro-free（免费）/ s2.1-pro',
   'settings.voice.pathLabel': '接口路径',
   'settings.voice.pathPlaceholder': '例如 /audio/speech',
   'settings.voice.nameLabel': '音色',

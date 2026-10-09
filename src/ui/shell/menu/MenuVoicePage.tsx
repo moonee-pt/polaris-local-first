@@ -190,7 +190,7 @@ export function MenuVoicePage({
         || voiceGeneration.model === 'eleven_multilingual_v2'
         || voiceGeneration.model === 's2-pro'
       ) {
-        patch.model = 's2.1-pro';
+        patch.model = 's2.1-pro-free';
       }
       if (
         !voiceGeneration.voice?.trim()

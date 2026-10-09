@@ -74,7 +74,7 @@ export const settings = {
   'settings.voice.modelPlaceholder': 'For example tts-1 / gpt-4o-mini-tts',
   'settings.voice.modelPlaceholderMiniMax': 'For example speech-2.8-turbo / speech-2.8-hd',
   'settings.voice.modelPlaceholderElevenLabs': 'For example eleven_multilingual_v2 / eleven_flash_v2_5',
-  'settings.voice.modelPlaceholderFishAudio': 'For example s2.1-pro / drama-3',
+  'settings.voice.modelPlaceholderFishAudio': 'For example s2.1-pro-free (free tier) / s2.1-pro',
   'settings.voice.pathLabel': 'Path',
   'settings.voice.pathPlaceholder': 'For example /audio/speech',
   'settings.voice.nameLabel': 'Voice',
