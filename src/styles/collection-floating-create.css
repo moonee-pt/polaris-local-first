@@ -88,16 +88,10 @@
 
 .collection-create-action-sheet .code-collection-create-menu {
   min-width: 0;
-  border-radius: 22px;
-  border: 1px solid color-mix(in srgb, var(--collection-card-border-color) 74%, transparent);
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--collection-card-surface-solid) 76%, rgba(255,255,255,0.82)), color-mix(in srgb, var(--collection-card-background) 88%, transparent)),
-    radial-gradient(circle at top left, color-mix(in srgb, var(--collection-card-accent-soft) 18%, transparent), transparent 66%);
-  box-shadow:
-    0 22px 48px rgba(18, 18, 18, 0.14),
-    inset 0 1px 0 color-mix(in srgb, rgba(255,255,255,0.42) 100%, transparent);
-  backdrop-filter: blur(20px) saturate(1.08);
-  -webkit-backdrop-filter: blur(20px) saturate(1.08);
+  border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--collection-card-border-color) 60%, transparent);
+  background: var(--surface-solid);
+  box-shadow: 0 8px 24px rgba(18, 18, 18, 0.1);
 }
 
 .collection-create-action-sheet .code-collection-create-menu-item-icon {
