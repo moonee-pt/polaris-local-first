@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildAssistantSpeechText } from './messageSpeechText';
+import { buildAssistantCaptionParts, buildAssistantSpeechText } from './messageSpeechText';
 
 describe('buildAssistantSpeechText', () => {
   it('keeps assistant prose while removing tool draft windows', () => {
@@ -52,5 +52,44 @@ describe('buildAssistantSpeechText', () => {
       '{"actions":[{"kind":"startTask","title":"整理"}]}',
       '```'
     ].join('\n'))).toBe('');
+  });
+});
+
+describe('buildAssistantCaptionParts', () => {
+  it('drops delivery cues from the caption but keeps them for the voice', () => {
+    const content = '【唔……[whispering] 是谁教你的。】';
+
+    expect(buildAssistantSpeechText(content)).toContain('[whispering]');
+    expect(buildAssistantCaptionParts(content)).toEqual([{ kind: 'speech', text: '唔……是谁教你的。' }]);
+  });
+
+  it('shows the stage direction the voice skips instead of a run of ellipses', () => {
+    const content = [
+      '【先说这一句。】',
+      '（他停了很久，才把视线挪开）',
+      '【再说一遍试试。】'
+    ].join('\n');
+
+    expect(buildAssistantSpeechText(content)).toContain('……');
+    expect(buildAssistantCaptionParts(content)).toEqual([
+      { kind: 'speech', text: '先说这一句。' },
+      { kind: 'stage', text: '（他停了很久，才把视线挪开）' },
+      { kind: 'speech', text: '再说一遍试试。' }
+    ]);
+  });
+
+  it('wraps bare stage text so it reads as narration', () => {
+    expect(buildAssistantCaptionParts('【进来吧。】\n门外雨声很大')).toEqual([
+      { kind: 'speech', text: '进来吧。' },
+      { kind: 'stage', text: '（门外雨声很大）' }
+    ]);
+  });
+
+  it('splits narration away from dialogue when the reply never used brackets', () => {
+    expect(buildAssistantCaptionParts('他笑了笑。（把外套递过去）穿上吧。')).toEqual([
+      { kind: 'speech', text: '他笑了笑。' },
+      { kind: 'stage', text: '（把外套递过去）' },
+      { kind: 'speech', text: '穿上吧。' }
+    ]);
   });
 });

@@ -25,7 +25,11 @@ describe('resolveVoiceCallSpeechTarget', () => {
       assistantMessage('a1', '我在。', 1_200)
     ]));
 
-    expect(target).toEqual({ messageId: 'a1', speechText: '我在。' });
+    expect(target).toEqual({
+      messageId: 'a1',
+      speechText: '我在。',
+      caption: [{ kind: 'speech', text: '我在。' }]
+    });
   });
 
   it('ignores replies that existed before the call started', () => {
@@ -76,5 +80,17 @@ describe('resolveVoiceCallSpeechTarget', () => {
     ]));
 
     expect(target?.speechText).toBe('嗯哼，我在。');
+  });
+
+  it('keeps delivery cues for the voice but hides them from the caption', () => {
+    const target = resolveVoiceCallSpeechTarget(baseArgs([
+      assistantMessage('a1', '【[whispering] 别闹。】\n（他偏过头）', 1_200)
+    ]));
+
+    expect(target?.speechText).toBe('[whispering] 别闹。');
+    expect(target?.caption).toEqual([
+      { kind: 'speech', text: '别闹。' },
+      { kind: 'stage', text: '（他偏过头）' }
+    ]);
   });
 });

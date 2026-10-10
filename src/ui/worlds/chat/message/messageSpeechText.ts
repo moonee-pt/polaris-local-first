@@ -1,8 +1,13 @@
 import { TOOL_DRAFT_BLOCK_PATTERN } from '../../../../app/chat/chatMarkdownPatterns';
 import { stripCodeBlocksFromMessage } from '../../../../engines/codeCardEngine';
 import { stripFleshCues } from '../../../../engines/voice/fleshAmbience';
+import { stripCrowdLaughterTags, stripPerformanceTags } from '../../../../engines/voice/performanceTags';
+import type { VoiceCallCaptionSourcePart } from '../../../../engines/voice/voiceCallCaption';
 
 type SpeechSegment = { kind: 'speech' | 'stage'; text: string };
+
+/** What the call caption shows: the line spoken out loud, or the stage direction around it. */
+export type AssistantCaptionPart = VoiceCallCaptionSourcePart;
 
 /** 【】 marks what is said out loud; this is what call mode asks the model to write. */
 const CALL_SPEECH_PAIRS: Array<[string, string]> = [['【', '】']];
@@ -103,12 +108,67 @@ function stripStageDirections(content: string) {
 }
 
 export function buildAssistantSpeechText(content: string) {
-  const withoutToolDrafts = stripToolDraftBlocks(content);
-  const withoutCodeBlocks = stripCodeBlocksFromMessage(withoutToolDrafts);
-  const cleaned = normalizeSpeechWhitespace(stripMarkdownForSpeech(withoutCodeBlocks));
+  const cleaned = cleanReplyForVoice(content);
   const pairs = cleaned.includes('【') ? CALL_SPEECH_PAIRS : QUOTE_PAIRS;
   const segments = splitSpeechSegments(cleaned, pairs);
   const hasSpokenLines = segments.some((segment) => segment.kind === 'speech' && segment.text.trim());
   const spoken = hasSpokenLines ? joinSpokenSegments(segments) : stripStageDirections(cleaned);
-  return stripFleshCues(normalizeSpeechWhitespace(spoken));
+  return stripCrowdLaughterTags(stripFleshCues(normalizeSpeechWhitespace(spoken)));
 }
+
+/**
+ * The caption is read, not spoken: delivery cues stay in the text sent to the voice
+ * engine, and the stage directions the voice skips are shown as muted narration.
+ */
+export function buildAssistantCaptionParts(content: string): AssistantCaptionPart[] {
+  const cleaned = cleanReplyForVoice(content);
+  const pairs = cleaned.includes('【') ? CALL_SPEECH_PAIRS : QUOTE_PAIRS;
+  const segments = splitSpeechSegments(cleaned, pairs);
+  const hasSpokenLines = segments.some((segment) => segment.kind === 'speech' && segment.text.trim());
+  const source: SpeechSegment[] = hasSpokenLines
+    ? segments
+    : splitStageDirections(cleaned);
+
+  const parts: AssistantCaptionPart[] = [];
+  for (const segment of source) {
+    const text = segment.kind === 'speech'
+      ? stripPerformanceTags(stripFleshCues(segment.text)).trim()
+      : formatStageDirection(segment.text);
+    if (!text) continue;
+    const previous = parts[parts.length - 1];
+    if (previous && previous.kind === segment.kind) {
+      previous.text = `${previous.text}\n${text}`;
+      continue;
+    }
+    parts.push({ kind: segment.kind, text });
+  }
+  return parts;
+}
+
+function formatStageDirection(gap: string) {
+  const trimmed = stripPerformanceTags(stripFleshCues(gap)).trim();
+  if (!trimmed) return '';
+  const wrapped = /^（[^（）]*）$/.test(trimmed) || /^\([^()]*\)$/.test(trimmed);
+  return wrapped ? trimmed : `（${trimmed}）`;
+}
+
+function splitStageDirections(content: string): SpeechSegment[] {
+  const segments: SpeechSegment[] = [];
+  const pattern = /（[^（）]*）|\([^()]*\)/g;
+  let cursor = 0;
+  for (const match of content.matchAll(pattern)) {
+    const start = match.index ?? 0;
+    if (start > cursor) segments.push({ kind: 'speech', text: content.slice(cursor, start) });
+    segments.push({ kind: 'stage', text: match[0] });
+    cursor = start + match[0].length;
+  }
+  if (cursor < content.length) segments.push({ kind: 'speech', text: content.slice(cursor) });
+  return segments;
+}
+
+function cleanReplyForVoice(content: string) {
+  const withoutToolDrafts = stripToolDraftBlocks(content);
+  const withoutCodeBlocks = stripCodeBlocksFromMessage(withoutToolDrafts);
+  return normalizeSpeechWhitespace(stripMarkdownForSpeech(withoutCodeBlocks));
+}
+

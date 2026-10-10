@@ -2,11 +2,13 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { readMessageSpeechCacheBlob, saveMessageSpeechCache } from '../chat/messageSpeechCache';
 import { requestGeneratedSpeech } from '../../engines/voiceGenerationClient';
 import {
-  resolveVoiceCallVisibleText,
+  resolveVoiceCallVisibleParts,
   splitVoiceCallCaptions,
-  type VoiceCallCaptionSegment
+  type VoiceCallCaptionSegment,
+  type VoiceCallCaptionSourcePart
 } from '../../engines/voice/voiceCallCaption';
 import { useRuntimeStore } from '../../stores/runtimeStore';
+import { getCallAudio, markCallAudioBlocked, markCallAudioUnlocked, setCallAudioInUse } from './callAudio';
 import type { ChatMessageVoiceCache } from '../../types/domain';
 
 export type VoiceCallPlaybackStatus = 'idle' | 'generating' | 'speaking';
@@ -14,6 +16,7 @@ export type VoiceCallPlaybackStatus = 'idle' | 'generating' | 'speaking';
 type SpeakArgs = {
   messageId: string;
   text: string;
+  caption: VoiceCallCaptionSourcePart[];
 };
 
 type UseVoiceCallPlaybackArgs = {
@@ -24,12 +27,19 @@ type UseVoiceCallPlaybackArgs = {
 type UseVoiceCallPlaybackResult = {
   status: VoiceCallPlaybackStatus;
   activeMessageId: string | null;
-  visibleText: string;
+  visibleParts: VoiceCallCaptionSourcePart[];
   canSpeak: boolean;
   speak: (args: SpeakArgs) => void;
-  playCachedClip: (messageId: string, cache: ChatMessageVoiceCache, segments: VoiceCallCaptionSegment[]) => void;
+  playCachedClip: (messageId: string, cache: ChatMessageVoiceCache, caption: VoiceCallCaptionSourcePart[]) => void;
   stop: () => void;
 };
+
+type PlayBlob = (blob: Blob, caption: VoiceCallCaptionSourcePart[], messageId: string) => void;
+
+function sameParts(left: VoiceCallCaptionSourcePart[], right: VoiceCallCaptionSourcePart[]) {
+  if (left.length !== right.length) return false;
+  return left.every((part, index) => part.kind === right[index].kind && part.text === right[index].text);
+}
 
 /**
  * Plays one generated reply inside the call stage and reveals its caption along
@@ -43,15 +53,17 @@ export function useVoiceCallPlayback({
   const voiceGeneration = useRuntimeStore((state) => state.voiceGeneration);
   const [status, setStatus] = useState<VoiceCallPlaybackStatus>('idle');
   const [activeMessageId, setActiveMessageId] = useState<string | null>(null);
-  const [visibleText, setVisibleText] = useState('');
+  const [visibleParts, setVisibleParts] = useState<VoiceCallCaptionSourcePart[]>([]);
 
-  const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioUrlRef = useRef<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const frameRef = useRef<number | null>(null);
   const segmentsRef = useRef<VoiceCallCaptionSegment[]>([]);
-  const visibleTextRef = useRef('');
+  const visiblePartsRef = useRef<VoiceCallCaptionSourcePart[]>([]);
   const runIdRef = useRef(0);
+  const pendingRef = useRef<{ messageId: string; blob: Blob; caption: VoiceCallCaptionSourcePart[] } | null>(null);
+  const retryRef = useRef<(() => void) | null>(null);
+  const playBlobRef = useRef<PlayBlob | null>(null);
   const onSpeechCacheReadyRef = useRef(onSpeechCacheReady);
   const onErrorRef = useRef(onError);
 
@@ -66,32 +78,38 @@ export function useVoiceCallPlayback({
     frameRef.current = null;
   }, []);
 
+  const clearRetryListener = useCallback(() => {
+    if (!retryRef.current) return;
+    window.removeEventListener('pointerdown', retryRef.current, true);
+    retryRef.current = null;
+  }, []);
+
   const releaseAudio = useCallback(() => {
     cancelFrameLoop();
-    const audio = audioRef.current;
-    if (audio) {
-      audio.onended = null;
-      audio.onerror = null;
-      audio.onloadedmetadata = null;
-      audio.pause();
-      audio.removeAttribute('src');
-      audioRef.current = null;
-    }
+    clearRetryListener();
+    setCallAudioInUse(false);
+    const audio = getCallAudio();
+    audio.onended = null;
+    audio.onerror = null;
+    audio.onloadedmetadata = null;
+    audio.pause();
+    audio.removeAttribute('src');
     const url = audioUrlRef.current;
     if (url) {
       URL.revokeObjectURL(url);
       audioUrlRef.current = null;
     }
-  }, [cancelFrameLoop]);
+  }, [cancelFrameLoop, clearRetryListener]);
 
   const stop = useCallback(() => {
     runIdRef.current += 1;
     abortRef.current?.abort();
     abortRef.current = null;
+    pendingRef.current = null;
     releaseAudio();
     segmentsRef.current = [];
-    visibleTextRef.current = '';
-    setVisibleText('');
+    visiblePartsRef.current = [];
+    setVisibleParts([]);
     setActiveMessageId(null);
     setStatus('idle');
   }, [releaseAudio]);
@@ -99,6 +117,7 @@ export function useVoiceCallPlayback({
   useEffect(() => () => {
     runIdRef.current += 1;
     abortRef.current?.abort();
+    pendingRef.current = null;
     releaseAudio();
   }, [releaseAudio]);
 
@@ -106,8 +125,7 @@ export function useVoiceCallPlayback({
     cancelFrameLoop();
     const startedAt = Date.now();
     const tick = () => {
-      const audio = audioRef.current;
-      if (!audio) return;
+      const audio = getCallAudio();
       const duration = audio.duration;
       const hasRealDuration = Number.isFinite(duration) && duration > 0;
       const progress = hasRealDuration
@@ -115,40 +133,49 @@ export function useVoiceCallPlayback({
         : estimatedSeconds > 0
           ? (Date.now() - startedAt) / 1000 / estimatedSeconds
           : 0;
-      const next = resolveVoiceCallVisibleText(segmentsRef.current, progress);
-      if (next !== visibleTextRef.current) {
-        visibleTextRef.current = next;
-        setVisibleText(next);
+      const next = resolveVoiceCallVisibleParts(segmentsRef.current, progress);
+      if (!sameParts(visiblePartsRef.current, next)) {
+        visiblePartsRef.current = next;
+        setVisibleParts(next);
       }
       frameRef.current = requestAnimationFrame(tick);
     };
     frameRef.current = requestAnimationFrame(tick);
   }, [cancelFrameLoop]);
 
-  const playBlob = useCallback((blob: Blob, segments: VoiceCallCaptionSegment[]) => {
+  const playBlob = useCallback((blob: Blob, caption: VoiceCallCaptionSourcePart[], messageId: string) => {
+    const segments = splitVoiceCallCaptions(caption);
+    if (segments.length === 0) return;
+
+    clearRetryListener();
     const url = URL.createObjectURL(blob);
-    const audio = new Audio(url);
-    audio.preload = 'auto';
-    audioRef.current = audio;
+    const audio = getCallAudio();
+    setCallAudioInUse(true);
+    audio.onended = null;
+    audio.onerror = null;
+    audio.src = url;
     audioUrlRef.current = url;
     segmentsRef.current = segments;
-    visibleTextRef.current = '';
-    setVisibleText('');
+    visiblePartsRef.current = [];
+    setVisibleParts([]);
+    pendingRef.current = { messageId, blob, caption };
 
     const totalChars = segments.reduce((sum, segment) => sum + segment.text.length, 0);
     const estimatedSeconds = Math.max(1, totalChars / 5);
 
     audio.onended = () => {
-      if (audioRef.current !== audio) return;
-      const fullText = resolveVoiceCallVisibleText(segments, 1);
-      visibleTextRef.current = fullText;
-      setVisibleText(fullText);
+      if (audioUrlRef.current !== url) return;
+      const full = resolveVoiceCallVisibleParts(segments, 1);
+      visiblePartsRef.current = full;
+      setVisibleParts(full);
+      pendingRef.current = null;
       releaseAudio();
       setActiveMessageId(null);
       setStatus('idle');
     };
     audio.onerror = () => {
-      if (audioRef.current !== audio) return;
+      if (audioUrlRef.current !== url) return;
+      pendingRef.current = null;
       releaseAudio();
       setActiveMessageId(null);
       setStatus('idle');
@@ -157,16 +184,35 @@ export function useVoiceCallPlayback({
 
     setStatus('speaking');
     startFrameLoop(estimatedSeconds);
-    void audio.play().catch(() => {
-      if (audioRef.current !== audio) return;
+    void audio.play().then(() => {
+      markCallAudioUnlocked();
+    }).catch(() => {
+      if (audioUrlRef.current !== url) return;
+      markCallAudioBlocked();
+      const pending = pendingRef.current;
       releaseAudio();
       setActiveMessageId(null);
       setStatus('idle');
       onErrorRef.current?.('autoplay-blocked');
+      if (!pending) return;
+      // The browser only needs one more real tap: replay the same clip straight from it.
+      pendingRef.current = pending;
+      const retry = () => {
+        const item = pendingRef.current;
+        clearRetryListener();
+        if (!item) return;
+        pendingRef.current = null;
+        setActiveMessageId(item.messageId);
+        playBlobRef.current?.(item.blob, item.caption, item.messageId);
+      };
+      retryRef.current = retry;
+      window.addEventListener('pointerdown', retry, true);
     });
-  }, [releaseAudio, startFrameLoop]);
+  }, [clearRetryListener, releaseAudio, startFrameLoop]);
 
-  const speak = useCallback(({ messageId, text }: SpeakArgs) => {
+  playBlobRef.current = playBlob;
+
+  const speak = useCallback(({ messageId, text, caption }: SpeakArgs) => {
     const speechText = text.trim();
     if (!speechText) return;
 
@@ -177,9 +223,6 @@ export function useVoiceCallPlayback({
       onErrorRef.current?.('voice-provider-missing');
       return;
     }
-
-    const segments = splitVoiceCallCaptions(speechText);
-    if (segments.length === 0) return;
 
     const controller = new AbortController();
     abortRef.current = controller;
@@ -209,7 +252,7 @@ export function useVoiceCallPlayback({
         }
 
         if (runIdRef.current !== runId || controller.signal.aborted) return;
-        playBlob(result.blob, segments);
+        playBlob(result.blob, caption, messageId);
       } catch {
         if (runIdRef.current !== runId || controller.signal.aborted) return;
         setActiveMessageId(null);
@@ -219,7 +262,7 @@ export function useVoiceCallPlayback({
     })();
   }, [canSpeak, playBlob, stop, voiceGeneration]);
 
-  const playCachedClip = useCallback((messageId: string, cache: ChatMessageVoiceCache, segments: VoiceCallCaptionSegment[]) => {
+  const playCachedClip = useCallback((messageId: string, cache: ChatMessageVoiceCache, caption: VoiceCallCaptionSourcePart[]) => {
     stop();
     const runId = runIdRef.current;
     setActiveMessageId(messageId);
@@ -228,7 +271,7 @@ export function useVoiceCallPlayback({
       try {
         const blob = await readMessageSpeechCacheBlob(cache);
         if (runIdRef.current !== runId) return;
-        playBlob(blob, segments);
+        playBlob(blob, caption, messageId);
       } catch {
         if (runIdRef.current !== runId) return;
         setActiveMessageId(null);
@@ -241,7 +284,7 @@ export function useVoiceCallPlayback({
   return {
     status,
     activeMessageId,
-    visibleText,
+    visibleParts,
     canSpeak,
     speak,
     stop,

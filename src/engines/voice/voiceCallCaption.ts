@@ -5,15 +5,25 @@
  * instead of a real token stream. Sentences and clauses carry extra weight so the
  * text pauses where the voice breathes.
  */
+export type VoiceCallCaptionKind = 'speech' | 'stage';
+
+export type VoiceCallCaptionSourcePart = {
+  kind: VoiceCallCaptionKind;
+  text: string;
+};
+
 export type VoiceCallCaptionSegment = {
   text: string;
   weight: number;
+  kind: VoiceCallCaptionKind;
 };
 
 const SENTENCE_DELIMITERS = '。！？!?…；;\n';
 const CLAUSE_DELIMITERS = '，,、：:';
 const SENTENCE_PAUSE_WEIGHT = 5;
 const CLAUSE_PAUSE_WEIGHT = 2;
+/** Stage directions are silent on the track, so they hold the screen a little longer. */
+const STAGE_HOLD_WEIGHT = 8;
 
 type RawChunk = {
   text: string;
@@ -42,21 +52,32 @@ function splitByDelimiters(text: string, delimiters: string, pauseWeight: number
   return chunks;
 }
 
-export function splitVoiceCallCaptions(text: string): VoiceCallCaptionSegment[] {
-  const normalized = text.replace(/\r\n?/g, '\n').trim();
-  if (!normalized) return [];
+export function splitVoiceCallCaptions(source: string | VoiceCallCaptionSourcePart[]): VoiceCallCaptionSegment[] {
+  const parts: VoiceCallCaptionSourcePart[] = typeof source === 'string'
+    ? [{ kind: 'speech', text: source }]
+    : source;
 
   const segments: VoiceCallCaptionSegment[] = [];
 
-  for (const sentence of splitByDelimiters(normalized, SENTENCE_DELIMITERS, SENTENCE_PAUSE_WEIGHT)) {
-    const clauses = splitByDelimiters(sentence.text, CLAUSE_DELIMITERS, CLAUSE_PAUSE_WEIGHT);
+  for (const part of parts) {
+    const normalized = part.text.replace(/\r\n?/g, '\n').trim();
+    if (!normalized) continue;
 
-    clauses.forEach((clause, clauseIndex) => {
-      const isLastClause = clauseIndex === clauses.length - 1;
-      const weight = countChars(clause.text) + clause.pause + (isLastClause ? sentence.pause : 0);
-      if (weight <= 0) return;
-      segments.push({ text: clause.text, weight });
-    });
+    if (part.kind === 'stage') {
+      segments.push({ text: normalized, weight: countChars(normalized) + STAGE_HOLD_WEIGHT, kind: 'stage' });
+      continue;
+    }
+
+    for (const sentence of splitByDelimiters(normalized, SENTENCE_DELIMITERS, SENTENCE_PAUSE_WEIGHT)) {
+      const clauses = splitByDelimiters(sentence.text, CLAUSE_DELIMITERS, CLAUSE_PAUSE_WEIGHT);
+
+      clauses.forEach((clause, clauseIndex) => {
+        const isLastClause = clauseIndex === clauses.length - 1;
+        const weight = countChars(clause.text) + clause.pause + (isLastClause ? sentence.pause : 0);
+        if (weight <= 0) return;
+        segments.push({ text: clause.text, weight, kind: 'speech' });
+      });
+    }
   }
 
   return segments;
@@ -66,36 +87,36 @@ export function buildVoiceCallCaptionText(segments: VoiceCallCaptionSegment[]) {
   return segments.map((segment) => segment.text).join('');
 }
 
-export function resolveVoiceCallVisibleText(segments: VoiceCallCaptionSegment[], progress: number): string {
-  if (segments.length === 0) return '';
-  if (!Number.isFinite(progress)) return '';
-  if (progress <= 0) return '';
-
-  const fullText = buildVoiceCallCaptionText(segments);
-  if (progress >= 1) return fullText;
+export function resolveVoiceCallVisibleParts(
+  segments: VoiceCallCaptionSegment[],
+  progress: number
+): VoiceCallCaptionSourcePart[] {
+  if (segments.length === 0) return [];
+  if (!Number.isFinite(progress)) return [];
+  if (progress <= 0) return [];
 
   const totalWeight = segments.reduce((sum, segment) => sum + segment.weight, 0);
-  if (totalWeight <= 0) return fullText;
+  let remainingWeight = totalWeight * Math.min(1, progress);
+  const visible: VoiceCallCaptionSourcePart[] = [];
 
-  let remainingWeight = totalWeight * progress;
-  let visible = '';
+  const push = (kind: VoiceCallCaptionKind, text: string) => {
+    if (!text) return;
+    const previous = visible[visible.length - 1];
+    if (previous && previous.kind === kind) previous.text += text;
+    else visible.push({ kind, text });
+  };
 
   for (const segment of segments) {
+    const chars = Array.from(segment.text);
     if (remainingWeight >= segment.weight) {
-      visible += segment.text;
+      push(segment.kind, segment.text);
       remainingWeight -= segment.weight;
       continue;
     }
 
-    const chars = Array.from(segment.text);
-    if (remainingWeight >= chars.length) {
-      visible += segment.text;
-      return visible;
-    }
-
-    const consumedChars = Math.floor(remainingWeight);
-    const visibleCount = Math.max(1, Math.min(chars.length, consumedChars));
-    return visible + chars.slice(0, visibleCount).join('');
+    const visibleCount = Math.max(1, Math.min(chars.length, Math.floor(remainingWeight)));
+    push(segment.kind, chars.slice(0, visibleCount).join(''));
+    return visible;
   }
 
   return visible;

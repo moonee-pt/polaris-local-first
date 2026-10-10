@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useVoiceCallPlayback } from '../../../app/call/useVoiceCallPlayback';
+import { primeCallAudio } from '../../../app/call/callAudio';
 import { useFleshAmbience } from '../../../app/call/useFleshAmbience';
-import { splitVoiceCallCaptions } from '../../../engines/voice/voiceCallCaption';
+import type { VoiceCallCaptionSourcePart } from '../../../engines/voice/voiceCallCaption';
 import { readFleshCues } from '../../../engines/voice/fleshAmbience';
 import { useI18n } from '../../../i18n';
 import type { I18nKey } from '../../../i18n/messages';
 import { useChatActions, useChatPresentation, useChatStablePayload, useChatUi } from '../chat/context/ChatContext';
-import { buildAssistantSpeechText } from '../chat/message/messageSpeechText';
+import { buildAssistantCaptionParts, buildAssistantSpeechText } from '../chat/message/messageSpeechText';
 import { resolveVoiceCallSpeechTarget } from './voiceCallSpeechTarget';
 import { Icon } from '../../Icon';
 import { runImpactAction, runSelectionAction } from '../../haptics';
@@ -77,6 +78,13 @@ export function VoiceCallStage({ onClose }: VoiceCallStageProps) {
   };
 
   useEffect(() => {
+    primeCallAudio();
+    const unlock = () => primeCallAudio();
+    window.addEventListener('pointerdown', unlock, true);
+    return () => window.removeEventListener('pointerdown', unlock, true);
+  }, []);
+
+  useEffect(() => {
     const interval = window.setInterval(() => {
       setElapsedMs(Date.now() - startedAtRef.current);
     }, 1000);
@@ -95,18 +103,16 @@ export function VoiceCallStage({ onClose }: VoiceCallStageProps) {
     return null;
   }, [stablePayload.messages]);
 
-  const speakAssistantMessage = (messageId: string, text: string) => {
-    if (!text) return;
+  const speakAssistantMessage = (messageId: string, speechText: string, caption: VoiceCallCaptionSourcePart[]) => {
+    if (!speechText || caption.length === 0) return;
     const source = stablePayload.messages.find((message) => message.id === messageId);
     if (source) applyFleshCues(source.content);
     const cachedVoice = stablePayload.messages.find((message) => message.id === messageId)?.voiceCache;
     if (cachedVoice) {
-      const segments = splitVoiceCallCaptions(text);
-      if (segments.length === 0) return;
-      playback.playCachedClip(messageId, cachedVoice, segments);
+      playback.playCachedClip(messageId, cachedVoice, caption);
       return;
     }
-    playback.speak({ messageId, text });
+    playback.speak({ messageId, text: speechText, caption });
   };
 
   useEffect(() => {
@@ -122,7 +128,7 @@ export function VoiceCallStage({ onClose }: VoiceCallStageProps) {
 
     spokenMessageIdsRef.current.add(target.messageId);
     setErrorCode(null);
-    speakAssistantMessage(target.messageId, target.speechText);
+    speakAssistantMessage(target.messageId, target.speechText, target.caption);
   }, [stablePayload.messages, muted, playback.status, ui.sending, ui.streaming]);
 
   function handleHangUp() {
@@ -165,10 +171,11 @@ export function VoiceCallStage({ onClose }: VoiceCallStageProps) {
     const message = latestAssistantMessage;
     if (!message) return;
     const speechText = buildAssistantSpeechText(message.content);
-    if (!speechText) return;
+    const caption = buildAssistantCaptionParts(message.content);
+    if (!speechText || caption.length === 0) return;
     applyFleshCues(message.content);
     setErrorCode(null);
-    speakAssistantMessage(message.id, speechText);
+    speakAssistantMessage(message.id, speechText, caption);
   }
 
   useEffect(() => {
@@ -189,14 +196,14 @@ export function VoiceCallStage({ onClose }: VoiceCallStageProps) {
         ? t('chat.call.thinking')
         : t('chat.call.listening');
 
-  const visibleText = muted ? '' : playback.visibleText;
+  const captionParts = muted ? [] : playback.visibleParts;
   const hintText = muted
     ? t('chat.call.mutedHint')
     : errorCode
       ? t(ERROR_MESSAGE_KEYS[errorCode] ?? 'chat.call.generationFailed')
-      : visibleText
-        ? ''
-        : t('chat.call.captionHint');
+      : captionParts.length === 0
+        ? t('chat.call.captionHint')
+        : '';
 
   return createPortal(
     <div className="voice-call-stage" role="dialog" aria-modal="true" aria-label={t('chat.call.title')}>
@@ -222,7 +229,18 @@ export function VoiceCallStage({ onClose }: VoiceCallStageProps) {
         </div>
 
         <div className="voice-call-caption" aria-live="polite">
-          {visibleText ? <p className="voice-call-caption-text">{visibleText}</p> : null}
+          {captionParts.length > 0 ? (
+            <p className="voice-call-caption-text">
+              {captionParts.map((part, index) => (
+                <span
+                  key={`caption-${index}-${part.kind}`}
+                  className={part.kind === 'stage' ? 'voice-call-caption-stage' : undefined}
+                >
+                  {part.text}
+                </span>
+              ))}
+            </p>
+          ) : null}
           {hintText ? <p className={`voice-call-hint ${errorCode ? 'is-error' : ''}`}>{hintText}</p> : null}
           {errorCode && latestAssistantMessage ? (
             <button

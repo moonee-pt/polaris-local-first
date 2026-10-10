@@ -98,21 +98,34 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 12px;
   flex: 1 1 auto;
   min-height: 120px;
   overflow-y: auto;
-  padding: 8px 4px;
+  padding: clamp(16px, 6vh, 72px) 4px 8px;
   text-align: center;
 }
 
 .voice-call-caption-text {
   margin: 0;
-  font-size: 19px;
-  line-height: 1.6;
+  font-family: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', 'STSong', SimSun, Georgia, serif;
+  font-size: 21px;
+  line-height: 1.9;
+  letter-spacing: 0.01em;
   color: #f2f2f5;
+  white-space: pre-wrap;
   overflow-wrap: anywhere;
+}
+
+.voice-call-caption-stage {
+  display: block;
+  margin-top: 10px;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+  color: #85858f;
 }
 
 .voice-call-hint {
@@ -410,7 +423,11 @@
   }
 
   .voice-call-caption-text {
-    font-size: 17px;
+    font-size: 19px;
+  }
+
+  .voice-call-caption-stage {
+    font-size: 13px;
   }
 }
 

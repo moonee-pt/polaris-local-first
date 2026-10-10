@@ -1,14 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import {
   buildVoiceCallCaptionText,
-  resolveVoiceCallVisibleText,
+  resolveVoiceCallVisibleParts,
   splitVoiceCallCaptions
 } from './voiceCallCaption';
 
 describe('splitVoiceCallCaptions', () => {
   it('returns nothing for empty or whitespace text', () => {
     expect(splitVoiceCallCaptions('')).toEqual([]);
-    expect(splitVoiceCallCaptions('   \n  ')).toEqual([]);
+    expect(splitVoiceCallCaptions([{ kind: 'speech', text: '   \n  ' }])).toEqual([]);
   });
 
   it('keeps the original text intact after splitting', () => {
@@ -26,30 +26,53 @@ describe('splitVoiceCallCaptions', () => {
     expect(lastOfFirstSentence?.weight).toBe(9);
     expect(lastOfSecondSentence?.weight).toBe(8);
   });
+
+  it('marks stage directions so the caption can render them differently', () => {
+    const segments = splitVoiceCallCaptions([
+      { kind: 'speech', text: '你听。' },
+      { kind: 'stage', text: '（他没接话）' }
+    ]);
+
+    expect(segments.map((segment) => segment.kind)).toEqual(['speech', 'stage']);
+    expect(segments[1]?.text).toBe('（他没接话）');
+  });
 });
 
-describe('resolveVoiceCallVisibleText', () => {
+describe('resolveVoiceCallVisibleParts', () => {
   const text = '你好啊，很久没见了。今天想聊点什么？';
   const segments = splitVoiceCallCaptions(text);
 
   it('reveals nothing at the start and everything at the end', () => {
-    expect(resolveVoiceCallVisibleText(segments, 0)).toBe('');
-    expect(resolveVoiceCallVisibleText(segments, 1)).toBe(text);
-    expect(resolveVoiceCallVisibleText(segments, 4)).toBe(text);
+    expect(resolveVoiceCallVisibleParts(segments, 0)).toEqual([]);
+    expect(buildVoiceCallCaptionText(segments)).toBe(text);
+    expect(resolveVoiceCallVisibleParts(segments, 1).map((part) => part.text).join('')).toBe(text);
+    expect(resolveVoiceCallVisibleParts(segments, 4).map((part) => part.text).join('')).toBe(text);
   });
 
   it('never reveals text out of order', () => {
     let previous = '';
     for (let step = 0; step <= 10; step += 1) {
-      const current = resolveVoiceCallVisibleText(segments, step / 10);
+      const current = resolveVoiceCallVisibleParts(segments, step / 10).map((part) => part.text).join('');
       expect(text.startsWith(current)).toBe(true);
       expect(current.length).toBeGreaterThanOrEqual(previous.length);
       previous = current;
     }
   });
 
-  it('falls back to empty text when progress is not a number', () => {
-    expect(resolveVoiceCallVisibleText(segments, Number.NaN)).toBe('');
-    expect(resolveVoiceCallVisibleText([], 0.5)).toBe('');
+  it('keeps speech and stage parts separate', () => {
+    const mixed = splitVoiceCallCaptions([
+      { kind: 'speech', text: '第一句。第二句。' },
+      { kind: 'stage', text: '（他顿了一下）' },
+      { kind: 'speech', text: '第三句。' }
+    ]);
+
+    const full = resolveVoiceCallVisibleParts(mixed, 1);
+    expect(full.map((part) => part.kind)).toEqual(['speech', 'stage', 'speech']);
+    expect(full.map((part) => part.text)).toEqual(['第一句。第二句。', '（他顿了一下）', '第三句。']);
+  });
+
+  it('falls back to nothing when progress is not a number', () => {
+    expect(resolveVoiceCallVisibleParts(segments, Number.NaN)).toEqual([]);
+    expect(resolveVoiceCallVisibleParts([], 0.5)).toEqual([]);
   });
 });

@@ -1,9 +1,11 @@
 import type { ChatMessage } from '../../../types/domain';
-import { buildAssistantSpeechText } from '../chat/message/messageSpeechText';
+import { buildAssistantCaptionParts, buildAssistantSpeechText } from '../chat/message/messageSpeechText';
+import type { VoiceCallCaptionSourcePart } from '../../../engines/voice/voiceCallCaption';
 
 export type VoiceCallSpeechTarget = {
   messageId: string;
   speechText: string;
+  caption: VoiceCallCaptionSourcePart[];
 };
 
 type ResolveVoiceCallSpeechTargetArgs = {
@@ -41,7 +43,12 @@ export function resolveVoiceCallSpeechTarget({
 
     const speechText = buildAssistantSpeechText(message.content);
     if (!speechText) return null;
-    return { messageId: message.id, speechText };
+    const caption = buildAssistantCaptionParts(message.content);
+    return {
+      messageId: message.id,
+      speechText,
+      caption: caption.length > 0 ? caption : [{ kind: 'speech' as const, text: speechText }]
+    };
   }
 
   return null;
