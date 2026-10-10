@@ -112,9 +112,9 @@ type BuildTopbarPropsArgs = {
   menuOpen: boolean;
   activeThemePreview: ActiveThemePreview;
   toggleWorld: () => void;
-  createConversation: () => void;
   toggleMenu: () => void;
   openSettings: () => void;
+  openCollaboratorSettings: () => void;
   openPreviewChat: () => void;
   setSearchOpen: (next: boolean | ((prev: boolean) => boolean)) => void;
   setCollaboratorSwitchOpen: (next: boolean | ((prev: boolean) => boolean)) => void;
@@ -138,9 +138,9 @@ export function buildTopbarProps({
   menuOpen,
   activeThemePreview,
   toggleWorld,
-  createConversation,
   toggleMenu,
   openSettings,
+  openCollaboratorSettings,
   openPreviewChat,
   setSearchOpen,
   setCollaboratorSwitchOpen,
@@ -170,7 +170,7 @@ export function buildTopbarProps({
         setSearchOpen(false);
         setCollaboratorSwitchOpen((prev) => !prev);
       },
-      onCreateConversation: createConversation,
+      onOpenCollaboratorSettings: openCollaboratorSettings,
       onToggleSearch: () => {
         setCollaboratorSwitchOpen(false);
         setSearchOpen((prev) => !prev);

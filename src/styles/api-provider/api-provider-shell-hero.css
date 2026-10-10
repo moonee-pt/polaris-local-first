@@ -42,8 +42,7 @@
 
 .api-provider-hero {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: flex-start;
   gap: 14px;
   margin-bottom: 14px;
 }
@@ -111,6 +110,30 @@
 
 .api-provider-hero-badge.locked {
   border-color: color-mix(in srgb, var(--accent) 30%, var(--border) 70%);
+}
+
+.api-provider-hero-subtitle {
+  margin: 3px 0 0;
+  font-size: var(--type-small);
+  line-height: 1.5;
+  color: var(--sheet-readable-muted);
+}
+
+.api-provider-action-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.api-provider-action-buttons .btn-secondary {
+  flex: 1 1 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 42px;
+  border-radius: 14px;
+  font-size: var(--type-small);
 }
 
 .api-provider-control-layer {

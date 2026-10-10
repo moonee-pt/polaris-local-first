@@ -10,7 +10,6 @@ import { RuntimePerformanceSurfaceMounted } from '../runtime-performance/Runtime
 import { ApiProviderAddView } from './ApiProviderAddView';
 import { ApiProviderConfigForm } from './ApiProviderConfigForm';
 import { ApiProviderListView } from './ApiProviderListView';
-import { getProviderModelDisplayLabel } from './apiProviderDisplay';
 
 type ApiTestResult = null | { ok: boolean; message: string };
 
@@ -215,19 +214,12 @@ export function ApiProviderSheet({
                 text={t('apiProvider.helpText')}
               />
             </h2>
+            {showingDetail && !publicTrialProvider && (
+              <p className="api-provider-hero-subtitle">
+                {api.model || t('apiProvider.model.emptyFallback')}
+              </p>
+            )}
           </div>
-          {showingDetail ? (
-            <div className={`api-provider-hero-badge ${publicTrialProvider ? 'locked' : ''}`}>
-              <strong>{t('apiProvider.routeConfigBadge')}</strong>
-              <span>
-                {getProviderModelDisplayLabel(
-                  api,
-                  t('apiProvider.model.emptyFallback'),
-                  t('apiProvider.model.builtInPlaceholder')
-                )}
-              </span>
-            </div>
-          ) : null}
         </div>
 
         <div className="api-provider-sheet-scroll">
@@ -251,20 +243,27 @@ export function ApiProviderSheet({
             )
           ) : (
             <>
-              <div className="provider-stack api-provider-control-layer api-provider-detail-actions">
-                <div className="provider-inline-actions api-provider-inline-actions">
-                  <button
-                    type="button"
-                    className="btn-secondary"
-                    onClick={() => onDuplicateProvider(t('apiProvider.duplicateName', { name: api.name }))}
-                    disabled={!activeProviderId || builtInProvider}
-                  >
-                    {t('apiProvider.duplicateAsNew')}
-                  </button>
-                  <button type="button" className="btn-secondary danger" onClick={handleDeleteProvider} disabled={!activeProviderId || providers.length <= 1 || builtInProvider}>
-                    {t('apiProvider.deleteCurrent')}
-                  </button>
-                </div>
+              <div className="api-provider-action-buttons">
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={() => onDuplicateProvider(t('apiProvider.duplicateName', { name: api.name }))}
+                  disabled={!activeProviderId || builtInProvider}
+                  title={t('apiProvider.duplicateAsNew')}
+                >
+                  <Icon name="copy" size={16} />
+                  <span>{t('apiProvider.duplicateAsNew')}</span>
+                </button>
+                <button
+                  type="button"
+                  className="btn-secondary danger"
+                  onClick={handleDeleteProvider}
+                  disabled={!activeProviderId || providers.length <= 1 || builtInProvider}
+                  title={t('apiProvider.deleteCurrent')}
+                >
+                  <Icon name="trash" size={16} />
+                  <span>{t('apiProvider.deleteCurrent')}</span>
+                </button>
               </div>
 
               <ApiProviderConfigForm

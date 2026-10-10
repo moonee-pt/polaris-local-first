@@ -40,6 +40,7 @@ type UseAppShellWorldControllerArgs = {
   chatUi: ChatUiState;
   toggleMenu: () => void;
   openSettings: () => void;
+  openCollaboratorSettings: () => void;
   openToolbox: () => void;
   openProviderSettings: () => void;
 };
@@ -56,6 +57,7 @@ export function useAppShellWorldController({
   chatUi,
   toggleMenu,
   openSettings,
+  openCollaboratorSettings,
   openToolbox,
   openProviderSettings
 }: UseAppShellWorldControllerArgs) {
@@ -104,9 +106,9 @@ export function useAppShellWorldController({
       }
       toggleWorld();
     },
-    createConversation: navigationActions.openFreshConversation,
     toggleMenu,
     openSettings,
+    openCollaboratorSettings,
     openPreviewChat: navigationActions.openPreviewChat,
     setSearchOpen: collection.setSearchOpen,
     setCollaboratorSwitchOpen: collection.setCollaboratorSwitchOpen,

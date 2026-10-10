@@ -33,7 +33,7 @@ export type AppTopbarState = {
 export type AppTopbarActions = {
   onToggleWorld: () => void;
   onToggleCollaboratorSwitch: () => void;
-  onCreateConversation: () => void;
+  onOpenCollaboratorSettings: () => void;
   onToggleSearch: () => void;
   onOpenCollectionInfoFullscreen: () => void;
   onToggleMenu: () => void;
@@ -183,12 +183,12 @@ export function AppTopbar({
             {state.activeWorld === 'chat' && (
               <button
                 type="button"
-                className="action-btn icon-btn topbar-new-chat-btn"
-                onClick={(event) => handleSelectionAction(actions.onCreateConversation, event.currentTarget)}
-                title={t('common.newConversation')}
-                aria-label={t('common.newConversation')}
+                className="action-btn icon-btn topbar-new-chat-btn topbar-collaborator-settings-btn"
+                onClick={(event) => handleSelectionAction(actions.onOpenCollaboratorSettings, event.currentTarget)}
+                title={t('topbar.openCollaboratorSettings')}
+                aria-label={t('topbar.openCollaboratorSettings')}
               >
-                <Icon name="plus" size={18} />
+                <Icon name="persona" size={18} />
               </button>
             )}
 

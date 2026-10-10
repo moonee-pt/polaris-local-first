@@ -232,6 +232,7 @@ export function useAppShellController() {
     chatUi,
     toggleMenu: overlays.toggleMenu,
     openSettings: overlays.collectionOpenSettings,
+    openCollaboratorSettings: overlays.collaboratorActions.openCollaboratorInfo,
     openToolbox: () => overlays.openMenuAt('toolbox'),
     openProviderSettings: overlays.collectionOpenProviderSettings
   });
