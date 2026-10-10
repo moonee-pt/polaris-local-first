@@ -142,6 +142,8 @@ export function MenuSheet({
             importingData={controller.importingData}
             exportingWebDav={controller.exportingWebDav}
             importingWebDav={controller.importingWebDav}
+            exportingCloud={controller.exportingCloud}
+            importingCloud={controller.importingCloud}
             localExportDetail={controller.localExportDetail}
             localImportDetail={controller.localImportDetail}
             localExportProgress={controller.localExportProgress}
@@ -162,6 +164,14 @@ export function MenuSheet({
             onImportFromWebDav={() => {
               void controller.onImportFromWebDav();
             }}
+            onExportToCloud={() => {
+              void controller.onExportToCloud();
+            }}
+            onImportFromCloud={() => {
+              void controller.onImportFromCloud();
+            }}
+            cloudPassphrase={controller.cloudPassphrase}
+            onSetCloudPassphrase={controller.onSetCloudPassphrase}
           />
         ) : null}
         {visiblePage === 'gateway' ? (

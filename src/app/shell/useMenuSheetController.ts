@@ -194,7 +194,9 @@ export function useMenuSheetController({
   const busy = backupTransfer.exportingData
     || backupTransfer.importingData
     || backupTransfer.exportingWebDav
-    || backupTransfer.importingWebDav;
+    || backupTransfer.importingWebDav
+    || backupTransfer.exportingCloud
+    || backupTransfer.importingCloud;
   const androidUpdate = useMenuAndroidUpdateController({ ui });
   const tokenUsageSummary = useMemo(() => {
     if (!shouldBuildMenuTokenUsageSummary(open, page)) return EMPTY_MENU_TOKEN_USAGE_SUMMARY;
@@ -286,6 +288,8 @@ export function useMenuSheetController({
     importingData: backupTransfer.importingData,
     exportingWebDav: backupTransfer.exportingWebDav,
     importingWebDav: backupTransfer.importingWebDav,
+    exportingCloud: backupTransfer.exportingCloud,
+    importingCloud: backupTransfer.importingCloud,
     enabledToolGroupsCount: toolbox.enabledToolGroupsCount,
     desktopLocalAvailable: toolbox.desktopLocalAvailable,
     onRefreshPersonalDataStatus: toolbox.onRefreshPersonalDataStatus,
@@ -340,6 +344,10 @@ export function useMenuSheetController({
     onExportData: backupTransfer.onExportData,
     onImportData: backupTransfer.onImportData,
     onExportToWebDav: backupTransfer.onExportToWebDav,
-    onImportFromWebDav: backupTransfer.onImportFromWebDav
+    onImportFromWebDav: backupTransfer.onImportFromWebDav,
+    onExportToCloud: backupTransfer.onExportToCloud,
+    onImportFromCloud: backupTransfer.onImportFromCloud,
+    cloudPassphrase: backupTransfer.cloudPassphrase,
+    onSetCloudPassphrase: backupTransfer.onSetCloudPassphrase
   };
 }

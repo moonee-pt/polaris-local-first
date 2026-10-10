@@ -319,6 +319,22 @@ async function readStructuredExportStores(
   };
 }
 
+export const CLOUD_SYNC_SCHEMA_VERSION = 1;
+
+export async function buildCloudSyncSnapshot(
+  options: StructuredExportPackageOptions = {}
+): Promise<StructuredExportSnapshot> {
+  const stores = await readStructuredExportStores({}, options);
+  return {
+    spaceState: stores.spaceState,
+    chatState: stores.chatState,
+    collectionState: stores.collectionState,
+    personaState: stores.personaState,
+    personaMemoryDocContent: stores.personaMemoryDocContent,
+    runtimeState: stores.runtimeState
+  };
+}
+
 function buildAssetPaths(asset: StoredAssetMeta) {
   const extension = resolveAssetExtension(asset.name, asset.mimeType);
   const assetDir = asset.kind === 'image' ? 'assets/images' : 'assets/attachments';

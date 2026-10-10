@@ -25,6 +25,12 @@ type MenuBackupPageProps = {
   onImportData: () => void;
   onExportToWebDav: () => void;
   onImportFromWebDav: () => void;
+  exportingCloud: boolean;
+  importingCloud: boolean;
+  onExportToCloud: () => void;
+  onImportFromCloud: () => void;
+  cloudPassphrase: string;
+  onSetCloudPassphrase: (value: string) => void;
 };
 
 export function MenuBackupPage({
@@ -47,7 +53,13 @@ export function MenuBackupPage({
   onExportData,
   onImportData,
   onExportToWebDav,
-  onImportFromWebDav
+  onImportFromWebDav,
+  exportingCloud,
+  importingCloud,
+  onExportToCloud,
+  onImportFromCloud,
+  cloudPassphrase,
+  onSetCloudPassphrase
 }: MenuBackupPageProps) {
   const { t } = useI18n();
 
@@ -154,6 +166,45 @@ export function MenuBackupPage({
               ? t('settings.backup.webdavReadyNote')
               : t('settings.backup.webdavMissingNote')}
           </div>
+        </div>
+      </section>
+
+      <section className="menu-section">
+        <div className="menu-section-head">
+          <span className="menu-section-kicker menu-section-kicker-row">
+            {t('settings.backup.cloudTitle')}
+          </span>
+          <p className="menu-section-note">{t('settings.backup.cloudSubtitle')}</p>
+        </div>
+        <div className="menu-webdav-section">
+          <div className="settings-form">
+            <label>{t('settings.backup.cloudPassphrase')}</label>
+            <input
+              type="password"
+              value={cloudPassphrase}
+              onChange={(event) => onSetCloudPassphrase(event.target.value)}
+              placeholder={t('settings.backup.cloudPassphrasePlaceholder')}
+              autoComplete="off"
+            />
+          </div>
+        </div>
+        <div className="provider-inline-actions menu-webdav-actions">
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={onExportToCloud}
+            disabled={busy || importingCloud}
+          >
+            {exportingCloud ? t('settings.backup.cloudUploading') : t('settings.backup.cloudUpload')}
+          </button>
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={onImportFromCloud}
+            disabled={busy || exportingCloud}
+          >
+            {importingCloud ? t('settings.backup.cloudReading') : t('settings.backup.cloudRestore')}
+          </button>
         </div>
       </section>
     </div>

@@ -6,6 +6,8 @@ import {
   importBackupViaSystemFiles
 } from '../../native/systemBackupFiles';
 import { downloadLatestBackupFromWebDav, uploadBackupToWebDav } from '../../native/webdavBackup';
+import { downloadCloudBackup, uploadCloudBackup } from '../../engines/cloudSync';
+import { getCloudSyncPassphrase, setCloudSyncPassphrase } from '../../engines/cloudSyncPassphrase';
 import {
   formatStoreTransferProgress,
   resolveStoreTransferProgressPercent,
@@ -75,6 +77,9 @@ export function useMenuBackupTransferController({
   const [importProgress, setImportProgress] = useState<StoreTransferProgress | null>(null);
   const [exportingWebDav, setExportingWebDav] = useState(false);
   const [importingWebDav, setImportingWebDav] = useState(false);
+  const [exportingCloud, setExportingCloud] = useState(false);
+  const [importingCloud, setImportingCloud] = useState(false);
+  const [cloudPassphrase, setCloudPassphraseState] = useState(() => getCloudSyncPassphrase());
 
   const systemBackupAvailability = getSystemBackupAvailability();
   const {
@@ -187,12 +192,50 @@ export function useMenuBackupTransferController({
     }
   };
 
+  const exportToCloud = async () => {
+    try {
+      setExportingCloud(true);
+      setExportProgress({ message: '读取对话和设置' });
+      const { updatedAt } = await uploadCloudBackup(cloudPassphrase, { onProgress: setExportProgress });
+      ui.alert(`已加密同步到云端：${new Date(updatedAt).toLocaleString()}`);
+    } catch (error) {
+      ui.alert(error instanceof Error ? error.message : '云端备份失败');
+    } finally {
+      setExportingCloud(false);
+      setExportProgress(null);
+    }
+  };
+
+  const importFromCloud = async () => {
+    try {
+      setImportingCloud(true);
+      if (!ui.confirm('会从云端拉取最近一份备份并解密覆盖当前数据，确定吗？')) return;
+      setImportProgress({ message: '读取并解密云端备份' });
+      const result = await downloadCloudBackup(cloudPassphrase, { onProgress: setImportProgress });
+      ui.alert(result.restored
+        ? `已从云端恢复：${result.updatedAt ? new Date(result.updatedAt).toLocaleString() : ''}`
+        : '云端还没有备份，请先在旧设备点一次“同步到云端”。');
+    } catch (error) {
+      ui.alert(error instanceof Error ? error.message : '云端恢复失败');
+    } finally {
+      setImportingCloud(false);
+      setImportProgress(null);
+    }
+  };
+
+  const onSetCloudPassphrase = (value: string) => {
+    setCloudSyncPassphrase(value);
+    setCloudPassphraseState(value);
+  };
+
   return {
     readyForWebDav: isWebDavConfigured(webdav),
     exportingData,
     importingData,
     exportingWebDav,
     importingWebDav,
+    exportingCloud,
+    importingCloud,
     localBackupAvailable,
     localExportDetail: visibleLocalExportDetail,
     localImportDetail: visibleLocalImportDetail,
@@ -205,6 +248,10 @@ export function useMenuBackupTransferController({
     onExportData: exportData,
     onImportData: importData,
     onExportToWebDav: exportToWebDav,
-    onImportFromWebDav: importFromWebDav
+    onImportFromWebDav: importFromWebDav,
+    onExportToCloud: exportToCloud,
+    onImportFromCloud: importFromCloud,
+    cloudPassphrase,
+    onSetCloudPassphrase
   };
 }
