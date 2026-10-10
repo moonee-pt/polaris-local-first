@@ -76,42 +76,6 @@
   color: var(--sheet-readable-muted);
 }
 
-.api-provider-hero-badge {
-  flex: 0 0 auto;
-  min-width: 132px;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  padding: 10px 12px;
-  border-radius: 16px;
-  border: 1px solid color-mix(in srgb, var(--border) 78%, rgba(255,255,255,0.28));
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, rgba(255,255,255,0.54) 42%, var(--surface-solid) 58%),
-      color-mix(in srgb, var(--surface-solid) 86%, rgba(255,255,255,0.18))
-    );
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.68),
-    0 10px 24px rgba(76, 88, 120, 0.08);
-  backdrop-filter: blur(18px) saturate(1.12);
-}
-
-.api-provider-hero-badge strong {
-  font-size: var(--type-small);
-  font-weight: 600;
-  color: var(--sheet-readable-text);
-}
-
-.api-provider-hero-badge span {
-  font-size: var(--type-caption);
-  color: var(--sheet-readable-muted);
-}
-
-.api-provider-hero-badge.locked {
-  border-color: color-mix(in srgb, var(--accent) 30%, var(--border) 70%);
-}
-
 .api-provider-hero-subtitle {
   margin: 3px 0 0;
   font-size: var(--type-small);

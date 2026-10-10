@@ -575,7 +575,6 @@
 /* 11. API provider sub-sheet */
 :is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .api-provider-list-card,
 :is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .api-provider-section,
-:is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .api-provider-hero-badge,
 :is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .api-provider-control-layer,
 :is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .provider-stack,
 :is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .theme-css-guard-card {
@@ -598,21 +597,9 @@
   color: var(--set-text);
 }
 
-:is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .api-provider-hero-badge,
 :is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .api-provider-control-layer,
 :is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .theme-css-guard-card {
   padding: 14px 0;
-}
-
-:is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .api-provider-hero-badge strong {
-  font-size: 15px;
-  font-weight: 600;
-}
-
-:is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .api-provider-hero-badge span {
-  margin-top: 3px;
-  font-size: 12.5px;
-  color: var(--set-muted);
 }
 
 :is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .api-provider-section + .api-provider-section,
