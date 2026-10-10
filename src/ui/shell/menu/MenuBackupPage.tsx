@@ -29,8 +29,7 @@ type MenuBackupPageProps = {
   importingCloud: boolean;
   onExportToCloud: () => void;
   onImportFromCloud: () => void;
-  cloudPassphrase: string;
-  onSetCloudPassphrase: (value: string) => void;
+  cloudLastBackupAt: string;
 };
 
 export function MenuBackupPage({
@@ -58,8 +57,7 @@ export function MenuBackupPage({
   importingCloud,
   onExportToCloud,
   onImportFromCloud,
-  cloudPassphrase,
-  onSetCloudPassphrase
+  cloudLastBackupAt
 }: MenuBackupPageProps) {
   const { t } = useI18n();
 
@@ -177,15 +175,13 @@ export function MenuBackupPage({
           <p className="menu-section-note">{t('settings.backup.cloudSubtitle')}</p>
         </div>
         <div className="menu-webdav-section">
-          <div className="settings-form">
-            <label>{t('settings.backup.cloudPassphrase')}</label>
-            <input
-              type="password"
-              value={cloudPassphrase}
-              onChange={(event) => onSetCloudPassphrase(event.target.value)}
-              placeholder={t('settings.backup.cloudPassphrasePlaceholder')}
-              autoComplete="off"
-            />
+          <div className="settings-note">
+            {t('settings.backup.cloudAutoNote')}
+          </div>
+          <div className="settings-note settings-note-muted">
+            {cloudLastBackupAt
+              ? `${t('settings.backup.cloudLastBackup')}: ${new Date(cloudLastBackupAt).toLocaleString()}`
+              : t('settings.backup.cloudLastBackupNever')}
           </div>
         </div>
         <div className="provider-inline-actions menu-webdav-actions">

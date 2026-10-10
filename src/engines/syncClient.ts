@@ -1,5 +1,4 @@
 import { buildInternalApiEndpoint } from './chat-api/chatApiEndpoint';
-import { getPolarisDeviceId } from './freeProvider';
 
 export type SyncSnapshot = {
   schemaVersion: number;
@@ -9,10 +8,14 @@ export type SyncSnapshot = {
 
 export type PushResult = { ok: true; id: string; updatedAt: string };
 
+function syncToken(): string {
+  return (import.meta.env.VITE_POLARIS_SYNC_SECRET ?? '').trim();
+}
+
 function syncHeaders(): HeadersInit {
   return {
     'Content-Type': 'application/json',
-    'X-Polaris-Device-Id': getPolarisDeviceId()
+    'X-Polaris-Sync-Token': syncToken()
   };
 }
 
@@ -50,4 +53,8 @@ export async function listSnapshots(): Promise<SyncSnapshot[]> {
   }
   const data = (await res.json()) as { ok: boolean; snapshots: SyncSnapshot[] };
   return data.snapshots ?? [];
+}
+
+export function isSyncConfigured(): boolean {
+  return syncToken().length > 0;
 }

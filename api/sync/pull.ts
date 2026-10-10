@@ -1,6 +1,9 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getSnapshotsCollection } from '../../src/engines/server/mongo.js';
-import { applySyncCors, getSyncUserId } from '../../src/engines/server/syncHttp.js';
+import { applySyncCors, authorizeSyncRequest, getSyncUserId } from '../../src/engines/server/syncHttp.js';
+import { decryptSnapshot, looksEncrypted } from '../../src/engines/server/syncCrypto.js';
+
+const RETENTION_LIMIT = 7;
 
 type SnapshotDoc = {
   userId: string;
@@ -11,10 +14,13 @@ type SnapshotDoc = {
 
 function serialize(doc: SnapshotDoc | null | undefined) {
   if (!doc) return null;
+  const payload = looksEncrypted(doc.payload)
+    ? JSON.parse(decryptSnapshot(doc.payload))
+    : doc.payload;
   return {
     schemaVersion: doc.schemaVersion,
     updatedAt: doc.updatedAt.toISOString(),
-    payload: doc.payload
+    payload
   };
 }
 
@@ -31,20 +37,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const userId = getSyncUserId(req);
-  if (!userId) {
-    res.status(400).json({ error: { message: 'Missing X-Polaris-Device-Id', type: 'invalid_request' } });
-    return;
-  }
+  if (!authorizeSyncRequest(req, res)) return;
 
   try {
+    const userId = getSyncUserId(req);
     const collection = await getSnapshotsCollection();
 
     if (req.query.list === '1') {
       const docs = await collection
         .find<SnapshotDoc>({ userId })
         .sort({ updatedAt: -1 })
-        .limit(7)
+        .limit(RETENTION_LIMIT)
         .toArray();
       res.status(200).json({ ok: true, snapshots: docs.map(serialize) });
       return;

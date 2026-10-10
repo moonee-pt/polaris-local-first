@@ -347,7 +347,6 @@ export function useMenuSheetController({
     onImportFromWebDav: backupTransfer.onImportFromWebDav,
     onExportToCloud: backupTransfer.onExportToCloud,
     onImportFromCloud: backupTransfer.onImportFromCloud,
-    cloudPassphrase: backupTransfer.cloudPassphrase,
-    onSetCloudPassphrase: backupTransfer.onSetCloudPassphrase
+    cloudLastBackupAt: backupTransfer.cloudLastBackupAt
   };
 }

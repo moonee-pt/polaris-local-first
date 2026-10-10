@@ -170,8 +170,7 @@ export function MenuSheet({
             onImportFromCloud={() => {
               void controller.onImportFromCloud();
             }}
-            cloudPassphrase={controller.cloudPassphrase}
-            onSetCloudPassphrase={controller.onSetCloudPassphrase}
+            cloudLastBackupAt={controller.cloudLastBackupAt}
           />
         ) : null}
         {visiblePage === 'gateway' ? (
