@@ -8,15 +8,16 @@ export type SyncSnapshot = {
 
 export type PushResult = { ok: true; id: string; updatedAt: string };
 
-function syncToken(): string {
-  return (import.meta.env.VITE_POLARIS_SYNC_SECRET ?? '').trim();
+function syncHeaders(): HeadersInit {
+  return { 'Content-Type': 'application/json' };
 }
 
-function syncHeaders(): HeadersInit {
-  return {
-    'Content-Type': 'application/json',
-    'X-Polaris-Sync-Token': syncToken()
-  };
+// Same-origin /api/sync backend exists on the deployed site but not in local `vite dev`,
+// so only attempt sync when we are not on a local dev host.
+export function isSyncConfigured(): boolean {
+  if (typeof window === 'undefined') return false;
+  const host = window.location.hostname;
+  return host !== 'localhost' && host !== '127.0.0.1' && host !== '';
 }
 
 export async function pushSnapshot(payload: unknown, schemaVersion = 1): Promise<PushResult> {
@@ -53,8 +54,4 @@ export async function listSnapshots(): Promise<SyncSnapshot[]> {
   }
   const data = (await res.json()) as { ok: boolean; snapshots: SyncSnapshot[] };
   return data.snapshots ?? [];
-}
-
-export function isSyncConfigured(): boolean {
-  return syncToken().length > 0;
 }

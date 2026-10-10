@@ -639,7 +639,7 @@ export const settings = {
   'settings.backup.webdavReadyNote': '会把完整备份包传到这个已存在的远端目录里，恢复时直接拿最新那一份覆盖当前数据。网页端需要 HTTPS 和跨域权限，末尾 / 会自动处理。',
   'settings.backup.webdavMissingNote': '把已存在的远端目录 URL、用户名和密码填全后，就能上传和恢复完整备份。网页端请使用 HTTPS WebDAV，并在服务端允许跨域访问。',
   'settings.backup.cloudTitle': '云端同步',
-  'settings.backup.cloudSubtitle': '自动把你在这台设备上的对话、角色、设置和 API 密钥同步到你的 MongoDB 云库。上传前服务器会整体加密，云端只存密文；换任何浏览器打开你的站点都会自动拉回最新数据，无需手动操作。图片等附件暂不走云端。',
+  'settings.backup.cloudSubtitle': '自动把你在这台设备上的对话、角色、设置和 API 密钥同步到你的 MongoDB 云库。换任何浏览器打开你的站点都会自动拉回最新数据，无需手动操作。图片等附件暂不走云端。',
   'settings.backup.cloudUploading': '同步中…',
   'settings.backup.cloudUpload': '立即同步一次',
   'settings.backup.cloudReading': '恢复中…',

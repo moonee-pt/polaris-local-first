@@ -1,7 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getSnapshotsCollection, snapshotsTooLarge } from '../../src/engines/server/mongo.js';
-import { applySyncCors, authorizeSyncRequest, getSyncUserId, parseSyncBody } from '../../src/engines/server/syncHttp.js';
-import { encryptSnapshot } from '../../src/engines/server/syncCrypto.js';
+import { applySyncCors, getSyncUserId, parseSyncBody } from '../../src/engines/server/syncHttp.js';
 
 const RETENTION = 7;
 
@@ -17,8 +16,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.status(405).json({ error: { message: 'Method not allowed', type: 'invalid_request' } });
     return;
   }
-
-  if (!authorizeSyncRequest(req, res)) return;
 
   let body: { schemaVersion?: number; payload?: unknown };
   try {
@@ -42,12 +39,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const userId = getSyncUserId(req);
     const collection = await getSnapshotsCollection();
     const now = new Date();
-    const encrypted = encryptSnapshot(JSON.stringify(body.payload));
     const insert = await collection.insertOne({
       userId,
       schemaVersion: typeof body.schemaVersion === 'number' ? body.schemaVersion : 1,
       updatedAt: now,
-      payload: encrypted
+      payload: body.payload
     });
 
     const stale = await collection

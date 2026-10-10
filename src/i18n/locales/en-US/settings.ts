@@ -641,7 +641,7 @@ export const settings = {
   'settings.backup.webdavReadyNote': 'Complete backups will be uploaded to this existing remote folder. Restore uses the latest one and overwrites current data. Web requires HTTPS and CORS permission; trailing slashes are handled automatically.',
   'settings.backup.webdavMissingNote': 'Fill in an existing remote folder URL, username, and password to upload or restore complete backups. On web, use HTTPS WebDAV and enable CORS on the server.',
   'settings.backup.cloudTitle': 'Cloud Sync',
-  'settings.backup.cloudSubtitle': 'Automatically syncs this device\'s chats, personas, settings and API keys to your MongoDB cloud. The server encrypts the whole payload before storing, so the cloud keeps only ciphertext. Opening your site in any browser pulls the latest data back automatically — no manual steps. Image attachments are not synced yet.',
+  'settings.backup.cloudSubtitle': 'Automatically syncs this device\'s chats, personas, settings and API keys to your MongoDB cloud. Opening your site in any browser pulls the latest data back automatically — no manual steps. Image attachments are not synced yet.',
   'settings.backup.cloudUploading': 'Syncing...',
   'settings.backup.cloudUpload': 'Sync now',
   'settings.backup.cloudReading': 'Restoring...',

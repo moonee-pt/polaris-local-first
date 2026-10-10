@@ -68,7 +68,7 @@ export type AutoCloudBackupOutcome = 'ok' | 'skipped-not-configured' | 'skipped-
 
 let autoBackupInFlight = false;
 
-// Silent background backup. No-ops unless a sync token is baked into the build.
+// Silent background backup on the deployed site (no-ops in local dev, see isSyncConfigured).
 // Reads the persisted snapshot (durable IndexedDB data), so it is safe at any point after startup.
 export async function runAutoCloudBackup(): Promise<AutoCloudBackupOutcome> {
   if (!isSyncConfigured()) return 'skipped-not-configured';

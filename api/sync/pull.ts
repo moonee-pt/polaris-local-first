@@ -1,7 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getSnapshotsCollection } from '../../src/engines/server/mongo.js';
-import { applySyncCors, authorizeSyncRequest, getSyncUserId } from '../../src/engines/server/syncHttp.js';
-import { decryptSnapshot, looksEncrypted } from '../../src/engines/server/syncCrypto.js';
+import { applySyncCors, getSyncUserId } from '../../src/engines/server/syncHttp.js';
 
 const RETENTION_LIMIT = 7;
 
@@ -14,13 +13,10 @@ type SnapshotDoc = {
 
 function serialize(doc: SnapshotDoc | null | undefined) {
   if (!doc) return null;
-  const payload = looksEncrypted(doc.payload)
-    ? JSON.parse(decryptSnapshot(doc.payload))
-    : doc.payload;
   return {
     schemaVersion: doc.schemaVersion,
     updatedAt: doc.updatedAt.toISOString(),
-    payload
+    payload: doc.payload
   };
 }
 
@@ -36,8 +32,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.status(405).json({ error: { message: 'Method not allowed', type: 'invalid_request' } });
     return;
   }
-
-  if (!authorizeSyncRequest(req, res)) return;
 
   try {
     const userId = getSyncUserId(req);
