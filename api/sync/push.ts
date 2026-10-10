@@ -1,8 +1,12 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getSnapshotsCollection, snapshotsTooLarge } from '../../src/engines/server/mongo.js';
+import { docTooLarge, getTableCollection } from '../../src/engines/server/mongo.js';
 import { applySyncCors, getSyncUserId, parseSyncBody } from '../../src/engines/server/syncHttp.js';
+import type { SyncOp, SyncTableName } from '../../src/engines/syncProtocol.js';
+import { SYNC_TABLES } from '../../src/engines/syncProtocol.js';
 
-const RETENTION = 7;
+function isTableName(value: unknown): value is SyncTableName {
+  return typeof value === 'string' && (SYNC_TABLES as readonly string[]).includes(value);
+}
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   applySyncCors(req, res, 'POST, OPTIONS');
@@ -17,7 +21,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  let body: { schemaVersion?: number; payload?: unknown };
+  let body: { ops?: unknown };
   try {
     body = parseSyncBody(req) as typeof body;
   } catch {
@@ -25,38 +29,44 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  if (body.payload === undefined || body.payload === null) {
-    res.status(400).json({ error: { message: 'Empty payload', type: 'invalid_request' } });
+  const ops = Array.isArray(body.ops) ? (body.ops as SyncOp[]) : null;
+  if (!ops) {
+    res.status(400).json({ error: { message: 'Missing ops array', type: 'invalid_request' } });
     return;
   }
 
-  if (snapshotsTooLarge(body.payload)) {
-    res.status(413).json({ error: { message: 'Snapshot exceeds 16MB', type: 'payload_too_large' } });
-    return;
+  for (const op of ops) {
+    if (!op || typeof op !== 'object' || !isTableName(op.table) || typeof op.id !== 'string' || !op.id) {
+      res.status(400).json({ error: { message: 'Malformed op', type: 'invalid_request' } });
+      return;
+    }
+    if (op.delete !== true && docTooLarge(op.data)) {
+      res.status(413).json({ error: { message: 'Row exceeds 16MB', type: 'payload_too_large' } });
+      return;
+    }
   }
 
   try {
     const userId = getSyncUserId(req);
-    const collection = await getSnapshotsCollection();
-    const now = new Date();
-    const insert = await collection.insertOne({
-      userId,
-      schemaVersion: typeof body.schemaVersion === 'number' ? body.schemaVersion : 1,
-      updatedAt: now,
-      payload: body.payload
-    });
+    const now = Date.now();
+    let applied = 0;
 
-    const stale = await collection
-      .find({ userId })
-      .sort({ updatedAt: -1 })
-      .skip(RETENTION)
-      .project({ _id: 1 })
-      .toArray();
-    if (stale.length > 0) {
-      await collection.deleteMany({ _id: { $in: stale.map((doc) => doc._id) } });
+    for (const op of ops) {
+      const collection = await getTableCollection(op.table);
+      if (op.delete === true) {
+        await collection.deleteOne({ userId, _id: op.id });
+      } else {
+        const updatedAt = new Date(typeof op.updatedAt === 'number' ? op.updatedAt : now);
+        await collection.updateOne(
+          { userId, _id: op.id },
+          { $set: { userId, data: op.data, updatedAt }, $setOnInsert: { createdAt: updatedAt } },
+          { upsert: true }
+        );
+      }
+      applied += 1;
     }
 
-    res.status(200).json({ ok: true, id: insert.insertedId, updatedAt: now.toISOString() });
+    res.status(200).json({ ok: true, applied, latestAt: now });
   } catch (error) {
     res.status(500).json({ error: { message: error instanceof Error ? error.message : 'Sync failed', type: 'server_error' } });
   }

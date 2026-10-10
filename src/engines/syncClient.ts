@@ -1,12 +1,7 @@
 import { buildInternalApiEndpoint } from './chat-api/chatApiEndpoint';
+import type { PullResponse, PushResponse, SyncOp } from './syncProtocol';
 
-export type SyncSnapshot = {
-  schemaVersion: number;
-  updatedAt: string;
-  payload: unknown;
-};
-
-export type PushResult = { ok: true; id: string; updatedAt: string };
+export type { PullResponse, SyncOp } from './syncProtocol';
 
 function syncHeaders(): HeadersInit {
   return { 'Content-Type': 'application/json' };
@@ -20,38 +15,19 @@ export function isSyncConfigured(): boolean {
   return host !== 'localhost' && host !== '127.0.0.1' && host !== '';
 }
 
-export async function pushSnapshot(payload: unknown, schemaVersion = 1): Promise<PushResult> {
+export async function pushOps(ops: SyncOp[]): Promise<PushResponse> {
   const res = await fetch(buildInternalApiEndpoint('/api/sync/push'), {
     method: 'POST',
     headers: syncHeaders(),
-    body: JSON.stringify({ schemaVersion, payload })
+    body: JSON.stringify({ ops })
   });
-  if (!res.ok) {
-    throw new Error(`同步上传失败（${res.status}）`);
-  }
-  return (await res.json()) as PushResult;
+  if (!res.ok) throw new Error(`同步上传失败（${res.status}）`);
+  return (await res.json()) as PushResponse;
 }
 
-export async function pullLatestSnapshot(): Promise<SyncSnapshot | null> {
-  const res = await fetch(buildInternalApiEndpoint('/api/sync/pull'), {
-    method: 'GET',
-    headers: syncHeaders()
-  });
-  if (!res.ok) {
-    throw new Error(`同步下载失败（${res.status}）`);
-  }
-  const data = (await res.json()) as { ok: boolean; snapshot: SyncSnapshot | null };
-  return data.snapshot;
-}
-
-export async function listSnapshots(): Promise<SyncSnapshot[]> {
-  const res = await fetch(buildInternalApiEndpoint('/api/sync/pull?list=1'), {
-    method: 'GET',
-    headers: syncHeaders()
-  });
-  if (!res.ok) {
-    throw new Error(`同步列表读取失败（${res.status}）`);
-  }
-  const data = (await res.json()) as { ok: boolean; snapshots: SyncSnapshot[] };
-  return data.snapshots ?? [];
+export async function pullTables(since: number | null): Promise<PullResponse> {
+  const path = since === null ? '/api/sync/pull' : `/api/sync/pull?since=${since}`;
+  const res = await fetch(buildInternalApiEndpoint(path), { method: 'GET', headers: syncHeaders() });
+  if (!res.ok) throw new Error(`同步下载失败（${res.status}）`);
+  return (await res.json()) as PullResponse;
 }

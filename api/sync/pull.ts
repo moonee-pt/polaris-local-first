@@ -1,23 +1,20 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getSnapshotsCollection } from '../../src/engines/server/mongo.js';
+import { getTableCollection } from '../../src/engines/server/mongo.js';
 import { applySyncCors, getSyncUserId } from '../../src/engines/server/syncHttp.js';
+import { SYNC_TABLES, type PullResponse, type SyncTableName, type SyncDoc } from '../../src/engines/syncProtocol.js';
 
-const RETENTION_LIMIT = 7;
+type Row = { _id: string; updatedAt: Date; data: unknown };
 
-type SnapshotDoc = {
-  userId: string;
-  schemaVersion: number;
-  updatedAt: Date;
-  payload: unknown;
-};
-
-function serialize(doc: SnapshotDoc | null | undefined) {
-  if (!doc) return null;
-  return {
-    schemaVersion: doc.schemaVersion,
-    updatedAt: doc.updatedAt.toISOString(),
-    payload: doc.payload
-  };
+async function readTable(userId: string, table: SyncTableName, since: number | null): Promise<SyncDoc[]> {
+  const collection = await getTableCollection(table);
+  const filter: Record<string, unknown> = { userId };
+  if (since !== null) filter.updatedAt = { $gt: new Date(since) };
+  const docs = await collection.find<Row>(filter).toArray();
+  return docs.map((doc) => ({
+    id: String(doc._id),
+    data: doc.data,
+    updatedAt: doc.updatedAt instanceof Date ? doc.updatedAt.getTime() : Number(doc.updatedAt ?? 0)
+  }));
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -33,22 +30,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
+  const sinceRaw = typeof req.query.since === 'string' ? Number(req.query.since) : null;
+  const since = Number.isFinite(sinceRaw as number) ? (sinceRaw as number) : null;
+
   try {
     const userId = getSyncUserId(req);
-    const collection = await getSnapshotsCollection();
-
-    if (req.query.list === '1') {
-      const docs = await collection
-        .find<SnapshotDoc>({ userId })
-        .sort({ updatedAt: -1 })
-        .limit(RETENTION_LIMIT)
-        .toArray();
-      res.status(200).json({ ok: true, snapshots: docs.map(serialize) });
-      return;
+    const tables = {} as Record<SyncTableName, SyncDoc[]>;
+    let latestAt = 0;
+    for (const table of SYNC_TABLES) {
+      const rows = await readTable(userId, table, since);
+      tables[table] = rows;
+      for (const row of rows) if (row.updatedAt > latestAt) latestAt = row.updatedAt;
     }
-
-    const latest = await collection.findOne<SnapshotDoc>({ userId }, { sort: { updatedAt: -1 } });
-    res.status(200).json({ ok: true, snapshot: serialize(latest) });
+    const payload: PullResponse = { ok: true, tables, latestAt };
+    res.status(200).json(payload);
   } catch (error) {
     res.status(500).json({ error: { message: error instanceof Error ? error.message : 'Pull failed', type: 'server_error' } });
   }

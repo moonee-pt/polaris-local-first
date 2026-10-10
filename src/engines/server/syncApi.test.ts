@@ -1,18 +1,32 @@
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const insertOne = vi.fn().mockResolvedValue({ insertedId: 'id-1' });
-const deleteMany = vi.fn().mockResolvedValue({ deletedCount: 0 });
-const findOne = vi.fn();
-const toArray = vi.fn().mockResolvedValue([]);
-const limit = vi.fn().mockReturnValue({ toArray });
-const skip = vi.fn().mockReturnValue({ project: vi.fn().mockReturnValue({ toArray }) });
-const project = vi.fn();
-const sort = vi.fn().mockReturnValue({ skip, limit });
-const find = vi.fn().mockReturnValue({ sort });
-const createIndex = vi.fn().mockResolvedValue(undefined);
+type TableMock = {
+  updateOne: ReturnType<typeof vi.fn>;
+  deleteOne: ReturnType<typeof vi.fn>;
+  find: ReturnType<typeof vi.fn>;
+  createIndex: ReturnType<typeof vi.fn>;
+};
+
+function makeTable(rows: Array<{ _id: string; updatedAt: Date; data: unknown }> = []): TableMock {
+  const toArray = vi.fn().mockResolvedValue(rows);
+  return {
+    updateOne: vi.fn().mockResolvedValue({ upsertedId: 'x' }),
+    deleteOne: vi.fn().mockResolvedValue({ deletedCount: 1 }),
+    find: vi.fn().mockReturnValue({ toArray }),
+    createIndex: vi.fn().mockResolvedValue(undefined)
+  };
+}
+
+const tables: Record<string, TableMock> = {};
+function getTable(name: string): TableMock {
+  if (!tables[name]) tables[name] = makeTable();
+  return tables[name];
+}
 
 vi.mock('./mongo.js', () => ({
-  getSnapshotsCollection: vi.fn(async () => ({ insertOne, deleteMany, findOne, find, createIndex, project })),
+  getTableCollection: vi.fn(async (name: string) => getTable(name)),
+  getSnapshotsCollection: vi.fn(async () => getTable('snapshots')),
+  docTooLarge: vi.fn(() => false),
   snapshotsTooLarge: vi.fn(() => false)
 }));
 
@@ -35,54 +49,105 @@ function makeRes() {
 const req = (over: any = {}) => ({
   method: 'POST',
   headers: { origin: 'https://qoder.zone' },
-  body: { schemaVersion: 1, payload: { chat: {} } },
+  body: { ops: [] },
   query: {},
   ...over
 } as any);
 
-describe('api/sync/push', () => {
-  it('rejects a non-POST request', async () => {
+describe('api/sync/push (table ops)', () => {
+  it('rejects non-POST', async () => {
     const res = makeRes();
     await pushHandler(req({ method: 'GET' }), res);
     expect(res.statusCode).toBe(405);
   });
 
-  it('rejects an empty payload', async () => {
+  it('rejects a missing ops array', async () => {
     const res = makeRes();
-    await pushHandler(req({ body: { payload: null } }), res);
+    await pushHandler(req({ body: {} }), res);
     expect(res.statusCode).toBe(400);
   });
 
-  it('stores the snapshot under the owner id and trims history', async () => {
+  it('rejects an op with an unknown table name', async () => {
     const res = makeRes();
-    await pushHandler(req({ body: { schemaVersion: 1, payload: { chat: { hi: 1 } } } }), res);
-    expect(insertOne).toHaveBeenCalledWith(
-      expect.objectContaining({ userId: 'owner', schemaVersion: 1, payload: { chat: { hi: 1 } } })
+    await pushHandler(
+      req({ body: { ops: [{ table: 'sync_bogus', id: 'x', data: 1 }] } }),
+      res
+    );
+    expect(res.statusCode).toBe(400);
+  });
+
+  it('upserts settings and conversations with owner scope', async () => {
+    for (const key of Object.keys(tables)) delete tables[key];
+    const res = makeRes();
+    await pushHandler(
+      req({
+        body: {
+          ops: [
+            { table: 'sync_settings', id: 'global', data: { spaceState: { theme: 'dark' } } },
+            { table: 'sync_conversations', id: 'c-1', data: { id: 'c-1', title: 'hi', messages: [] } }
+          ]
+        }
+      }),
+      res
     );
     expect(res.statusCode).toBe(200);
-    expect(res.body).toMatchObject({ ok: true });
+    expect(res.body).toMatchObject({ ok: true, applied: 2 });
+    expect(getTable('sync_settings').updateOne).toHaveBeenCalledWith(
+      { userId: 'owner', _id: 'global' },
+      expect.objectContaining({ $set: expect.objectContaining({ userId: 'owner' }) }),
+      { upsert: true }
+    );
+    expect(getTable('sync_conversations').updateOne).toHaveBeenCalled();
+  });
+
+  it('deletes a row when op.delete is true', async () => {
+    for (const key of Object.keys(tables)) delete tables[key];
+    const res = makeRes();
+    await pushHandler(req({ body: { ops: [{ table: 'sync_personas', id: 'p-9', delete: true }] } }), res);
+    expect(getTable('sync_personas').deleteOne).toHaveBeenCalledWith({ userId: 'owner', _id: 'p-9' });
+    expect(getTable('sync_personas').updateOne).not.toHaveBeenCalled();
   });
 });
 
-describe('api/sync/pull', () => {
-  it('rejects a non-GET request', async () => {
+describe('api/sync/pull (all tables)', () => {
+  beforeEach(() => {
+    for (const key of Object.keys(tables)) delete tables[key];
+  });
+
+  it('rejects non-GET', async () => {
     const res = makeRes();
     await pullHandler(req({ method: 'POST' }), res);
     expect(res.statusCode).toBe(405);
   });
 
-  it('returns the latest snapshot', async () => {
-    findOne.mockResolvedValue({ userId: 'owner', schemaVersion: 1, updatedAt: new Date('2026-10-10T00:00:00Z'), payload: { chat: 1 } });
+  it('returns every table with owner-scoped rows and a latestAt marker', async () => {
+    tables.sync_settings = makeTable([
+      { _id: 'global', updatedAt: new Date('2026-10-10T00:00:00Z'), data: { spaceState: { theme: 'light' } } }
+    ]);
+    tables.sync_conversations = makeTable([
+      { _id: 'c-1', updatedAt: new Date('2026-10-11T00:00:00Z'), data: { id: 'c-1', messages: [] } }
+    ]);
     const res = makeRes();
-    await pullHandler(req({ method: 'GET' }), res);
+    await pullHandler(req({ method: 'GET', body: undefined }), res);
     expect(res.statusCode).toBe(200);
-    expect(res.body).toMatchObject({ ok: true, snapshot: { schemaVersion: 1, payload: { chat: 1 } } });
+    const body = res.body as any;
+    expect(body.ok).toBe(true);
+    expect(body.tables.sync_settings).toEqual([
+      { id: 'global', data: { spaceState: { theme: 'light' } }, updatedAt: Date.parse('2026-10-10T00:00:00Z') }
+    ]);
+    expect(body.tables.sync_conversations[0].id).toBe('c-1');
+    expect(body.latestAt).toBe(Date.parse('2026-10-11T00:00:00Z'));
   });
 
-  it('returns null when nothing synced yet', async () => {
-    findOne.mockResolvedValue(null);
+  it('filters by updatedAt when ?since is provided', async () => {
+    tables.sync_conversations = makeTable();
     const res = makeRes();
-    await pullHandler(req({ method: 'GET' }), res);
-    expect(res.body).toMatchObject({ ok: true, snapshot: null });
+    await pullHandler(req({ method: 'GET', query: { since: '1700000000000' }, body: undefined }), res);
+    const find = getTable('sync_conversations').find;
+    expect(find).toHaveBeenCalledWith(expect.objectContaining({
+      userId: 'owner',
+      updatedAt: { $gt: new Date(1700000000000) }
+    }));
+    expect(res.statusCode).toBe(200);
   });
 });
