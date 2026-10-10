@@ -5,6 +5,9 @@ import { useI18n } from '../../../../i18n';
 import { Icon } from '../../../Icon';
 import { toolIconName } from '../chatToolIcons';
 import { buildThinkingSessionSummary, createThinkingSummaryCopy } from '../thinkingSummary';
+import { buildAssistantSpeechText } from '../message/messageSpeechText';
+import { readFleshCues, type FleshAmbiencePreset, type FleshCue } from '../../../../engines/voice/fleshAmbience';
+import type { I18nKey } from '../../../../i18n/messages';
 
 type ThinkingSheetProps = {
   message: ChatMessage | null;
@@ -12,6 +15,25 @@ type ThinkingSheetProps = {
   assistantName: string;
   onClose: () => void;
 };
+
+const FLESH_CATEGORY_KEYS: Record<string, string> = {
+  dryplap: 'dryplap',
+  wetplap: 'wetplap',
+  wet: 'wet',
+  stroke: 'stroke',
+  cum: 'cum',
+  pullout: 'pullout'
+};
+
+function describeFleshCue(cue: FleshCue, t: I18nTranslator['t']) {
+  const categoryKey = FLESH_CATEGORY_KEYS[cue.category];
+  const label = t((`chat.performanceTag.${categoryKey}`) as I18nKey);
+  if (cue.kind === 'oneShot') {
+    return `${label} · ${t('chat.thinking.voice.oneShot')}`;
+  }
+  const presetLabel = t((`chat.thinking.voice.preset.${cue.preset as FleshAmbiencePreset}`) as I18nKey);
+  return `${label} · ${presetLabel} · ${t('chat.thinking.voice.loop')}`;
+}
 
 function localizeToolStatus(status: ToolInvocation['status'], t: I18nTranslator['t']) {
   switch (status) {
@@ -49,6 +71,14 @@ export function ThinkingSheet({
     () => (message ? buildThinkingSessionSummary(messages, message.id, copy) : null),
     [copy, message, messages]
   );
+
+  const voice = useMemo(() => {
+    if (!message || message.role !== 'assistant') return null;
+    const cues = readFleshCues(message.content);
+    const ttsText = buildAssistantSpeechText(message.content);
+    if (!cues.length && !ttsText) return null;
+    return { ttsText, cues };
+  }, [message]);
 
   useEffect(() => {
     setRawExpanded(false);
@@ -119,6 +149,30 @@ export function ThinkingSheet({
             </article>
           ))}
         </div>
+
+        {voice ? (
+          <section className="thinking-summary-voice">
+            <span className="thinking-summary-voice-kicker">{t('chat.thinking.voice.title')}</span>
+            <div className="thinking-summary-voice-row">
+              <span className="thinking-summary-voice-label">{t('chat.thinking.voice.tts')}</span>
+              <pre className="thinking-summary-voice-tts">{voice.ttsText || '—'}</pre>
+            </div>
+            <div className="thinking-summary-voice-row">
+              <span className="thinking-summary-voice-label">{t('chat.thinking.voice.track')}</span>
+              {voice.cues.length ? (
+                <div className="thinking-summary-voice-track">
+                  {voice.cues.map((cue, index) => (
+                    <span key={`voice-cue-${index}`} className="thinking-summary-voice-track-item">
+                      {describeFleshCue(cue, t)}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <span className="thinking-summary-voice-track-empty">{t('chat.thinking.voice.trackEmpty')}</span>
+              )}
+            </div>
+          </section>
+        ) : null}
 
         <div className="thinking-summary-raw">
           <button

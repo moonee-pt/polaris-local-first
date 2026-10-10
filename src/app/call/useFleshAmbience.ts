@@ -13,7 +13,7 @@ const LOOKAHEAD_SEC = 0.8;
 const TICK_MS = 150;
 const FADE_IN_SEC = 0.5;
 const FADE_OUT_SEC = 0.9;
-const DUCK_LEVEL = 0.55;
+const DUCK_LEVEL = 0.8;
 
 function resolveClipUrl(category: FleshAmbienceCategory, clip: string) {
   const base = import.meta.env.BASE_URL || '/';
@@ -197,7 +197,7 @@ export function useFleshAmbience(): FleshAmbienceController {
     void context.resume().catch(() => {});
     const clip = FLESH_CLIP_NAMES[category][0];
     if (!clip) return;
-    const hit = () => scheduleHit(context, category, clip, context.currentTime + 0.05, 0.7);
+    const hit = () => scheduleHit(context, category, clip, context.currentTime + 0.05, 1);
     if (bufferRef.current.has(`${category}/${clip}`)) {
       hit();
       return;

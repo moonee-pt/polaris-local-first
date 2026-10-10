@@ -334,6 +334,68 @@
   word-break: break-word;
 }
 
+.thinking-summary-voice {
+  margin-top: 12px;
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid color-mix(in srgb, var(--border) 72%, transparent);
+  background: color-mix(in srgb, var(--surface) 76%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.thinking-summary-voice-kicker {
+  display: inline-block;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.thinking-summary-voice-row {
+  display: grid;
+  gap: 6px;
+}
+
+.thinking-summary-voice-label {
+  font-size: var(--type-caption);
+  color: var(--text-soft);
+}
+
+.thinking-summary-voice-tts {
+  margin: 0;
+  color: var(--text);
+  font: inherit;
+  font-size: var(--type-caption);
+  line-height: 1.65;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.thinking-summary-voice-track,
+.thinking-summary-voice-track-empty {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.thinking-summary-voice-track-item {
+  padding: 2px 9px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--border) 72%, transparent);
+  background: color-mix(in srgb, var(--surface-solid) 70%, transparent);
+  color: var(--text-muted);
+  font-size: var(--type-caption);
+  line-height: 1.6;
+}
+
+.thinking-summary-voice-track-empty {
+  color: var(--text-muted);
+  font-size: var(--type-caption);
+}
+
 @media (max-width: 640px) {
   .thinking-summary-sheet {
     padding-left: 12px;

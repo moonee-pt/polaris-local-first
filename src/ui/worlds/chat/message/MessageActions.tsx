@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { CodeCardActionMode } from '../../../../app/chat/chatDerivedState';
 import { readMessageSpeechCacheBlob, saveMessageSpeechCache } from '../../../../app/chat/messageSpeechCache';
+import { playChatSpeechBlob, primeChatSpeechAudio, stopChatSpeechAudio } from '../../../../app/chat/chatSpeechAudio';
 import { requestGeneratedSpeech } from '../../../../engines/voiceGenerationClient';
 import { readFleshCues } from '../../../../engines/voice/fleshAmbience';
 import { useFleshAmbience } from '../../../../app/call/useFleshAmbience';
@@ -104,8 +105,6 @@ export function MessageActions({
   const [assistantSheetOpen, setAssistantSheetOpen] = useState(false);
   const [assistantSheetMode, setAssistantSheetMode] = useState<'menu' | 'edit' | 'memory'>('menu');
   const [assistantDraft, setAssistantDraft] = useState(messageContent);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const audioUrlRef = useRef<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const voiceGeneration = useRuntimeStore((state) => state.voiceGeneration);
   const showCodeCardAction = codeCardActionMode !== 'hidden';
@@ -171,17 +170,7 @@ export function MessageActions({
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       window.speechSynthesis.cancel();
     }
-    const currentAudio = audioRef.current;
-    if (currentAudio) {
-      currentAudio.pause();
-      currentAudio.src = '';
-      audioRef.current = null;
-    }
-    const currentUrl = audioUrlRef.current;
-    if (currentUrl) {
-      URL.revokeObjectURL(currentUrl);
-      audioUrlRef.current = null;
-    }
+    stopChatSpeechAudio();
     abortRef.current?.abort();
     abortRef.current = null;
     setSpeaking(false);
@@ -250,21 +239,14 @@ export function MessageActions({
   };
 
   const playAudioBlob = async (blob: Blob) => {
-    const url = URL.createObjectURL(blob);
-    const audio = new Audio(url);
-    audioRef.current = audio;
-    audioUrlRef.current = url;
-    audio.onended = () => {
-      if (audioRef.current !== audio) return;
-      stopSpeechPlayback();
-    };
-    audio.onerror = () => {
-      if (audioRef.current !== audio) return;
-      onSetCommandStatus(t('chat.messageActions.audioPlaybackFailed'), true);
-      stopSpeechPlayback();
-    };
     setSpeaking(true);
-    await audio.play();
+    await playChatSpeechBlob(blob, {
+      onEnded: () => stopSpeechPlayback(),
+      onError: () => {
+        onSetCommandStatus(t('chat.messageActions.audioPlaybackFailed'), true);
+        stopSpeechPlayback();
+      }
+    });
   };
 
   const playCachedSpeech = async (cache: ChatMessageVoiceCache) => {
@@ -300,6 +282,7 @@ export function MessageActions({
       stopSpeechPlayback();
       return;
     }
+    primeChatSpeechAudio();
     stopSpeechPlayback();
     applyMessageAmbience();
     if (speechCache?.assetId) {

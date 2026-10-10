@@ -78,9 +78,9 @@ describe('flesh ambience loop', () => {
 
   it('applies gain jitter around the preset level', () => {
     const plaps = collect(13, 'wetplap', 'soft', 40);
-    expect(plaps.every((hit) => hit.gain > 0.3 && hit.gain < 0.7)).toBe(true);
+    expect(plaps.every((hit) => hit.gain > 0.4 && hit.gain < 0.9)).toBe(true);
     const bed = collect(13, 'wet', 'soft', 40);
-    expect(bed.every((hit) => hit.gain > 0.15 && hit.gain < 0.5)).toBe(true);
+    expect(bed.every((hit) => hit.gain > 0.25 && hit.gain < 0.6)).toBe(true);
   });
 
   it('switches density when the preset is changed mid-scene', () => {

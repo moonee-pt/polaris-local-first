@@ -26,11 +26,18 @@ export type FleshAmbienceHit = {
 
 const CUE_SOURCE = '\\[(flesh|dryplap|wetplap|wet|stroke|cum|pullout)(?::(soft|hard))?\\]';
 
+const FLESH_CUE_SLUGS = new Set(['flesh', 'dryplap', 'wetplap', 'wet', 'stroke', 'cum', 'pullout']);
+
+/** True when a bracket's inner text (already lowercased/trimmed) is a body-sound cue. */
+export function isFleshCueTag(inner: string) {
+  return FLESH_CUE_SLUGS.has(inner.split(':')[0].trim());
+}
+
 const CATEGORY_PROFILE: Record<FleshLoopCategory, { perSec: number; gain: number }> = {
-  dryplap: { perSec: 1.7, gain: 0.6 },
-  wetplap: { perSec: 1.7, gain: 0.6 },
-  wet: { perSec: 0.9, gain: 0.4 },
-  stroke: { perSec: 0.9, gain: 0.4 }
+  dryplap: { perSec: 2.4, gain: 0.8 },
+  wetplap: { perSec: 2.4, gain: 0.8 },
+  wet: { perSec: 1.2, gain: 0.55 },
+  stroke: { perSec: 1.2, gain: 0.55 }
 };
 
 const PRESET_SCALE: Record<FleshAmbiencePreset, { rate: number; gain: number }> = {
