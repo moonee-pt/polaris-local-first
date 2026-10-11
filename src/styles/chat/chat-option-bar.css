@@ -1,27 +1,32 @@
 /* Chat option bar: the assistant hands back a short list of directions to pick from.
-   While the answer is still open the list sits on a pearl-glass slab; once it is answered,
+   Palette matches the bottom shelf tab's active pink (#fff2f6 -> #f6b9c9, detail #d588a1).
+   While the answer is still open the list sits on a frosted pink slab; once it is answered,
    or in a message that is no longer live, the glass drops away and only rows remain. */
 
 .message-option-bar {
+  --option-pink-light: #fff2f6;
+  --option-pink: #f6b9c9;
+  --option-pink-ink: #d588a1;
+  --option-pink-deep: #c46f8d;
+  --option-pink-text: #4a2431;
+
   position: relative;
   padding: 0.24em 0;
-  border-radius: 18px;
+  border-radius: 12px;
   background:
-    radial-gradient(118% 86% at 3% 0%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 55%),
-    radial-gradient(96% 76% at 100% 104%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 58%),
+    radial-gradient(118% 86% at 3% 0%, color-mix(in srgb, var(--option-pink) 42%, transparent), transparent 55%),
     linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--accent) 6.5%, transparent) 0%,
-      color-mix(in srgb, var(--accent) 1.5%, transparent) 100%
-    ),
-    color-mix(in srgb, var(--cool-surface) 54%, transparent);
-  -webkit-backdrop-filter: blur(20px) saturate(170%);
-  backdrop-filter: blur(20px) saturate(170%);
+      135deg,
+      color-mix(in srgb, var(--option-pink-light) 76%, transparent) 0%,
+      color-mix(in srgb, var(--option-pink) 56%, transparent) 100%
+    );
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
   box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--accent) 10%, transparent),
-    0 20px 38px -26px color-mix(in srgb, var(--accent) 58%, transparent),
-    0 4px 12px -8px rgba(18, 20, 30, 0.22),
-    inset 0 1px 0 color-mix(in srgb, #ffffff 40%, transparent);
+    0 0 0 1px color-mix(in srgb, var(--option-pink-ink) 20%, transparent),
+    0 18px 34px -24px color-mix(in srgb, var(--option-pink-ink) 72%, transparent),
+    0 3px 10px -7px rgba(74, 36, 49, 0.22),
+    inset 0 1px 0 color-mix(in srgb, #ffffff 52%, transparent);
   overflow: hidden;
 }
 
@@ -31,7 +36,7 @@
 }
 
 .message-option-bar-list > * + * {
-  border-top: 1px solid color-mix(in srgb, var(--text) 8.5%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--option-pink-ink) 22%, transparent);
 }
 
 .message-option-bar-row {
@@ -57,18 +62,18 @@ button.message-option-bar-row {
 }
 
 button.message-option-bar-row:active {
-  background: color-mix(in srgb, var(--accent) 13%, transparent);
-  transform: scale(0.995);
+  background: color-mix(in srgb, var(--option-pink-ink) 18%, transparent);
+  transform: scale(0.996);
 }
 
 @media (hover: hover) {
   button.message-option-bar-row:hover {
-    background: color-mix(in srgb, var(--accent) 7%, transparent);
+    background: color-mix(in srgb, var(--option-pink-ink) 10%, transparent);
   }
 }
 
 button.message-option-bar-row:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--accent) 42%, transparent);
+  outline: 2px solid color-mix(in srgb, var(--option-pink-deep) 60%, transparent);
   outline-offset: -3px;
 }
 
@@ -83,9 +88,9 @@ button.message-option-bar-row:focus-visible {
   font-size: 0.72em;
   font-weight: 700;
   letter-spacing: 0.02em;
-  color: color-mix(in srgb, var(--accent) 78%, var(--text-muted) 22%);
-  background: color-mix(in srgb, var(--accent) 11%, transparent);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 20%, transparent);
+  color: var(--option-pink-deep);
+  background: color-mix(in srgb, var(--option-pink) 38%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--option-pink-ink) 30%, transparent);
 }
 
 .message-option-bar-text {
@@ -99,15 +104,15 @@ button.message-option-bar-row:focus-visible {
 }
 
 .message-option-bar-row.is-chosen .message-option-bar-letter {
-  background: var(--accent);
-  color: var(--cool-surface-deep);
+  background: linear-gradient(135deg, var(--option-pink) 0%, var(--option-pink-deep) 100%);
+  color: var(--option-pink-text);
   box-shadow: none;
 }
 
 .message-option-bar-custom .message-option-bar-letter,
 .message-option-bar.is-static .message-option-bar-row:not(.is-chosen) .message-option-bar-letter {
-  background: color-mix(in srgb, var(--text) 6%, transparent);
-  color: color-mix(in srgb, var(--text-muted) 82%, transparent);
+  background: color-mix(in srgb, var(--option-pink-ink) 14%, transparent);
+  color: color-mix(in srgb, var(--option-pink-ink) 62%, var(--text-muted) 38%);
   box-shadow: none;
 }
 
@@ -128,8 +133,8 @@ button.message-option-bar-row:focus-visible {
   min-width: 0;
   padding: 0.5em 0.8em;
   border: 0;
-  border-radius: 12px;
-  background: color-mix(in srgb, var(--accent) 6%, transparent);
+  border-radius: 8px;
+  background: color-mix(in srgb, #ffffff 52%, transparent);
   color: var(--text);
   font: inherit;
   line-height: 1.35;
@@ -137,14 +142,13 @@ button.message-option-bar-row:focus-visible {
 }
 
 .message-option-bar-custom input::placeholder {
-  color: var(--text-muted);
-  opacity: 0.82;
+  color: color-mix(in srgb, var(--option-pink-ink) 62%, var(--text-soft) 38%);
 }
 
 .message-option-bar-custom input:focus {
   outline: none;
-  background: color-mix(in srgb, var(--accent) 10%, transparent);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 26%, transparent);
+  background: color-mix(in srgb, #ffffff 72%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--option-pink-ink) 40%, transparent);
 }
 
 .message-option-bar-send {
@@ -158,17 +162,17 @@ button.message-option-bar-row:focus-visible {
   border: 0;
   border-radius: 999px;
   background: transparent;
-  color: color-mix(in srgb, var(--text-muted) 74%, transparent);
+  color: color-mix(in srgb, var(--option-pink-ink) 70%, var(--text-muted) 30%);
   cursor: pointer;
   transition: background 160ms ease, color 160ms ease, transform 160ms ease;
 }
 
 .message-option-bar-send[data-ready='true'] {
-  background: linear-gradient(135deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 74%, #d8b46f 26%) 100%);
-  color: var(--cool-surface-deep);
+  background: linear-gradient(135deg, var(--option-pink) 0%, var(--option-pink-deep) 100%);
+  color: var(--option-pink-text);
   box-shadow:
-    0 10px 20px -12px color-mix(in srgb, var(--accent) 66%, transparent),
-    inset 0 1px 0 color-mix(in srgb, #ffffff 26%, transparent);
+    0 10px 18px -12px color-mix(in srgb, var(--option-pink-ink) 82%, transparent),
+    inset 0 1px 0 color-mix(in srgb, #ffffff 42%, transparent);
 }
 
 .message-option-bar-send:disabled {
@@ -180,7 +184,7 @@ button.message-option-bar-row:focus-visible {
 }
 
 .message-option-bar-send:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--accent) 42%, transparent);
+  outline: 2px solid color-mix(in srgb, var(--option-pink-deep) 60%, transparent);
   outline-offset: 2px;
 }
 
@@ -194,17 +198,45 @@ button.message-option-bar-row:focus-visible {
   box-shadow: none;
 }
 
+/* Night rooms: keep the pink but let it glow through the dark bubble instead of going opaque. */
+html[data-polaris-appearance='dark'] .message-option-bar:not(.is-static) {
+  background:
+    radial-gradient(118% 86% at 3% 0%, color-mix(in srgb, var(--option-pink) 26%, transparent), transparent 55%),
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--option-pink-light) 15%, transparent) 0%,
+      color-mix(in srgb, var(--option-pink) 13%, transparent) 100%
+    ),
+    color-mix(in srgb, var(--cool-surface) 52%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--option-pink) 26%, transparent),
+    0 20px 38px -26px color-mix(in srgb, var(--option-pink-ink) 62%, transparent),
+    inset 0 1px 0 color-mix(in srgb, #ffffff 14%, transparent);
+}
+
+html[data-polaris-appearance='dark'] .message-option-bar-custom input {
+  background: color-mix(in srgb, #ffffff 9%, transparent);
+}
+
 @supports not ((backdrop-filter: blur(4px)) or (-webkit-backdrop-filter: blur(4px))) {
-  .message-option-bar {
-    background: color-mix(in srgb, var(--cool-surface-deep) 92%, transparent);
+  .message-option-bar:not(.is-static) {
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--option-pink-light) 96%, transparent) 0%,
+      color-mix(in srgb, var(--option-pink) 88%, transparent) 100%
+    );
   }
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  .message-option-bar {
+  .message-option-bar:not(.is-static) {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
-    background: color-mix(in srgb, var(--cool-surface-deep) 94%, transparent);
+    background: linear-gradient(
+      135deg,
+      var(--option-pink-light) 0%,
+      color-mix(in srgb, var(--option-pink) 82%, #ffffff) 100%
+    );
   }
 }
 
