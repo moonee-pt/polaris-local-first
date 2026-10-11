@@ -1,6 +1,7 @@
 import type { ChatMessage, ChatMessageVoiceCache } from '../../../types/domain';
 import { splitVoiceCallCaptions, type VoiceCallCaptionSegment } from '../../../engines/voice/voiceCallCaption';
-import { buildAssistantCaptionParts } from '../chat/message/messageSpeechText';
+import { buildAssistantCaptionParts, getAssistantAmbiencePlan } from '../chat/message/messageSpeechText';
+import type { TimedAmbienceCue } from '../../../engines/voice/ambienceTimeline';
 
 /**
  * One message rendered as part of the reading page. Assistant replies keep the same
@@ -12,6 +13,9 @@ export type ReadingBlock = {
   segments: VoiceCallCaptionSegment[];
   voiceCache: ChatMessageVoiceCache | null;
   voicable: boolean;
+  /** Body-sound cues this reply asks for, timed against the clip it plays under. */
+  ambience: TimedAmbienceCue[];
+  ambienceSec: number;
 };
 
 export function buildReadingBlocks(messages: ChatMessage[]): ReadingBlock[] {
@@ -26,12 +30,15 @@ export function buildReadingBlocks(messages: ChatMessage[]): ReadingBlock[] {
       : splitVoiceCallCaptions([{ kind: 'speech', text: raw }]);
     if (segments.length === 0) continue;
     const voiceCache = message.voiceCache ?? null;
+    const ambiencePlan = message.role === 'assistant' ? getAssistantAmbiencePlan(raw) : null;
     blocks.push({
       messageId: message.id,
       role: message.role,
       segments,
       voiceCache,
-      voicable: message.role === 'assistant' && Boolean(voiceCache?.assetId)
+      voicable: message.role === 'assistant' && Boolean(voiceCache?.assetId),
+      ambience: ambiencePlan?.cues ?? [],
+      ambienceSec: ambiencePlan?.estimatedSec ?? 0
     });
   }
   return blocks;

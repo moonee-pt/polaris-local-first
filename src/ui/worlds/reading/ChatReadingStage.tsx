@@ -13,6 +13,7 @@ import { useI18n } from '../../../i18n';
 import { Icon } from '../../Icon';
 import { runSelectionAction } from '../../haptics';
 import { useChatPresentation, useChatStablePayload } from '../chat/context/ChatContext';
+import { useFleshAmbience } from '../../../app/call/useFleshAmbience';
 import { buildReadingBlocks, resolveReadingCursor, type ReadingBlock } from './chatReadingModel';
 
 type ChatReadingStageProps = {
@@ -24,6 +25,7 @@ export function ChatReadingStage({ onClose }: ChatReadingStageProps) {
   const stablePayload = useChatStablePayload();
   const presentation = useChatPresentation();
 
+  const ambience = useFleshAmbience();
   const blocks = useMemo(() => buildReadingBlocks(stablePayload.messages), [stablePayload.messages]);
   const spokenBlocks = useMemo(() => blocks.filter((block) => block.voicable), [blocks]);
 
@@ -41,6 +43,7 @@ export function ChatReadingStage({ onClose }: ChatReadingStageProps) {
   useEffect(() => () => {
     runIdRef.current += 1;
     setCallAudioInUse(false);
+    ambience.stop();
     if (frameRef.current !== null) window.cancelAnimationFrame(frameRef.current);
     const audio = audioRef.current;
     if (audio) {
@@ -63,6 +66,7 @@ export function ChatReadingStage({ onClose }: ChatReadingStageProps) {
       frameRef.current = null;
     }
     setCallAudioInUse(false);
+    ambience.stop();
     const audio = audioRef.current;
     if (!audio) return;
     audio.onended = null;
@@ -157,6 +161,13 @@ export function ChatReadingStage({ onClose }: ChatReadingStageProps) {
       if (runIdRef.current !== runId) return;
       markCallAudioUnlocked();
       setPlaying(true);
+      if (block.ambience.length) {
+        const measured = Number.isFinite(audio.duration) && audio.duration > 0 ? audio.duration : block.ambienceSec;
+        ambience.schedule(block.ambience, measured);
+        ambience.setDucked(true);
+      } else {
+        ambience.stop();
+      }
       frameRef.current = window.requestAnimationFrame(tick);
     })();
   };
@@ -167,12 +178,14 @@ export function ChatReadingStage({ onClose }: ChatReadingStageProps) {
       return;
     }
     primeCallAudio();
+    ambience.schedule([], 1);
     playAt(spokenIndex >= 0 && spokenIndex < spokenBlocks.length ? spokenIndex : 0);
   };
 
   const step = (delta: number) => {
     if (spokenBlocks.length === 0) return;
     primeCallAudio();
+    ambience.schedule([], 1);
     const base = spokenIndex >= 0 ? spokenIndex : 0;
     const next = Math.min(spokenBlocks.length - 1, Math.max(0, base + delta));
     playAt(next);
