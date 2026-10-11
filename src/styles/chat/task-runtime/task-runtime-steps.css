@@ -45,8 +45,8 @@
 }
 .task-runtime-card-step-dot.in_progress {
   border-color: transparent;
-  background: var(--task-blue);
-  box-shadow: 0 0 10px color-mix(in srgb, var(--task-blue) 40%, transparent);
+  background: var(--task-accent-ink);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--task-accent-ink) 45%, transparent);
   animation: softPulse 2s ease-in-out infinite;
 }
 .task-runtime-card-step-dot.completed {

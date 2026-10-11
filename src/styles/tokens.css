@@ -166,6 +166,12 @@
   --color-error: #c76e5a;
   --color-info: #7b8abf;
 
+  /* Project Pink: the bottom tab bar colour. One pink for the whole app, never a blue. */
+  --pink: #f6b9c9;
+  --pink-light: #fff2f6;
+  --pink-ink: #d588a1;
+  --pink-ink-deep: #c46f8d;
+
   /* ── Border Radius ── */
   --radius-xs: 4px;
   --radius-sm: 9px;
