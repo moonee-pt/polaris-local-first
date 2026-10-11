@@ -28,6 +28,8 @@ type MessageContentProps = {
   hasResolvedToolEvent?: boolean;
   collapseThinkingProjection?: boolean;
   smoothStreamingText?: boolean;
+  onSelectOption?: (text: string) => void;
+  optionsInteractive?: boolean;
 };
 
 type Translate = I18nTranslator['t'];
@@ -139,13 +141,18 @@ function stripToolDraftBlocks(content: string) {
     .trim();
 }
 
-function renderRichText(content: string) {
-  return <MessageMarkdown content={content} />;
+type MessageOptionBarProps = {
+  onSelectOption?: (text: string) => void;
+  optionsInteractive?: boolean;
+};
+
+function renderRichText(content: string, optionBar?: MessageOptionBarProps) {
+  return <MessageMarkdown content={content} {...optionBar} />;
 }
 
-function renderAssistantProse(content: string) {
+function renderAssistantProse(content: string, optionBar?: MessageOptionBarProps) {
   if (!content.trim()) return null;
-  return renderRichText(content);
+  return renderRichText(content, optionBar);
 }
 
 function renderToolDrafts(
@@ -288,13 +295,18 @@ export function MessageContent({
   hasProjectedCodeToolEvent = false,
   hasResolvedToolEvent = false,
   collapseThinkingProjection = false,
-  smoothStreamingText = false
+  smoothStreamingText = false,
+  onSelectOption,
+  optionsInteractive = false
 }: MessageContentProps) {
   const { t } = useI18n();
   const [closingThinkingText, setClosingThinkingText] = useState<string | null>(null);
   const [copiedToolDraftKey, setCopiedToolDraftKey] = useState<string | null>(null);
   const [copiedProjectedCodeKey, setCopiedProjectedCodeKey] = useState<string | null>(null);
   const isAssistantMessage = message.role === 'assistant';
+  const optionBar = isAssistantMessage && onSelectOption
+    ? { onSelectOption, optionsInteractive }
+    : undefined;
   const displayedMessageContent = useSmoothStreamingText(
     message.id,
     message.content,
@@ -405,7 +417,7 @@ export function MessageContent({
 
     return (
       <>
-        {renderAssistantProse(inlineContent)}
+        {renderAssistantProse(inlineContent, optionBar)}
         {hasThinkingProjection && visibleThinkingText ? (
           <MessageThinkingProjection thinkingText={visibleThinkingText} />
         ) : closingThinkingText ? (
@@ -428,7 +440,7 @@ export function MessageContent({
 
   return (
     <>
-      {renderAssistantProse(proseContent)}
+      {renderAssistantProse(proseContent, optionBar)}
       {shouldShowThinkingProjection && visibleThinkingText ? (
         <MessageThinkingProjection thinkingText={visibleThinkingText} />
       ) : closingThinkingText ? (
@@ -452,7 +464,7 @@ export function MessageContent({
           onApplyCustomCss={onApplyCustomCss}
         />
       ) : null}
-      {codeBlocks.length === 0 && toolDraftBlocks.length === 0 && !proseContent && !shouldShowThinkingProjection ? renderRichText(displayedMessageContent) : null}
+      {codeBlocks.length === 0 && toolDraftBlocks.length === 0 && !proseContent && !shouldShowThinkingProjection ? renderRichText(displayedMessageContent, optionBar) : null}
     </>
   );
 }

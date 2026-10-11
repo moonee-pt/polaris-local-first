@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseRichCardBlock, parseRichDetailsBlock, renderRichInlineContent } from './messageRichMarkup';
+import { parseRichCardBlock, parseRichDetailsBlock, parseRichOptionsBlock, renderRichInlineContent } from './messageRichMarkup';
 
 describe('messageRichMarkup', () => {
   it('parses details blocks', () => {
@@ -17,6 +17,15 @@ describe('messageRichMarkup', () => {
       tone: 'rose',
       body: '慢一点说话'
     });
+  });
+
+  it('parses option bars and trims blank or overflowing rows', () => {
+    expect(parseRichOptionsBlock('<polaris-options><option>先聊天气</option><option> 先聊心情 </option></polaris-options>')).toEqual({
+      options: ['先聊天气', '先聊心情']
+    });
+    expect(parseRichOptionsBlock('<polaris-options></polaris-options>')).toBeNull();
+    const overflow = Array.from({ length: 9 }, (_, index) => `<option>o${index}</option>`).join('');
+    expect(parseRichOptionsBlock(`<polaris-options>${overflow}</polaris-options>`)?.options).toHaveLength(6);
   });
 
   it('keeps supported span markup as styled react nodes', () => {

@@ -13,6 +13,8 @@ describe('buildCapabilityEntries', () => {
     expect(markupEntry?.content).toContain('<details><summary>标题</summary>内容</details>');
     expect(markupEntry?.content).toContain('<polaris-card title="标题" kicker="角标" tone="mist|warm|cool|rose|gold">内容</polaris-card>');
     expect(markupEntry?.content).toContain('<span style="...">...</span>');
+    expect(markupEntry?.content).toContain('<polaris-options>');
+    expect(markupEntry?.content).toContain('<option>');
   });
 
   it('passes the unlocked experimental runCode sandbox profile into the capability prompt', () => {

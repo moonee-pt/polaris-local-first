@@ -214,6 +214,25 @@ export function parseRichDetailsBlock(markup: string): RichDetailsBlock | null {
   };
 }
 
+export type RichOptionsBlock = {
+  options: string[];
+};
+
+const RICH_OPTIONS_MAX = 6;
+
+export function parseRichOptionsBlock(markup: string): RichOptionsBlock | null {
+  const match = markup.trim().match(/^<polaris-options(?:\s[^>]*)?>([\s\S]*?)<\/polaris-options>$/i);
+  if (!match) return null;
+
+  const options = Array.from((match[1] ?? '').matchAll(/<option>([\s\S]*?)<\/option>/gi))
+    .map((entry) => (entry[1] ?? '').replace(/\s+/g, ' ').trim())
+    .filter(Boolean)
+    .slice(0, RICH_OPTIONS_MAX);
+
+  if (options.length === 0) return null;
+  return { options };
+}
+
 export function parseRichCardBlock(markup: string): RichCardBlock | null {
   const match = markup.trim().match(/^<polaris-card([^>]*)>([\s\S]*?)<\/polaris-card>$/i);
   if (!match) return null;

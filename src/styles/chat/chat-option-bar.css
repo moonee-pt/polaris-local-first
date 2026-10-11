@@ -1,0 +1,158 @@
+/* Chat option bar: an interactive choice the assistant offers inside its own message.
+   One structural device: a left rule marks the block as waiting on the reader. */
+
+.message-option-bar {
+  padding-left: 0.62em;
+  border-left: 2px solid color-mix(in srgb, var(--accent) 44%, transparent);
+}
+
+.message-option-bar.is-static {
+  border-left-color: color-mix(in srgb, var(--border) 82%, transparent);
+}
+
+.message-option-bar-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.message-option-bar-list > * + * {
+  border-top: 1px solid color-mix(in srgb, var(--border) 46%, transparent);
+}
+
+.message-option-bar-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.62em;
+  width: 100%;
+  min-height: max(44px, 3em);
+  padding: 0.5em 0.5em 0.5em 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  line-height: 1.45;
+  text-align: left;
+}
+
+button.message-option-bar-row {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 140ms ease, background 140ms ease;
+}
+
+button.message-option-bar-row:active {
+  background: color-mix(in srgb, var(--accent) 11%, transparent);
+}
+
+@media (hover: hover) {
+  button.message-option-bar-row:hover {
+    background: color-mix(in srgb, var(--accent) 6%, transparent);
+  }
+}
+
+button.message-option-bar-row:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  outline-offset: -2px;
+}
+
+.message-option-bar-letter {
+  flex: 0 0 auto;
+  min-width: 0.95em;
+  font-size: 0.74em;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+button.message-option-bar-row .message-option-bar-letter {
+  color: color-mix(in srgb, var(--accent) 58%, var(--text-muted) 42%);
+}
+
+.message-option-bar-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.message-option-bar-row.is-chosen {
+  color: var(--text);
+}
+
+.message-option-bar-row.is-chosen .message-option-bar-letter {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.message-option-bar.is-static .message-option-bar-row:not(.is-chosen) {
+  color: var(--text-muted);
+}
+
+.message-option-bar.is-static .message-option-bar-row:not(.is-chosen) .message-option-bar-letter {
+  color: color-mix(in srgb, var(--text-muted) 72%, transparent);
+}
+
+.message-option-bar-custom {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  min-height: max(46px, 3.1em);
+  padding: 0.4em 0.4em 0.4em 0;
+}
+
+.message-option-bar-custom input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  line-height: 1.45;
+}
+
+.message-option-bar-custom input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.74;
+}
+
+.message-option-bar-custom input:focus {
+  outline: none;
+}
+
+.message-option-bar-send {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.7em;
+  height: 1.7em;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: color-mix(in srgb, var(--text-muted) 70%, transparent);
+  cursor: pointer;
+  transition: color 140ms ease;
+}
+
+.message-option-bar-send[data-ready='true'] {
+  color: var(--accent);
+}
+
+.message-option-bar-send:disabled {
+  cursor: default;
+}
+
+.message-option-bar-send:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .message-option-bar-row,
+  .message-option-bar-send {
+    transition: none;
+  }
+}

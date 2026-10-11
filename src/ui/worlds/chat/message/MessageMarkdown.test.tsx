@@ -102,6 +102,17 @@ describe('MessageMarkdown', () => {
     expect(html).toContain('第二段');
   });
 
+  it('renders a static option bar when no selection handler is provided', () => {
+    const html = renderToStaticMarkup(
+      <MessageMarkdown content={'<polaris-options><option>先聊天气</option><option>先聊心情</option></polaris-options>'} />
+    );
+
+    expect(html).toContain('message-option-bar is-static');
+    expect(html).toContain('先聊天气');
+    expect(html).toContain('先聊心情');
+    expect(html).not.toContain('<button');
+  });
+
   it('breaks a line where two spoken lines were written back to back', () => {
     const html = renderToStaticMarkup(
       <MessageMarkdown content={'（把灯调暗）【今天好累。】【早点睡吧。】'} />

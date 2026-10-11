@@ -51,6 +51,7 @@ function buildReplyMarkupLayer() {
     '其中 `<span style>` 只支持轻量样式子集：color、background/background-color、border/border-color、border-radius、padding、font-size、font-weight、font-style、letter-spacing、text-transform、text-decoration、box-shadow、opacity、margin-left、margin-right、display:inline-block。',
     '允许的块级写法：`<details><summary>标题</summary>内容</details>` 用来做折叠段落。',
     '还允许轻量卡片：`<polaris-card title="标题" kicker="角标" tone="mist|warm|cool|rose|gold">内容</polaris-card>`。',
+    '当你要让用户从几个方向里挑一个再回答（比如「先聊 A 还是先聊 B」），可以用选项条：`<polaris-options><option>选项一</option><option>选项二</option></polaris-options>`。界面会自动补一条「自己填」的入口，所以别把兜底项写进去；条数控制在 6 条以内、宁可少给。只在确实需要用户拍板时用，不要每轮都堆。',
     '这些富文本只服务内容表达，不要拿它冒充工具结果，也不要塞需要宿主额外执行的东西。'
   ].join('\n');
 }

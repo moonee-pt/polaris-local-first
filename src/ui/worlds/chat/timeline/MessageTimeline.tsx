@@ -449,7 +449,12 @@ export function MessageTimeline({ isWorldSettled }: MessageTimelineProps) {
     openToolbox: actions.openToolbox,
     openCodeCard: actions.openCodeCard,
     runCodeCard,
-    setCommandStatus: actions.setCommandStatus
+    setCommandStatus: actions.setCommandStatus,
+    selectOption: (text: string) => {
+      if (!conversationId) return;
+      actions.setConversationDraft(conversationId, text);
+      void actions.submit();
+    }
   }), [
     actions.applyCustomCss,
     actions.applyToolPreview,
@@ -467,6 +472,8 @@ export function MessageTimeline({ isWorldSettled }: MessageTimelineProps) {
     actions.openToolbox,
     actions.openThinkingSummary,
     actions.setCommandStatus,
+    actions.setConversationDraft,
+    actions.submit,
     actions.removeEditingAttachment,
     actions.retry,
     actions.rollbackToolPreview,
@@ -475,7 +482,8 @@ export function MessageTimeline({ isWorldSettled }: MessageTimelineProps) {
     actions.toggleCodeExpanded,
     actions.toggleThinkingCollapsed,
     actions.updateEditingDraft,
-    runCodeCard
+    runCodeCard,
+    conversationId
   ]);
 
   return (
