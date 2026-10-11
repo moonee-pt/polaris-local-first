@@ -44,9 +44,9 @@ const CATEGORY_PROFILE: Record<FleshLoopCategory, { perSec: number; gain: number
 };
 
 const PRESET_SCALE: Record<FleshAmbiencePreset, { rate: number; gain: number }> = {
-  soft: { rate: 0.6, gain: 0.8 },
-  mid: { rate: 1, gain: 1 },
-  hard: { rate: 1.6, gain: 1.2 }
+  soft: { rate: 0.6, gain: 1 },
+  mid: { rate: 1, gain: 1.3 },
+  hard: { rate: 1.6, gain: 1.6 }
 };
 
 function pad2(value: number) {
