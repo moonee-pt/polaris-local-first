@@ -13,6 +13,7 @@ import { runSelectionAction, runSuccessAction } from '../../../haptics';
 import { useI18n } from '../../../../i18n';
 import { MessageMemoryEvidence } from './MessageMemoryEvidence';
 import { getAssistantAmbiencePlan } from './messageSpeechText';
+import { registerAmbienceStop, stopOtherAmbiences } from '../../../../app/audio/ambienceRegistry';
 
 /** Replies whose voice already started on its own; a re-render must never replay one. */
 const autoSpokenMessageIds = new Set<string>();
@@ -89,6 +90,8 @@ export function MessageActions({
   const abortRef = useRef<AbortController | null>(null);
   const voiceGeneration = useRuntimeStore((state) => state.voiceGeneration);
   const autoSpeakRef = useRef<(() => void) | null>(null);
+  /** Auto read-aloud keeps its ambience alive after the clip ends. */
+  const autoPlaybackRef = useRef(false);
   const showCodeCardAction = codeCardActionMode !== 'hidden';
   const hasMemoryEvidence = role === 'assistant' && Boolean(memoryEvidence?.items.length);
   const hasSpeechCache = role === 'assistant' && Boolean(speechCache?.assetId);
@@ -131,6 +134,8 @@ export function MessageActions({
     setAmbienceDucked(speaking);
   }, [speaking, setAmbienceDucked]);
 
+  useEffect(() => registerAmbienceStop(stopAmbience), [stopAmbience]);
+
   useEffect(() => () => {
     stopSpeechPlayback();
   }, []);
@@ -169,9 +174,20 @@ export function MessageActions({
     setSpeechLoading(false);
   }
 
+  /** A clip that ended on its own: auto read-aloud leaves the ambience running,
+   *  a manual tap still tears it down. */
+  function finishSpeechPlayback() {
+    if (autoPlaybackRef.current) {
+      setSpeaking(false);
+      return;
+    }
+    stopSpeechPlayback();
+  }
+
   function applyMessageAmbience(measuredSec?: number) {
     const plan = getAssistantAmbiencePlan(messageContent);
     if (!plan.cues.length) return;
+    stopOtherAmbiences(stopAmbience);
     scheduleAmbience(plan.cues, measuredSec ?? plan.estimatedSec);
   }
 
@@ -179,8 +195,8 @@ export function MessageActions({
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.onend = () => setSpeaking(false);
-    utterance.onerror = () => setSpeaking(false);
+    utterance.onend = () => finishSpeechPlayback();
+    utterance.onerror = () => finishSpeechPlayback();
     setSpeaking(true);
     applyMessageAmbience();
     window.speechSynthesis.speak(utterance);
@@ -234,7 +250,7 @@ export function MessageActions({
     setSpeaking(true);
     await playChatSpeechBlob(blob, {
       onStarted: (durationSec) => applyMessageAmbience(durationSec),
-      onEnded: () => stopSpeechPlayback(),
+      onEnded: () => finishSpeechPlayback(),
       onError: () => {
         onSetCommandStatus(t('chat.messageActions.audioPlaybackFailed'), true);
         stopSpeechPlayback();
@@ -256,9 +272,10 @@ export function MessageActions({
     }
   };
 
-  const beginSpeech = () => {
+  const beginSpeech = (auto = false) => {
     const text = speakableContent;
     if (!text) return;
+    autoPlaybackRef.current = auto;
     primeChatSpeechAudio();
     stopSpeechPlayback();
     if (speechCache?.assetId) {
@@ -272,7 +289,7 @@ export function MessageActions({
     onSetCommandStatus(t('chat.messageActions.systemVoiceFallback'));
     playNativeSpeech(text);
   };
-  autoSpeakRef.current = beginSpeech;
+  autoSpeakRef.current = () => beginSpeech(true);
 
   const toggleSpeech = () => {
     if (!canSpeakAssistant || speechLoading) return;

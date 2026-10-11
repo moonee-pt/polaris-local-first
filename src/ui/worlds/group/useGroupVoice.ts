@@ -5,6 +5,7 @@ import {
   saveMessageSpeechCache
 } from '../../../app/chat/messageSpeechCache';
 import { playChatSpeechBlob, primeChatSpeechAudio, stopChatSpeechAudio } from '../../../app/chat/chatSpeechAudio';
+import { registerAmbienceStop, stopAllAmbiences, stopOtherAmbiences } from '../../../app/audio/ambienceRegistry';
 import { useFleshAmbience } from '../../../app/call/useFleshAmbience';
 import { requestGeneratedSpeech } from '../../../engines/voiceGenerationClient';
 import { useRuntimeStore } from '../../../stores/runtimeStore';
@@ -80,6 +81,8 @@ export function useGroupVoice({ onSpeechCacheReady, onError }: UseGroupVoiceArgs
     );
   }, []);
 
+  useEffect(() => registerAmbienceStop(ambience.stop), [ambience.stop]);
+
   useEffect(() => () => {
     tokenRef.current += 1;
     abortsRef.current.forEach((controller) => controller.abort());
@@ -118,7 +121,10 @@ export function useGroupVoice({ onSpeechCacheReady, onError }: UseGroupVoiceArgs
     runningRef.current = messageId;
     setSpeakingId(messageId);
     const plan = getAssistantAmbiencePlan(message?.content ?? '');
-    if (plan.cues.length) ambience.schedule(plan.cues, plan.estimatedSec);
+    if (plan.cues.length) {
+      stopOtherAmbiences(ambience.stop);
+      ambience.schedule(plan.cues, plan.estimatedSec);
+    }
     ambience.setDucked(true);
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
@@ -135,7 +141,10 @@ export function useGroupVoice({ onSpeechCacheReady, onError }: UseGroupVoiceArgs
     void playChatSpeechBlob(blob, {
       onStarted: (durationSec) => {
         if (runningRef.current !== messageId) return;
-        if (plan.cues.length) ambience.schedule(plan.cues, durationSec || plan.estimatedSec);
+        if (plan.cues.length) {
+          stopOtherAmbiences(ambience.stop);
+          ambience.schedule(plan.cues, durationSec || plan.estimatedSec);
+        }
         ambience.setDucked(true);
       },
       onEnded: () => finish(messageId),
@@ -227,7 +236,7 @@ export function useGroupVoice({ onSpeechCacheReady, onError }: UseGroupVoiceArgs
     setLoadingIds(new Set());
     stopChatSpeechAudio();
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) window.speechSynthesis.cancel();
-    ambience.stop();
+    stopAllAmbiences();
     ambience.setDucked(false);
   };
   stopAllRef.current = stopAll;

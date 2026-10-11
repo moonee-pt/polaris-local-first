@@ -1,5 +1,6 @@
 import type { ComponentProps, DragEvent } from 'react';
 import { Suspense, lazy, useEffect, useRef } from 'react';
+import { stopAllAmbiences } from '../../app/audio/ambienceRegistry';
 import { useVoiceCallSession } from '../../app/call/voiceCallSession';
 import { useReadingSession } from '../../app/reading/readingSession';
 import { loadThinkingSheetModule } from '../app-shell/appShellLazyModules';
@@ -46,6 +47,15 @@ function ChatWorldLayout({ shell }: ChatWorldProps) {
   const closeVoiceCall = useVoiceCallSession((state) => state.close);
   const readingOpen = useReadingSession((state) => state.active);
   const closeReading = useReadingSession((state) => state.close);
+
+  const conversationId = stablePayload.conversation?.id ?? null;
+
+  // 换会话或离开对话世界时，把还在延续的音效一起静音。
+  useEffect(() => stopAllAmbiences, [conversationId]);
+
+  useEffect(() => {
+    if (!shell.isActiveWorld) stopAllAmbiences();
+  }, [shell.isActiveWorld]);
 
   useEffect(() => () => {
     useVoiceCallSession.getState().close();
