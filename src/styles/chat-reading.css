@@ -152,23 +152,3 @@
   font-size: 14px;
   color: var(--warm-text-muted);
 }
-
-.chat-reading-entry-row {
-  display: flex;
-  justify-content: flex-end;
-  padding: 0 2px 6px;
-}
-
-.chat-reading-entry {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 30px;
-  padding: 0 12px;
-  border-radius: 999px;
-  border: 1px solid var(--warm-border);
-  background: var(--warm-surface);
-  color: var(--warm-text-soft);
-  font-size: 12px;
-  cursor: pointer;
-}

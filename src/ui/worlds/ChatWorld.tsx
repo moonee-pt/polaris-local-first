@@ -4,7 +4,6 @@ import { useVoiceCallSession } from '../../app/call/voiceCallSession';
 import { loadThinkingSheetModule } from '../app-shell/appShellLazyModules';
 import { CollaboratorScopeStrip } from '../collection/grid/CollaboratorScopeStrip';
 import { VoiceCallStage } from './call/VoiceCallStage';
-import { ChatReadingEntry } from './reading/ChatReadingEntry';
 import { ChatReadingStage } from './reading/ChatReadingStage';
 import { ChatComposer } from './chat/composer/ChatComposer';
 import { useComposerFileIngest } from './chat/composer/useComposerFileIngest';
@@ -94,8 +93,7 @@ function ChatWorldLayout({ shell }: ChatWorldProps) {
         <MessageTimeline isWorldSettled={shell.isActiveWorld && !shell.isWorldSwitching} />
       </div>
       <div className="chat-dock">
-        <ChatReadingEntry onOpen={() => setReadingOpen(true)} />
-        <ChatComposer onStartVoiceCall={openVoiceCall} />
+        <ChatComposer onStartVoiceCall={openVoiceCall} onOpenReading={() => setReadingOpen(true)} />
       </div>
       {voiceCallActive ? (
         <VoiceCallStage onClose={closeVoiceCall} />

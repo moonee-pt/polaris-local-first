@@ -43,9 +43,10 @@ function resolveThemeReviveSpell(input: string): 'restore-default' | 'revive-las
 
 type ChatComposerProps = {
   onStartVoiceCall?: () => void;
+  onOpenReading?: () => void;
 };
 
-export function ChatComposer({ onStartVoiceCall }: ChatComposerProps = {}) {
+export function ChatComposer({ onStartVoiceCall, onOpenReading }: ChatComposerProps = {}) {
   const { t } = useI18n();
   const presentation = useChatPresentation();
   const composer = useChatComposer();
@@ -291,6 +292,7 @@ export function ChatComposer({ onStartVoiceCall }: ChatComposerProps = {}) {
                 interactionLocked={interactionLocked}
                 onSetPickerOpen={setAttachmentPickerOpen}
                 onStartVoiceCall={onStartVoiceCall}
+                onOpenReading={onOpenReading}
               />
               <textarea
                 ref={textareaRef}
