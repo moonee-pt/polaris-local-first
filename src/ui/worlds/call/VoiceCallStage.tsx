@@ -4,11 +4,11 @@ import { useVoiceCallPlayback } from '../../../app/call/useVoiceCallPlayback';
 import { primeCallAudio } from '../../../app/call/callAudio';
 import { useFleshAmbience } from '../../../app/call/useFleshAmbience';
 import type { VoiceCallCaptionSourcePart } from '../../../engines/voice/voiceCallCaption';
-import { readFleshCues, selectAmbienceCues } from '../../../engines/voice/fleshAmbience';
+import type { TimedAmbienceCue } from '../../../engines/voice/ambienceTimeline';
 import { useI18n } from '../../../i18n';
 import type { I18nKey } from '../../../i18n/messages';
 import { useChatActions, useChatPresentation, useChatStablePayload, useChatUi } from '../chat/context/ChatContext';
-import { buildAssistantCaptionParts, buildAssistantSpeechText } from '../chat/message/messageSpeechText';
+import { buildAssistantCaptionParts, buildAssistantSpeechText, getAssistantAmbiencePlan } from '../chat/message/messageSpeechText';
 import { resolveVoiceCallSpeechTarget } from './voiceCallSpeechTarget';
 import { Icon } from '../../Icon';
 import { runImpactAction, runSelectionAction } from '../../haptics';
@@ -52,14 +52,21 @@ export function VoiceCallStage({ onClose }: VoiceCallStageProps) {
   const [draft, setDraft] = useState('');
   const [errorCode, setErrorCode] = useState<string | null>(null);
 
+  const ambiencePlanRef = useRef<TimedAmbienceCue[]>([]);
+  const ambience = useFleshAmbience();
+
   const playback = useVoiceCallPlayback({
     onSpeechCacheReady: (messageId, voiceCache) => {
       const target = stablePayload.messages.find((message) => message.id === messageId);
       if (target) actions.cacheAssistantSpeech(target, voiceCache);
     },
+    onPlaybackStarted: (durationSec) => {
+      const cues = ambiencePlanRef.current;
+      ambiencePlanRef.current = [];
+      if (cues.length) ambience.schedule(cues, durationSec);
+    },
     onError: (code) => setErrorCode(code)
   });
-  const ambience = useFleshAmbience();
 
   useEffect(() => {
     if (playback.status === 'speaking') {
@@ -70,11 +77,8 @@ export function VoiceCallStage({ onClose }: VoiceCallStageProps) {
     if (playback.status === 'idle' && ambience.active) ambience.stop();
   }, [ambience, playback.status]);
 
-  const applyFleshCues = (content: string) => {
-    for (const cue of selectAmbienceCues(readFleshCues(content))) {
-      if (cue.kind === 'loop') ambience.start(cue.category, cue.preset);
-      else ambience.playOneShot(cue.category);
-    }
+  const queueFleshCues = (content: string) => {
+    ambiencePlanRef.current = getAssistantAmbiencePlan(content).cues;
   };
 
   useEffect(() => {
@@ -106,7 +110,7 @@ export function VoiceCallStage({ onClose }: VoiceCallStageProps) {
   const speakAssistantMessage = (messageId: string, speechText: string, caption: VoiceCallCaptionSourcePart[]) => {
     if (!speechText || caption.length === 0) return;
     const source = stablePayload.messages.find((message) => message.id === messageId);
-    if (source) applyFleshCues(source.content);
+    if (source) queueFleshCues(source.content);
     const cachedVoice = stablePayload.messages.find((message) => message.id === messageId)?.voiceCache;
     if (cachedVoice) {
       playback.playCachedClip(messageId, cachedVoice, caption);
@@ -173,7 +177,7 @@ export function VoiceCallStage({ onClose }: VoiceCallStageProps) {
     const speechText = buildAssistantSpeechText(message.content);
     const caption = buildAssistantCaptionParts(message.content);
     if (!speechText || caption.length === 0) return;
-    applyFleshCues(message.content);
+    queueFleshCues(message.content);
     setErrorCode(null);
     speakAssistantMessage(message.id, speechText, caption);
   }

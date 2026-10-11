@@ -26,6 +26,9 @@ export type FleshAmbienceHit = {
 
 const CUE_SOURCE = '\\[(flesh|dryplap|wetplap|wet|stroke|cum|pullout|breath)(?::(soft|hard))?\\]';
 
+/** Scanner source for the cue brackets, so a timeline can walk a text and find them in order. */
+export const FLESH_CUE_PATTERN = CUE_SOURCE;
+
 const FLESH_CUE_SLUGS = new Set(['flesh', 'dryplap', 'wetplap', 'wet', 'stroke', 'cum', 'pullout', 'breath']);
 
 /** True when a bracket's inner text (already lowercased/trimmed) is a body-sound cue. */
@@ -94,24 +97,23 @@ function presetFromSuffix(suffix: string): FleshAmbiencePreset {
   return 'mid';
 }
 
+/** One bracket's contents turned into a cue, or null when it is not a body sound. */
+export function parseFleshCueTag(name: string, modifier = ''): FleshCue | null {
+  const raw = name.toLowerCase();
+  if (raw === 'cum' || raw === 'pullout') return { kind: 'oneShot', category: raw };
+  if (raw !== 'flesh' && !FLESH_CUE_SLUGS.has(raw)) return null;
+  // flesh is a legacy alias so older messages still start a track.
+  const category = raw === 'flesh' ? 'wetplap' : raw;
+  return { kind: 'loop', category: category as FleshLoopCategory, preset: presetFromSuffix(modifier.toLowerCase()) };
+}
+
 export function readFleshCues(text: string): FleshCue[] {
   if (!text) return [];
-  const cues: FleshCue[] = [];
   const pattern = new RegExp(CUE_SOURCE, 'gi');
-  let match = pattern.exec(text);
-  while (match) {
-    // lesh is a legacy alias so older messages still start a track.
-    const raw = match[1].toLowerCase() === 'flesh' ? 'wetplap' : match[1].toLowerCase();
-    if (raw === 'cum' || raw === 'pullout') {
-      cues.push({ kind: 'oneShot', category: raw });
-    } else {
-      cues.push({
-        kind: 'loop',
-        category: raw as FleshLoopCategory,
-        preset: presetFromSuffix((match[2] ?? '').toLowerCase())
-      });
-    }
-    match = pattern.exec(text);
+  const cues: FleshCue[] = [];
+  for (const match of text.matchAll(pattern)) {
+    const cue = parseFleshCueTag(match[1], match[2] ?? '');
+    if (cue) cues.push(cue);
   }
   return cues;
 }

@@ -21,6 +21,8 @@ type SpeakArgs = {
 
 type UseVoiceCallPlaybackArgs = {
   onSpeechCacheReady?: (messageId: string, voiceCache: ChatMessageVoiceCache) => void;
+  /** Fires once the clip is really running, with the seconds it will take. */
+  onPlaybackStarted?: (durationSec: number) => void;
   onError?: (message: string) => void;
 };
 
@@ -41,6 +43,10 @@ function sameParts(left: VoiceCallCaptionSourcePart[], right: VoiceCallCaptionSo
   return left.every((part, index) => part.kind === right[index].kind && part.text === right[index].text);
 }
 
+function measuredSeconds(audio: HTMLAudioElement) {
+  return Number.isFinite(audio.duration) && audio.duration > 0 ? audio.duration : null;
+}
+
 /**
  * Plays one generated reply inside the call stage and reveals its caption along
  * the audio clock. The clip is generated as a whole file, so the caption is driven
@@ -48,6 +54,7 @@ function sameParts(left: VoiceCallCaptionSourcePart[], right: VoiceCallCaptionSo
  */
 export function useVoiceCallPlayback({
   onSpeechCacheReady,
+  onPlaybackStarted,
   onError
 }: UseVoiceCallPlaybackArgs = {}): UseVoiceCallPlaybackResult {
   const voiceGeneration = useRuntimeStore((state) => state.voiceGeneration);
@@ -65,9 +72,11 @@ export function useVoiceCallPlayback({
   const retryRef = useRef<(() => void) | null>(null);
   const playBlobRef = useRef<PlayBlob | null>(null);
   const onSpeechCacheReadyRef = useRef(onSpeechCacheReady);
+  const onPlaybackStartedRef = useRef(onPlaybackStarted);
   const onErrorRef = useRef(onError);
 
   onSpeechCacheReadyRef.current = onSpeechCacheReady;
+  onPlaybackStartedRef.current = onPlaybackStarted;
   onErrorRef.current = onError;
 
   const canSpeak = Boolean(voiceGeneration.enabled && voiceGeneration.baseUrl?.trim() && voiceGeneration.apiKey?.trim());
@@ -148,20 +157,27 @@ export function useVoiceCallPlayback({
     if (segments.length === 0) return;
 
     clearRetryListener();
+    const totalChars = segments.reduce((sum, segment) => sum + segment.text.length, 0);
+    const estimatedSeconds = Math.max(1, totalChars / 5);
+
     const url = URL.createObjectURL(blob);
     const audio = getCallAudio();
+    let announced = false;
+    const announce = () => {
+      if (announced) return;
+      announced = true;
+      onPlaybackStartedRef.current?.(measuredSeconds(audio) ?? estimatedSeconds);
+    };
     setCallAudioInUse(true);
     audio.onended = null;
     audio.onerror = null;
+    audio.onloadedmetadata = announce;
     audio.src = url;
     audioUrlRef.current = url;
     segmentsRef.current = segments;
     visiblePartsRef.current = [];
     setVisibleParts([]);
     pendingRef.current = { messageId, blob, caption };
-
-    const totalChars = segments.reduce((sum, segment) => sum + segment.text.length, 0);
-    const estimatedSeconds = Math.max(1, totalChars / 5);
 
     audio.onended = () => {
       if (audioUrlRef.current !== url) return;
@@ -186,6 +202,7 @@ export function useVoiceCallPlayback({
     startFrameLoop(estimatedSeconds);
     void audio.play().then(() => {
       markCallAudioUnlocked();
+      announce();
     }).catch(() => {
       if (audioUrlRef.current !== url) return;
       markCallAudioBlocked();

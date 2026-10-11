@@ -43,6 +43,8 @@ export function stopChatSpeechAudio() {
 }
 
 export type ChatSpeechPlaybackHandlers = {
+  /** Fires with the measured clip length the instant the voice starts, so tracks can be planned against it. */
+  onStarted?: (durationSec: number) => void;
   onEnded: () => void;
   onError: () => void;
 };
@@ -73,6 +75,7 @@ export async function playChatSpeechBlob(blob: Blob, handlers: ChatSpeechPlaybac
     };
     currentSource = source;
     source.start();
+    handlers.onStarted?.(buffer.duration);
   } catch {
     currentSource = null;
     handlers.onError();

@@ -4,7 +4,6 @@ import type { CodeCardActionMode } from '../../../../app/chat/chatDerivedState';
 import { readMessageSpeechCacheBlob, saveMessageSpeechCache } from '../../../../app/chat/messageSpeechCache';
 import { playChatSpeechBlob, primeChatSpeechAudio, stopChatSpeechAudio } from '../../../../app/chat/chatSpeechAudio';
 import { requestGeneratedSpeech } from '../../../../engines/voiceGenerationClient';
-import { readFleshCues, selectAmbienceCues } from '../../../../engines/voice/fleshAmbience';
 import { useFleshAmbience } from '../../../../app/call/useFleshAmbience';
 import { writeTextToClipboard } from '../../../../infrastructure/clipboard';
 import { canUseNativeSystemBackupFiles, exportFileViaSystemFiles } from '../../../../native/systemBackupFiles';
@@ -14,6 +13,7 @@ import { Icon } from '../../../Icon';
 import { runSelectionAction, runSuccessAction } from '../../../haptics';
 import { useI18n } from '../../../../i18n';
 import { MessageMemoryEvidence } from './MessageMemoryEvidence';
+import { getAssistantAmbiencePlan } from './messageSpeechText';
 
 async function exportSpeechBlob(blob: Blob, fileName: string) {
   if (canUseNativeSystemBackupFiles()) {
@@ -134,10 +134,9 @@ export function MessageActions({
   }, []);
 
   const {
-    start: startAmbience,
+    schedule: scheduleAmbience,
     stop: stopAmbience,
-    setDucked: setAmbienceDucked,
-    playOneShot: playAmbienceOneShot
+    setDucked: setAmbienceDucked
   } = useFleshAmbience();
 
   useEffect(() => {
@@ -171,11 +170,10 @@ export function MessageActions({
     setSpeechLoading(false);
   }
 
-  function applyMessageAmbience() {
-    for (const cue of selectAmbienceCues(readFleshCues(messageContent))) {
-      if (cue.kind === 'loop') startAmbience(cue.category, cue.preset);
-      else playAmbienceOneShot(cue.category);
-    }
+  function applyMessageAmbience(measuredSec?: number) {
+    const plan = getAssistantAmbiencePlan(messageContent);
+    if (!plan.cues.length) return;
+    scheduleAmbience(plan.cues, measuredSec ?? plan.estimatedSec);
   }
 
   const playNativeSpeech = (text: string) => {
@@ -185,6 +183,7 @@ export function MessageActions({
     utterance.onend = () => setSpeaking(false);
     utterance.onerror = () => setSpeaking(false);
     setSpeaking(true);
+    applyMessageAmbience();
     window.speechSynthesis.speak(utterance);
   };
 
@@ -235,6 +234,7 @@ export function MessageActions({
   const playAudioBlob = async (blob: Blob) => {
     setSpeaking(true);
     await playChatSpeechBlob(blob, {
+      onStarted: (durationSec) => applyMessageAmbience(durationSec),
       onEnded: () => stopSpeechPlayback(),
       onError: () => {
         onSetCommandStatus(t('chat.messageActions.audioPlaybackFailed'), true);
@@ -278,7 +278,6 @@ export function MessageActions({
     }
     primeChatSpeechAudio();
     stopSpeechPlayback();
-    applyMessageAmbience();
     if (speechCache?.assetId) {
       void playCachedSpeech(speechCache);
       return;

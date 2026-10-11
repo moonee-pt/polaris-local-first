@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildAssistantCaptionParts, buildAssistantSpeechText } from './messageSpeechText';
+import { buildAssistantCaptionParts, buildAssistantSpeechText, getAssistantAmbiencePlan } from './messageSpeechText';
 
 describe('buildAssistantSpeechText', () => {
   it('keeps assistant prose while removing tool draft windows', () => {
@@ -97,5 +97,42 @@ describe('buildAssistantCaptionParts', () => {
       { kind: 'stage', text: '（把外套递过去）' },
       { kind: 'speech', text: '穿上吧。' }
     ]);
+  });
+});
+
+describe('getAssistantAmbiencePlan', () => {
+  it('switches the track where the reply rewrites the cue', () => {
+    const plan = getAssistantAmbiencePlan([
+      '【慢一点。】',
+      '（她慢慢摇 [wetplap:soft]）',
+      '【别停。】',
+      '（更快了 [wetplap:hard]）',
+      '【就这样。】'
+    ].join('\n'));
+
+    expect(plan.cues).toMatchObject([
+      { kind: 'loop', preset: 'soft' },
+      { kind: 'loop', preset: 'hard' }
+    ]);
+    expect(plan.cues[0].atRatio).toBeLessThan(0.5);
+    expect(plan.cues[1].atRatio).toBeGreaterThan(0.5);
+  });
+
+  it('keeps cues that are written inside the spoken line', () => {
+    const plan = getAssistantAmbiencePlan('【嗯 [wet] 别躲。】');
+    expect(plan.cues).toHaveLength(1);
+    expect(plan.cues[0]).toMatchObject({ kind: 'loop', category: 'wet' });
+  });
+
+  it('starts a cue written after the last line where the voice stops', () => {
+    const plan = getAssistantAmbiencePlan('【先到这里。】\n（水声一直响到 [wet]）');
+    expect(plan.cues).toHaveLength(1);
+    expect(plan.cues[0].atRatio).toBeGreaterThan(0.2);
+  });
+
+  it('runs the timeline on spoken lines only', () => {
+    const plan = getAssistantAmbiencePlan('前言（不念的旁白 [wetplap]）【进来。】');
+    expect(plan.cues).toHaveLength(1);
+    expect(plan.cues[0].atRatio).toBeLessThan(0.2);
   });
 });

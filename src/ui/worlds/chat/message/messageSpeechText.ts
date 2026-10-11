@@ -1,5 +1,6 @@
 import { TOOL_DRAFT_BLOCK_PATTERN } from '../../../../app/chat/chatMarkdownPatterns';
 import { stripCodeBlocksFromMessage } from '../../../../engines/codeCardEngine';
+import { buildAmbiencePlan, type AmbiencePlan } from '../../../../engines/voice/ambienceTimeline';
 import { readFleshCues, selectAmbienceCues, stripFleshCues, type FleshCue } from '../../../../engines/voice/fleshAmbience';
 import { normalizePauseTagsForEngine, stripCrowdLaughterTags, stripPerformanceTags } from '../../../../engines/voice/performanceTags';
 import type { VoiceCallCaptionSourcePart } from '../../../../engines/voice/voiceCallCaption';
@@ -129,18 +130,54 @@ export function getAssistantVoiceContent(content: string): AssistantVoiceContent
   return cues.length || ttsText ? { ttsText, cues } : null;
 }
 
+function assistantSpeechSegments(content: string): SpeechSegment[] {
+  const cleaned = cleanReplyForVoice(content);
+  const pairs = cleaned.includes('【') ? CALL_SPEECH_PAIRS : QUOTE_PAIRS;
+  const segments = splitSpeechSegments(cleaned, pairs);
+  const hasSpokenLines = segments.some((segment) => segment.kind === 'speech' && segment.text.trim());
+  return hasSpokenLines ? segments : splitStageDirections(cleaned);
+}
+
+/**
+ * Where this reply's body sounds land along the voice, plus how long the clip should
+ * run. Speech lines and the narration between them are handed over in order: the
+ * narration is what the voice goes quiet for, so it is where a track turns on.
+ */
+export function getAssistantAmbiencePlan(content: string): AmbiencePlan {
+  const segments = assistantSpeechSegments(content);
+  if (!segments.some((segment) => segment.kind === 'speech' && segment.text.trim())) {
+    return buildAmbiencePlan(segments);
+  }
+
+  const parts: VoiceCallCaptionSourcePart[] = [];
+  let speech = '';
+  const flush = () => {
+    const spoken = speech.trim();
+    speech = '';
+    if (spoken) parts.push({ kind: 'speech', text: spoken });
+  };
+
+  for (const segment of segments) {
+    if (segment.kind === 'speech') {
+      speech += segment.text;
+      continue;
+    }
+    const gap = segment.text.trim();
+    if (!gap) continue;
+    flush();
+    parts.push({ kind: 'stage', text: gap });
+  }
+  flush();
+
+  return buildAmbiencePlan(parts);
+}
+
 /**
  * The caption is read, not spoken: delivery cues stay in the text sent to the voice
  * engine, and the stage directions the voice skips are shown as muted narration.
  */
 export function buildAssistantCaptionParts(content: string): AssistantCaptionPart[] {
-  const cleaned = cleanReplyForVoice(content);
-  const pairs = cleaned.includes('【') ? CALL_SPEECH_PAIRS : QUOTE_PAIRS;
-  const segments = splitSpeechSegments(cleaned, pairs);
-  const hasSpokenLines = segments.some((segment) => segment.kind === 'speech' && segment.text.trim());
-  const source: SpeechSegment[] = hasSpokenLines
-    ? segments
-    : splitStageDirections(cleaned);
+  const source = assistantSpeechSegments(content);
 
   const parts: AssistantCaptionPart[] = [];
   for (const segment of source) {
