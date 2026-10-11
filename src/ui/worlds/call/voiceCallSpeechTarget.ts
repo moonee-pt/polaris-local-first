@@ -1,10 +1,11 @@
 import type { ChatMessage } from '../../../types/domain';
-import { buildAssistantCaptionParts, buildAssistantSpeechText } from '../chat/message/messageSpeechText';
+import { buildAssistantCaptionParts, buildAssistantSpeechPlan } from '../chat/message/messageSpeechText';
 import type { VoiceCallCaptionSourcePart } from '../../../engines/voice/voiceCallCaption';
+import { buildCaptionPartsFromPlan, type VoiceCallSpeechPlan } from '../../../engines/voice/voiceCallSpeechUnits';
 
 export type VoiceCallSpeechTarget = {
   messageId: string;
-  speechText: string;
+  plan: VoiceCallSpeechPlan;
   caption: VoiceCallCaptionSourcePart[];
 };
 
@@ -41,13 +42,13 @@ export function resolveVoiceCallSpeechTarget({
     if (message.timestamp < startedAt) return null;
     if (hasSpoken(message.id)) return null;
 
-    const speechText = buildAssistantSpeechText(message.content);
-    if (!speechText) return null;
+    const plan = buildAssistantSpeechPlan(message.content);
+    if (plan.units.length === 0) return null;
     const caption = buildAssistantCaptionParts(message.content);
     return {
       messageId: message.id,
-      speechText,
-      caption: caption.length > 0 ? caption : [{ kind: 'speech' as const, text: speechText }]
+      plan,
+      caption: caption.length > 0 ? caption : buildCaptionPartsFromPlan(plan)
     };
   }
 

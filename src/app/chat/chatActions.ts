@@ -1,6 +1,7 @@
 import type { MutableRefObject } from 'react';
 import type { ChatMessage, ChatMessageVoiceCache, ChatMessageVoiceCall } from '../../types/domain';
 import { createUid } from '../../engines/id';
+import { createMessage } from '../../engines/chatMessageFactory';
 import type { ChatActionStoreBindings, ChatDerivedStatePort, ChatUiActionState } from './chatPorts';
 import {
   orphanCollaboratorConversationSessions,
@@ -330,6 +331,7 @@ export function createChatActionHandlers({
     startedAt: number;
     endedAt: number;
     turnCount: number;
+    durationLabel: string;
   }) => {
     if (params.messageIds.length === 0) return;
 
@@ -346,6 +348,13 @@ export function createChatActionHandlers({
         for (const messageId of params.messageIds) {
           store.chat.updateMessage(writableConversation, messageId, { voiceCall });
         }
+        // The call-mode instruction only rides along while the call is open, so without this
+        // note the reply after a hangup still reads like it is talking on the phone.
+        store.chat.addMessage(writableConversation, {
+          ...createMessage('system', `（通话结束：${params.durationLabel}）`),
+          requestRole: 'user',
+          requestContent: `〔电话〕这通电话已经挂断了，聊了 ${params.durationLabel}。现在回到文字聊天。`
+        });
         void store.chat.persistToDb?.().catch((error) => {
           reportPersistenceError({ label: '[chat:voice-call]', store: 'chat', operation: 'flush-voice-call' }, error);
         });

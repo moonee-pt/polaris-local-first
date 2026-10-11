@@ -49,12 +49,17 @@ export function createVoiceCallSpeechUnit(input: {
   caption: string;
   narration?: string[];
   pauseBeforeMs: number;
+  /** The line right before this one was spoken too: the caption breaks between them. */
+  continuesPreviousLine?: boolean;
 }): VoiceCallSpeechUnit | null {
   const narrationSegments = splitVoiceCallCaptions(
     (input.narration ?? []).map((text) => ({ kind: 'stage' as const, text }))
   );
   const speechSegments = splitVoiceCallCaptions([{ kind: 'speech', text: input.caption }]);
   if (speechSegments.length === 0) return null;
+  if (input.continuesPreviousLine) {
+    speechSegments.unshift({ text: '\n', weight: 1, kind: 'speech' });
+  }
 
   const segments = [...narrationSegments, ...speechSegments];
   return {

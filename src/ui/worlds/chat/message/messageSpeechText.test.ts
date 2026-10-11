@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { buildAssistantCaptionParts, buildAssistantSpeechText, getAssistantAmbiencePlan } from './messageSpeechText';
+import { buildAssistantCaptionParts, buildAssistantSpeechPlan, buildAssistantSpeechText, getAssistantAmbiencePlan } from './messageSpeechText';
+import {
+  VOICE_CALL_LINE_GAP_MS,
+  VOICE_CALL_PAUSE_MS,
+  buildCaptionPartsFromPlan
+} from '../../../../engines/voice/voiceCallSpeechUnits';
 
 describe('buildAssistantSpeechText', () => {
   it('keeps assistant prose while removing tool draft windows', () => {
@@ -104,6 +109,52 @@ describe('buildAssistantCaptionParts', () => {
       { kind: 'stage', text: '（把外套递过去）' },
       { kind: 'speech', text: '穿上吧。' }
     ]);
+  });
+});
+
+describe('buildAssistantSpeechPlan', () => {
+  it('sends each spoken line as its own clip and starts the first one right away', () => {
+    const plan = buildAssistantSpeechPlan('【今天好累。】【早点睡吧。】');
+
+    expect(plan.units.map((unit) => unit.tts)).toEqual(['今天好累。', '早点睡吧。']);
+    expect(plan.units[0].pauseBeforeMs).toBe(0);
+    expect(plan.units[1].pauseBeforeMs).toBe(VOICE_CALL_LINE_GAP_MS);
+    expect(plan.totalWeight).toBe(plan.units.reduce((sum, unit) => sum + unit.weight, 0));
+  });
+
+  it('turns the narration between lines into the silence before the next one', () => {
+    const plan = buildAssistantSpeechPlan([
+      '【先说这一句。】',
+      '（他停了很久，才把视线挪开）',
+      '【再说一遍试试。】'
+    ].join('\n'));
+
+    expect(plan.units).toHaveLength(2);
+    expect(plan.units[1].pauseBeforeMs).toBe(VOICE_CALL_PAUSE_MS.long);
+    expect(plan.units[1].segments[0]).toMatchObject({ kind: 'stage', text: '（他停了很久，才把视线挪开）' });
+    expect(plan.units[1].stageWeight).toBe(plan.units[1].segments[0].weight);
+  });
+
+  it('keeps delivery cues in the clip text while the caption stays clean', () => {
+    const plan = buildAssistantSpeechPlan('【[whispering] 别闹。】');
+
+    expect(plan.units[0].tts).toBe('[whispering] 别闹。');
+    expect(buildCaptionPartsFromPlan(plan)).toEqual([{ kind: 'speech', text: '别闹。' }]);
+  });
+
+  it('cuts a line that runs past one breath into several clips', () => {
+    const long = '这半句已经够长了，一口气说完有点勉强。中间还有一段话，也长得可以这样说。再说一句用来把长度顶过一口气的范围。最后才是收尾的那一句。';
+    const plan = buildAssistantSpeechPlan(`【${long}】`);
+
+    expect(plan.units.length).toBeGreaterThan(1);
+    expect(plan.units.map((unit) => unit.tts).join('')).toBe(long);
+  });
+
+  it('reads prose replies one clip at a time', () => {
+    const plan = buildAssistantSpeechPlan('他笑了笑。（把外套递过去）穿上吧。');
+
+    expect(plan.units.map((unit) => unit.tts)).toEqual(['他笑了笑。', '穿上吧。']);
+    expect(plan.units[1].segments[0]).toMatchObject({ kind: 'stage', text: '（把外套递过去）' });
   });
 });
 

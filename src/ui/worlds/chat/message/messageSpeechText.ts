@@ -3,6 +3,14 @@ import { stripCodeBlocksFromMessage } from '../../../../engines/codeCardEngine';
 import { buildAmbiencePlan, type AmbiencePlan } from '../../../../engines/voice/ambienceTimeline';
 import { readFleshCues, selectAmbienceCues, stripFleshCues, type FleshCue } from '../../../../engines/voice/fleshAmbience';
 import { normalizePauseTagsForEngine, stripCrowdLaughterTags, stripPerformanceTags } from '../../../../engines/voice/performanceTags';
+import {
+  VOICE_CALL_LINE_GAP_MS,
+  VOICE_CALL_PAUSE_MS,
+  createVoiceCallSpeechPlan,
+  createVoiceCallSpeechUnit,
+  type VoiceCallSpeechPlan,
+  type VoiceCallSpeechUnit
+} from '../../../../engines/voice/voiceCallSpeechUnits';
 import type { VoiceCallCaptionSourcePart } from '../../../../engines/voice/voiceCallCaption';
 
 type SpeechSegment = { kind: 'speech' | 'stage'; text: string };
@@ -85,18 +93,115 @@ function pauseForGap(gap: string) {
 
 function joinSpokenSegments(segments: SpeechSegment[]) {
   const parts: string[] = [];
+  let lastWasSpeech = false;
   segments.forEach((segment, index) => {
     if (segment.kind === 'speech') {
       const line = segment.text.trim();
-      if (line) parts.push(line);
+      if (!line) return;
+      // Two spoken lines written back to back are still two lines: the voice has to stop
+      // between them instead of running the words into one sentence.
+      if (lastWasSpeech) parts.push('\n');
+      parts.push(line);
+      lastWasSpeech = true;
       return;
     }
     if (parts.length === 0 || !segment.text.trim()) return;
     const hasLaterSpeech = segments.slice(index + 1).some((item) => item.kind === 'speech' && item.text.trim());
     if (!hasLaterSpeech) return;
     parts.push(pauseForGap(segment.text));
+    lastWasSpeech = false;
   });
   return parts.join('');
+}
+
+/** How long the voice goes quiet for a piece of narration of this length. */
+function pauseMsForGap(gap: string) {
+  const length = gap.replace(/\s+/g, '').length;
+  if (length >= 30) return VOICE_CALL_PAUSE_MS.extra;
+  if (length >= 10) return VOICE_CALL_PAUSE_MS.long;
+  return VOICE_CALL_PAUSE_MS.short;
+}
+
+const LONG_LINE_CHARS = 48;
+const LINE_END_DELIMITERS = '。！？!?…；;';
+
+/**
+ * A single spoken line can run long enough that the first sound is still worth
+ * waiting on. Cut it at sentence ends once it passes the point where one request
+ * stops feeling like one breath.
+ */
+function splitLongSpokenLine(text: string) {
+  const chars = Array.from(text);
+  if (chars.length <= LONG_LINE_CHARS) return [text];
+
+  const pieces: string[] = [];
+  let buffer = '';
+  for (const char of chars) {
+    buffer += char;
+    if (LINE_END_DELIMITERS.includes(char) && Array.from(buffer).length >= LONG_LINE_CHARS) {
+      pieces.push(buffer);
+      buffer = '';
+    }
+  }
+  if (buffer) pieces.push(buffer);
+  return pieces;
+}
+
+function toSpokenText(text: string) {
+  return normalizePauseTagsForEngine(stripCrowdLaughterTags(stripFleshCues(text))).trim();
+}
+
+function toCaptionText(text: string) {
+  return stripPerformanceTags(stripFleshCues(text)).trim();
+}
+
+/**
+ * The call reads a reply one spoken line at a time: the first line is synthesised on
+ * its own so it can start right away, and the narration between lines becomes real
+ * silence instead of a tag inside one long clip.
+ */
+export function buildAssistantSpeechPlan(content: string): VoiceCallSpeechPlan {
+  const cleaned = cleanReplyForVoice(content);
+  const pairs = cleaned.includes('【') ? CALL_SPEECH_PAIRS : QUOTE_PAIRS;
+  const marked = splitSpeechSegments(cleaned, pairs);
+  const segments = marked.some((segment) => segment.kind === 'speech' && segment.text.trim())
+    ? marked
+    : splitStageDirections(cleaned);
+
+  const units: VoiceCallSpeechUnit[] = [];
+  let narration: string[] = [];
+  let pauseBeforeMs = 0;
+
+  segments.forEach((segment, index) => {
+    if (segment.kind === 'speech') {
+      const spoken = toSpokenText(segment.text);
+      if (!spoken) return;
+      splitLongSpokenLine(spoken).forEach((piece) => {
+        const unit = createVoiceCallSpeechUnit({
+          tts: piece,
+          caption: toCaptionText(piece),
+          narration,
+          pauseBeforeMs: units.length === 0 ? 0 : pauseBeforeMs,
+          continuesPreviousLine: units.length > 0 && narration.length === 0
+        });
+        if (!unit) return;
+        units.push(unit);
+        narration = [];
+        pauseBeforeMs = VOICE_CALL_LINE_GAP_MS;
+      });
+      return;
+    }
+
+    const gap = segment.text.trim();
+    if (!gap) return;
+    const hasLaterSpeech = segments.slice(index + 1).some((item) => item.kind === 'speech' && item.text.trim());
+    if (!hasLaterSpeech) return;
+    const narrationText = formatStageDirection(gap);
+    if (narrationText) narration.push(narrationText);
+    pauseBeforeMs = pauseMsForGap(gap);
+  });
+
+  return createVoiceCallSpeechPlan(units);
 }
 
 /**

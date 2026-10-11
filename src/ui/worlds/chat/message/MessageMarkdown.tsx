@@ -123,6 +123,11 @@ function tryParseDisplayMath(lines: string[], index: number) {
   };
 }
 
+/** Two spoken lines written back to back belong on separate lines, not side by side. */
+function splitAdjacentSpokenLines(line: string) {
+  return line.split(/(?<=】)[ \t]*(?=【)/);
+}
+
 function parseMarkdownBlocks(content: string) {
   const blocks: MarkdownBlock[] = [];
   const lines = content.replace(/\r\n/g, '\n').split('\n');
@@ -130,7 +135,7 @@ function parseMarkdownBlocks(content: string) {
 
   const pushParagraphBlocks = (paragraphLines: string[]) => {
     const normalizedLines = paragraphLines
-      .map((line) => line.trimEnd())
+      .flatMap((line) => splitAdjacentSpokenLines(line.trimEnd()))
       .filter((line) => line.trim());
     if (normalizedLines.length > 0) {
       blocks.push({ type: 'paragraph', lines: normalizedLines });

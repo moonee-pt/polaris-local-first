@@ -101,4 +101,14 @@ describe('MessageMarkdown', () => {
     expect(html).toContain('第一段第二行');
     expect(html).toContain('第二段');
   });
+
+  it('breaks a line where two spoken lines were written back to back', () => {
+    const html = renderToStaticMarkup(
+      <MessageMarkdown content={'（把灯调暗）【今天好累。】【早点睡吧。】'} />
+    );
+
+    expect(html.match(/message-rich-text-line/g)).toHaveLength(2);
+    expect(html).toContain('【今天好累。】');
+    expect(html).toContain('【早点睡吧。】');
+  });
 });

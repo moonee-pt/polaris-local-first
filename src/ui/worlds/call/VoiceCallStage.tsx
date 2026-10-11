@@ -8,7 +8,8 @@ import type { TimedAmbienceCue } from '../../../engines/voice/ambienceTimeline';
 import { useI18n } from '../../../i18n';
 import type { I18nKey } from '../../../i18n/messages';
 import { useChatActions, useChatPresentation, useChatStablePayload, useChatUi } from '../chat/context/ChatContext';
-import { buildAssistantCaptionParts, buildAssistantSpeechText, getAssistantAmbiencePlan } from '../chat/message/messageSpeechText';
+import { buildAssistantCaptionParts, buildAssistantSpeechPlan, getAssistantAmbiencePlan } from '../chat/message/messageSpeechText';
+import type { VoiceCallSpeechPlan } from '../../../engines/voice/voiceCallSpeechUnits';
 import { resolveVoiceCallSpeechTarget } from './voiceCallSpeechTarget';
 import { Icon } from '../../Icon';
 import { runImpactAction, runSelectionAction } from '../../haptics';
@@ -107,8 +108,8 @@ export function VoiceCallStage({ onClose }: VoiceCallStageProps) {
     return null;
   }, [stablePayload.messages]);
 
-  const speakAssistantMessage = (messageId: string, speechText: string, caption: VoiceCallCaptionSourcePart[]) => {
-    if (!speechText || caption.length === 0) return;
+  const speakAssistantMessage = (messageId: string, plan: VoiceCallSpeechPlan, caption: VoiceCallCaptionSourcePart[]) => {
+    if (plan.units.length === 0 || caption.length === 0) return;
     const source = stablePayload.messages.find((message) => message.id === messageId);
     if (source) queueFleshCues(source.content);
     const cachedVoice = stablePayload.messages.find((message) => message.id === messageId)?.voiceCache;
@@ -116,7 +117,7 @@ export function VoiceCallStage({ onClose }: VoiceCallStageProps) {
       playback.playCachedClip(messageId, cachedVoice, caption);
       return;
     }
-    playback.speak({ messageId, text: speechText, caption });
+    playback.speak({ messageId, plan });
   };
 
   useEffect(() => {
@@ -132,7 +133,7 @@ export function VoiceCallStage({ onClose }: VoiceCallStageProps) {
 
     spokenMessageIdsRef.current.add(target.messageId);
     setErrorCode(null);
-    speakAssistantMessage(target.messageId, target.speechText, target.caption);
+    speakAssistantMessage(target.messageId, target.plan, target.caption);
   }, [stablePayload.messages, muted, playback.status, ui.sending, ui.streaming]);
 
   function handleHangUp() {
@@ -155,7 +156,8 @@ export function VoiceCallStage({ onClose }: VoiceCallStageProps) {
           messageIds: callMessages.map((message) => message.id),
           startedAt,
           endedAt,
-          turnCount: callMessages.filter((message) => message.role === 'user').length
+          turnCount: callMessages.filter((message) => message.role === 'user').length,
+          durationLabel: formatCallDuration(endedAt - startedAt)
         });
       }
     }
@@ -174,12 +176,12 @@ export function VoiceCallStage({ onClose }: VoiceCallStageProps) {
   function handleRetrySpeak() {
     const message = latestAssistantMessage;
     if (!message) return;
-    const speechText = buildAssistantSpeechText(message.content);
+    const plan = buildAssistantSpeechPlan(message.content);
     const caption = buildAssistantCaptionParts(message.content);
-    if (!speechText || caption.length === 0) return;
+    if (plan.units.length === 0 || caption.length === 0) return;
     queueFleshCues(message.content);
     setErrorCode(null);
-    speakAssistantMessage(message.id, speechText, caption);
+    speakAssistantMessage(message.id, plan, caption);
   }
 
   useEffect(() => {

@@ -77,6 +77,7 @@ export type ChatContextActionsValue = {
     startedAt: number;
     endedAt: number;
     turnCount: number;
+    durationLabel: string;
   }) => void;
   forkFromMessage: (message: ChatMessage) => void;
   updateEditingDraft: (value: string) => void;
