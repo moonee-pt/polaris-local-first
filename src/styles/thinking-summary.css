@@ -93,9 +93,7 @@
 }
 
 .thinking-summary-step {
-  display: grid;
-  grid-template-columns: var(--thinking-summary-rail-width) minmax(0, 1fr);
-  gap: var(--thinking-summary-rail-gap);
+  display: block;
 }
 
 .thinking-summary-step + .thinking-summary-step {
