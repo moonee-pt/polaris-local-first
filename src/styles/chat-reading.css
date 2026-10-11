@@ -112,30 +112,27 @@
   margin: 0;
   font-size: var(--type-body);
   line-height: 1.85;
-  white-space: pre-wrap;
   overflow-wrap: break-word;
 }
 
-.chat-reading-seg.is-speech + .chat-reading-seg.is-speech {
-  margin-left: 1px;
+.chat-reading-line {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
 }
 
-.chat-reading-seg.is-stage {
+.chat-reading-line.is-stage {
   color: var(--warm-text-muted);
 }
 
-.chat-reading-seg.is-read {
+.chat-reading-line.is-read {
   color: var(--warm-text-muted);
 }
 
-.chat-reading-seg.is-active {
+.chat-reading-line.is-active {
   border-radius: 4px;
   background: color-mix(in srgb, var(--reading-accent, #111111) 12%, transparent);
   box-shadow: inset 0 -2px 0 var(--reading-accent, #111111);
-}
-
-.chat-reading-read {
-  color: var(--warm-text-muted);
 }
 
 .chat-reading-notice {

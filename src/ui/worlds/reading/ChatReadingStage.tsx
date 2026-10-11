@@ -206,33 +206,24 @@ export function ChatReadingStage({ onClose }: ChatReadingStageProps) {
     return () => document.removeEventListener('keydown', handleKeyDown);
   });
 
-  const renderSegments = (block: ReadingBlock) => {
-    const cursor = block.messageId === activeMessageId
-      ? resolveReadingCursor(block.segments, progress)
-      : { segmentIndex: -1, readChars: 0 };
-    return block.segments.map((segment, index) => {
-      const state = cursor.segmentIndex < 0 || segment.kind === 'stage'
+  const renderLines = (block: ReadingBlock) => {
+    const activeLine = block.messageId === activeMessageId
+      ? block.lineOfSegment[resolveReadingCursor(block.segments, progress).segmentIndex] ?? -1
+      : -1;
+    return block.lines.map((line, index) => {
+      const state = line.kind === 'stage' || activeLine < 0
         ? 'idle'
-        : index < cursor.segmentIndex
+        : index < activeLine
           ? 'read'
-          : index === cursor.segmentIndex
+          : index === activeLine
             ? 'active'
             : 'idle';
       const className = [
-        'chat-reading-seg',
-        segment.kind === 'stage' ? 'is-stage' : 'is-speech',
+        'chat-reading-line',
+        line.kind === 'stage' ? 'is-stage' : 'is-speech',
         state === 'idle' ? '' : 'is-' + state
       ].filter(Boolean).join(' ');
-      const chars = Array.from(segment.text);
-      if (state === 'active' && cursor.readChars > 0 && cursor.readChars < chars.length) {
-        return (
-          <span key={index} className={className}>
-            <span className="chat-reading-read">{chars.slice(0, cursor.readChars).join('')}</span>
-            {chars.slice(cursor.readChars).join('')}
-          </span>
-        );
-      }
-      return <span key={index} className={className}>{segment.text}</span>;
+      return <span key={index} className={className}>{line.text}</span>;
     });
   };
 
@@ -314,7 +305,7 @@ export function ChatReadingStage({ onClose }: ChatReadingStageProps) {
               <p className="chat-reading-speaker">
                 {block.role === 'assistant' ? presentation.assistantName : t('chat.reading.you')}
               </p>
-              <p className="chat-reading-text">{renderSegments(block)}</p>
+              <p className="chat-reading-text">{renderLines(block)}</p>
             </article>
           ))}
         </div>
