@@ -6,6 +6,7 @@ import { CollaboratorScopeStrip } from '../collection/grid/CollaboratorScopeStri
 import { VoiceCallStage } from './call/VoiceCallStage';
 import { ChatReadingStage } from './reading/ChatReadingStage';
 import { ChatComposer } from './chat/composer/ChatComposer';
+import { ComposerOptionBar } from './chat/composer/ComposerOptionBar';
 import { useComposerFileIngest } from './chat/composer/useComposerFileIngest';
 import { ChatProvider } from './chat/ChatProvider';
 import { MessageTimeline } from './chat/timeline/MessageTimeline';
@@ -93,6 +94,7 @@ function ChatWorldLayout({ shell }: ChatWorldProps) {
         <MessageTimeline isWorldSettled={shell.isActiveWorld && !shell.isWorldSwitching} />
       </div>
       <div className="chat-dock">
+        <ComposerOptionBar />
         <ChatComposer onStartVoiceCall={openVoiceCall} onOpenReading={() => setReadingOpen(true)} />
       </div>
       {voiceCallActive ? (

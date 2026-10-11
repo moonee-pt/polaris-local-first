@@ -102,8 +102,8 @@ describe('MessageMarkdown', () => {
     expect(html).toContain('第二段');
   });
 
-  it('renders a fenced option block as choices instead of code', () => {
-    const html = renderToStaticMarkup(
+  it('keeps option markup out of the transcript', () => {
+    const fenced = renderToStaticMarkup(
       <MessageMarkdown
         content={[
           '想从哪边开始？',
@@ -115,21 +115,17 @@ describe('MessageMarkdown', () => {
       />
     );
 
-    expect(html).toContain('message-option-bar');
-    expect(html).toContain('先聊天气');
-    expect(html).toContain('先聊心情');
-    expect(html).not.toContain('polaris-options');
-  });
+    expect(fenced).toContain('想从哪边开始？');
+    expect(fenced).not.toContain('polaris-options');
+    expect(fenced).not.toContain('先聊天气');
 
-  it('renders a static option bar when no selection handler is provided', () => {
-    const html = renderToStaticMarkup(
-      <MessageMarkdown content={'<polaris-options><option>先聊天气</option><option>先聊心情</option></polaris-options>'} />
+    const bare = renderToStaticMarkup(
+      <MessageMarkdown content={'开始吗？<polaris-options><option>先聊天气</option></polaris-options>'} />
     );
 
-    expect(html).toContain('message-option-bar is-static');
-    expect(html).toContain('先聊天气');
-    expect(html).toContain('先聊心情');
-    expect(html).not.toContain('<button');
+    expect(bare).toContain('开始吗？');
+    expect(bare).not.toContain('polaris-options');
+    expect(bare).not.toContain('先聊天气');
   });
 
   it('breaks a line where two spoken lines were written back to back', () => {

@@ -20,7 +20,7 @@ describe('MessageContent', () => {
     expect(shouldSmoothStreamingMessageContent('普通回复', false)).toBe(false);
   });
 
-  it('shows a fenced option block as choices instead of a code block', () => {
+  it('keeps a fenced option block out of the transcript', () => {
     const html = renderToStaticMarkup(
       <MessageContent
         message={createAssistantMessage([
@@ -38,9 +38,9 @@ describe('MessageContent', () => {
       />
     );
 
-    expect(html).toContain('message-option-bar');
-    expect(html).toContain('先聊这周发生的事');
+    expect(html).toContain('想从哪边开始？');
     expect(html).not.toContain('polaris-options');
+    expect(html).not.toContain('先聊这周发生的事');
   });
 
   it('keeps ordinary narrated code blocks inline in the message body', () => {

@@ -1,7 +1,16 @@
-/* Chat option bar: the assistant hands back a short list of directions to pick from.
+/* Chat option bar: the choices the assistant just offered, docked above the composer.
    Palette follows the bottom shelf tab's active pink (#fff2f6 -> #f6b9c9, detail #d588a1),
    watered down so the slab reads as frosted glass instead of a card. The edge is one drawn
    border plus a soft top light, so all four sides sit on the same line. */
+.composer-option-bar {
+  padding: 0 16px;
+  margin-bottom: 8px;
+  max-height: min(46vh, 320px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
 
 .message-option-bar {
   --option-pink-light: #fff7fa;
@@ -188,17 +197,6 @@ button.message-option-bar-row:focus-visible {
 .message-option-bar-send:focus-visible {
   outline: 2px solid color-mix(in srgb, var(--option-pink-deep) 55%, transparent);
   outline-offset: 2px;
-}
-
-/* Answered, or shown in a message that is no longer live: drop the glass, keep the rows. */
-.message-option-bar.is-static {
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: none;
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-  box-shadow: none;
 }
 
 /* Night rooms: keep the pink but let it glow through the dark instead of going opaque. */

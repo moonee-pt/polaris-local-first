@@ -4,22 +4,13 @@ import {
   normalizeOptionBarMarkup,
   parseRichCardBlock,
   parseRichDetailsBlock,
-  parseRichOptionsBlock,
   renderRichInlineContent
 } from './messageRichMarkup';
-import { MessageOptionBar } from './MessageOptionBar';
 import { renderLatexNode } from './messageMath';
 import { cleanDisplayText } from '../../../text/displayText';
 
 type MessageMarkdownProps = {
   content: string;
-  onSelectOption?: (text: string) => void;
-  optionsInteractive?: boolean;
-};
-
-type OptionBarRender = {
-  interactive: boolean;
-  onSelect: ((text: string) => void) | null;
 };
 
 type MarkdownBlock =
@@ -303,11 +294,11 @@ function renderLines(lines: string[]) {
   ));
 }
 
-function renderMarkdownBlocks(content: string, keyPrefix: string, optionBar?: OptionBarRender) {
-  return parseMarkdownBlocks(content.trim()).map((block, index) => renderBlock(block, index, keyPrefix, optionBar));
+function renderMarkdownBlocks(content: string, keyPrefix: string) {
+  return parseMarkdownBlocks(content.trim()).map((block, index) => renderBlock(block, index, keyPrefix));
 }
 
-function renderBlock(block: MarkdownBlock, index: number, keyPrefix = 'block', optionBar?: OptionBarRender): ReactNode {
+function renderBlock(block: MarkdownBlock, index: number, keyPrefix = 'block'): ReactNode {
   if (block.type === 'heading') {
     const depth = Math.min(block.depth, 4);
     const className = `message-markdown-heading depth-${block.depth}`;
@@ -396,7 +387,7 @@ function renderBlock(block: MarkdownBlock, index: number, keyPrefix = 'block', o
           {renderRichInlineContent(details.summary)}
         </summary>
         <div className="message-markdown-details-body">
-          {renderMarkdownBlocks(details.body, `${keyPrefix}-details-${index}`, optionBar)}
+          {renderMarkdownBlocks(details.body, `${keyPrefix}-details-${index}`)}
         </div>
       </details>
     );
@@ -414,39 +405,26 @@ function renderBlock(block: MarkdownBlock, index: number, keyPrefix = 'block', o
         {card.kicker ? <span className="message-markdown-card-kicker">{renderRichInlineContent(card.kicker)}</span> : null}
         {card.title ? <strong className="message-markdown-card-title">{renderRichInlineContent(card.title)}</strong> : null}
         <div className="message-markdown-card-body">
-          {renderMarkdownBlocks(card.body, `${keyPrefix}-card-${index}`, optionBar)}
+          {renderMarkdownBlocks(card.body, `${keyPrefix}-card-${index}`)}
         </div>
       </section>
     );
   }
+  // The choices are docked above the composer, so the transcript itself stays quiet here.
   if (block.type === 'options') {
-    const parsedOptions = parseRichOptionsBlock(block.markup);
-    if (!parsedOptions) {
-      return <p key={`${keyPrefix}-options-fallback-${index}`} className="message-rich-text-paragraph">{block.markup}</p>;
-    }
-    return (
-      <MessageOptionBar
-        key={`${keyPrefix}-options-${index}`}
-        options={parsedOptions.options}
-        interactive={Boolean(optionBar?.interactive && optionBar?.onSelect)}
-        onSelect={optionBar?.onSelect ?? null}
-      />
-    );
+    return null;
   }
   return <p key={`${keyPrefix}-paragraph-${index}`} className="message-rich-text-paragraph">{renderLines(block.lines)}</p>;
 }
 
-export function MessageMarkdown({ content, onSelectOption, optionsInteractive = false }: MessageMarkdownProps) {
+export function MessageMarkdown({ content }: MessageMarkdownProps) {
   const displayContent = useMemo(() => normalizeOptionBarMarkup(cleanDisplayText(content)), [content]);
   const blocks = useMemo(() => parseMarkdownBlocks(displayContent.trim()), [displayContent]);
-  const optionBar = useMemo<OptionBarRender | undefined>(() => (
-    onSelectOption ? { interactive: optionsInteractive, onSelect: onSelectOption } : undefined
-  ), [onSelectOption, optionsInteractive]);
   if (!blocks.length) return null;
 
   return (
     <div className="message-rich-text message-markdown">
-      {blocks.map((block, index) => renderBlock(block, index, 'block', optionBar))}
+      {blocks.map((block, index) => renderBlock(block, index, 'block'))}
     </div>
   );
 }

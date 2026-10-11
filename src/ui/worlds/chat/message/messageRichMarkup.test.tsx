@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  extractOptionBarBlock,
   normalizeOptionBarMarkup,
   parseRichCardBlock,
   parseRichDetailsBlock,
@@ -42,6 +43,21 @@ describe('messageRichMarkup', () => {
     expect(parseRichOptionsBlock('<polaris-options><option>先聊天气</option>')).toEqual({
       options: ['先聊天气']
     });
+  });
+
+  it('pulls the option list out of a whole reply', () => {
+    const reply = [
+      '想从哪边开始？',
+      '',
+      '```html',
+      '<polaris-options><option>先聊天气</option><option>先聊心情</option></polaris-options>',
+      '```',
+      '',
+      '挑一个就行。'
+    ].join('\n');
+
+    expect(extractOptionBarBlock(reply)).toEqual({ options: ['先聊天气', '先聊心情'] });
+    expect(extractOptionBarBlock('这条回复没有选项')).toBeNull();
   });
 
   it('parses option bars and trims blank or overflowing rows', () => {

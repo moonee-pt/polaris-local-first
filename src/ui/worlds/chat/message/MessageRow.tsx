@@ -71,7 +71,6 @@ export type MessageRowActions = {
   openCodeCard: (cardId: string) => void;
   runCodeCard: (card: CodeCard) => void;
   setCommandStatus: (text: string, isError?: boolean) => void;
-  selectOption: (text: string) => void;
 };
 
 type MessageRowProps = {
@@ -431,8 +430,6 @@ function MessageRowComponent({
                   smoothStreamingText={showStreamingLive}
                   onToggleCodeExpanded={() => actions.toggleCodeExpanded(message.id)}
                   onApplyCustomCss={actions.applyCustomCss}
-                  onSelectOption={isAssistantReply ? actions.selectOption : undefined}
-                  optionsInteractive={isAssistantReply && isTerminalAssistantInUserTurn && !isStreamingLike}
                 />
                 {showStreamingHint ? <div className="assistant-streaming-hint" aria-hidden="true">{t('chat.messageRow.streamingHint')}<span className="assistant-streaming-dots"><span /><span /><span /></span><span className="assistant-streaming-caret" /></div> : null}
               </>

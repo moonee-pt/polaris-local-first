@@ -261,6 +261,20 @@ export function parseRichOptionsBlock(markup: string): RichOptionsBlock | null {
   return { options };
 }
 
+const RICH_OPTIONS_REGION = /<polaris-options(?:\s[^>]*)?>[\s\S]*?<\/polaris-options>/i;
+const RICH_OPTIONS_TO_END = /<polaris-options(?:\s[^>]*)?>[\s\S]*$/i;
+
+/** Pulls the option list out of a whole reply, wherever in it the model put the block. */
+export function extractOptionBarBlock(content: string): RichOptionsBlock | null {
+  if (!content.includes('<polaris-options')) return null;
+
+  const normalized = normalizeOptionBarMarkup(content);
+  const region = normalized.match(RICH_OPTIONS_REGION) ?? normalized.match(RICH_OPTIONS_TO_END);
+  if (!region) return null;
+
+  return parseRichOptionsBlock(region[0]);
+}
+
 export function parseRichCardBlock(markup: string): RichCardBlock | null {
   const match = markup.trim().match(/^<polaris-card([^>]*)>([\s\S]*?)<\/polaris-card>$/i);
   if (!match) return null;
