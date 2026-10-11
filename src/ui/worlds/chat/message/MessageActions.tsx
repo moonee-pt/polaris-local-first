@@ -42,6 +42,8 @@ type MessageActionsProps = {
   /** Set on the newest settled reply so its voice can start without a tap. */
   autoSpeakKey?: string | null;
   autoSpeakAt?: number | null;
+  /** Only the turn's final reply reads aloud; intermediate steps stay quiet. */
+  allowAssistantSpeech?: boolean;
   role: 'assistant' | 'user';
   onSetCommandStatus: (text: string, isError?: boolean) => void;
   onCodeCardAction: () => void;
@@ -67,6 +69,7 @@ export function MessageActions({
   speechCache = null,
   autoSpeakKey = null,
   autoSpeakAt = null,
+  allowAssistantSpeech = true,
   role,
   onSetCommandStatus,
   onCodeCardAction,
@@ -89,10 +92,10 @@ export function MessageActions({
   const showCodeCardAction = codeCardActionMode !== 'hidden';
   const hasMemoryEvidence = role === 'assistant' && Boolean(memoryEvidence?.items.length);
   const hasSpeechCache = role === 'assistant' && Boolean(speechCache?.assetId);
-  const hasAssistantMore = role === 'assistant' && (canEditAssistant || canForkAssistant || canRetryAssistant || hasMemoryEvidence || hasSpeechCache);
   const speakableContent = speechContent.trim();
   const canUseConfiguredSpeech = voiceGeneration.enabled && Boolean(voiceGeneration.baseUrl?.trim() && voiceGeneration.apiKey?.trim());
-  const canSpeakAssistant = role === 'assistant' && Boolean(speakableContent) && (hasSpeechCache || canUseConfiguredSpeech || nativeSpeechAvailable);
+  const canSpeakAssistant = role === 'assistant' && allowAssistantSpeech && Boolean(speakableContent) && (hasSpeechCache || canUseConfiguredSpeech || nativeSpeechAvailable);
+  const hasAssistantMore = role === 'assistant' && (canEditAssistant || canForkAssistant || canRetryAssistant || hasMemoryEvidence || canSpeakAssistant);
   const resolvedRetryAssistantLabel = retryAssistantLabel ?? t('chat.messageActions.retry');
 
   useEffect(() => {

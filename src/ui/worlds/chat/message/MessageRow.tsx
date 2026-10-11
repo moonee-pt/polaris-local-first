@@ -176,7 +176,8 @@ function MessageRowComponent({
     [isAssistantReply, message.content]
   );
   const speechContent = voiceContent?.ttsText ?? '';
-  const canOpenThinkingSummary = showThinking && (Boolean(message.thinkingText) || Boolean(voiceContent));
+  const showRowThinking = showThinking && isTerminalAssistantInUserTurn;
+  const canOpenThinkingSummary = showRowThinking && (Boolean(message.thinkingText) || Boolean(voiceContent));
   const [speechCacheMatches, setSpeechCacheMatches] = useState(false);
   useEffect(() => {
     const cache = message.voiceCache;
@@ -265,6 +266,7 @@ function MessageRowComponent({
       speechCache={speechCacheMatches ? message.voiceCache ?? null : null}
       autoSpeakKey={isAssistantReply && isLatestMessage && !isStreamingLike ? message.id : null}
       autoSpeakAt={isAssistantReply && isLatestMessage && !isStreamingLike ? message.timestamp : null}
+      allowAssistantSpeech={isTerminalAssistantInUserTurn}
       role={message.role === 'assistant' ? 'assistant' : 'user'}
       onSetCommandStatus={actions.setCommandStatus}
       onCodeCardAction={() => actions.codeCardAction(message)}
@@ -493,7 +495,7 @@ function MessageRowComponent({
                   onOpenThinkingSummary={actions.openThinkingSummary}
                   canOpenThinkingSummary={canOpenThinkingSummary}
                   showDetails={false}
-                  showThinking={showThinking}
+                  showThinking={showRowThinking}
                 />
               ) : null}
               {showAssistantMeta ? (
@@ -504,7 +506,7 @@ function MessageRowComponent({
                   onOpenThinkingSummary={actions.openThinkingSummary}
                   canOpenThinkingSummary={canOpenThinkingSummary}
                   showIdentity={!isAssistantContinuation}
-                  showThinking={showThinking}
+                  showThinking={showRowThinking}
                 />
               ) : null}
               {messageBubble}
