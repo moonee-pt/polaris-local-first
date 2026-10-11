@@ -1,5 +1,6 @@
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
+import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 function resolveManualChunk(id: string) {
@@ -30,9 +31,13 @@ function resolveManualChunk(id: string) {
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   const apiOrigin = env.VITE_POLARIS_API_ORIGIN?.trim();
+  const appVersion = JSON.parse(readFileSync(resolve(__dirname, 'package.json'), 'utf8')).version as string;
 
   return {
     plugins: [react()],
+    define: {
+      __APP_VERSION__: JSON.stringify(appVersion)
+    },
     server: apiOrigin
       ? {
         proxy: {

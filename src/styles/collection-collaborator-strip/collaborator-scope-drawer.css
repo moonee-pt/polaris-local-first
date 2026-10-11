@@ -112,6 +112,15 @@
   padding: 2px 0 6px;
 }
 
+/* The list does not fill the panel, so the version pushes itself to the bottom edge. */
+.collaborator-scope-drawer-version {
+  margin: auto 0 0;
+  font-size: 11px;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  color: var(--text-soft);
+}
+
 .collaborator-scope-group {
   display: flex;
   flex-direction: column;

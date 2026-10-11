@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { normalizePersonaDefaultSummary } from '../../../config/persona/personaBaseCatalog';
+import { APP_VERSION } from '../../../config/appVersion';
 import type { Persona } from '../../../types/domain';
 import { runSelectionAction, selectionHaptic } from '../../haptics';
 import { CollaboratorSigil } from '../../collaborator/CollaboratorSigil';
@@ -307,6 +308,7 @@ export function CollaboratorScopeStrip({
             />
           </CreateActionSheet>
         </div>
+        <p className="collaborator-scope-drawer-version">v{APP_VERSION}</p>
       </aside>
 
       <CreateActionSheet
