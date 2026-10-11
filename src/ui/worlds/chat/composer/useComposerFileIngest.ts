@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { useChatActions, useChatAttachments } from '../context/ChatContext';
 import { ingestComposerFiles } from './ingestComposerFiles';
+import { reloadOnceForStaleChunk } from './composerChunkRecovery';
 import { useI18n } from '../../../../i18n';
 
 export function useComposerFileIngest() {
@@ -13,6 +14,7 @@ export function useComposerFileIngest() {
       await ingestComposerFiles(files, attachments.add, actions.setCommandStatus);
     } catch (error) {
       actions.setCommandStatus(error instanceof Error ? error.message : t('chat.composer.readAttachmentFailed'), true);
+      reloadOnceForStaleChunk(error);
     }
   }, [actions, attachments, t]);
 }
