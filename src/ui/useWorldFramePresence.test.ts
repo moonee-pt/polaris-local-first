@@ -98,4 +98,21 @@ describe('resolveWorldPresenceForRender', () => {
       hideGroup: false
     });
   });
+
+  it('keeps the active world mounted when the previous world ref already advanced', () => {
+    expect(
+      resolveWorldPresenceForRender(
+        createSettledWorldPresence('chat'),
+        'collection',
+        'collection'
+      )
+    ).toEqual({
+      renderChat: true,
+      renderCollection: true,
+      renderGroup: false,
+      hideChat: false,
+      hideCollection: false,
+      hideGroup: false
+    });
+  });
 });

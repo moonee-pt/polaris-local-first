@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { inferCodeLanguage, normalizeCodeCardTags, normalizeCodeLanguage } from '../../engines/codeCardEngine';
 import { filterCodeCardsForCollaboratorScope } from '../../engines/collectionOwnership';
 import { enterChatWorld } from '../shell/frontstageNavigation';
@@ -660,6 +660,21 @@ export function useCodeCollectionWorkspaceController(args: {
       presentation: preview.presentation
     });
   };
+
+  const autoPreviewProjectIdRef = useRef<string | null>(null);
+
+  // Opening a workspace from chat lands directly in the running preview; entering
+  // from the collection shelf keeps the file browser as the first screen.
+  useEffect(() => {
+    if (!activeProjectId) {
+      autoPreviewProjectIdRef.current = null;
+      return;
+    }
+    if (projectReturnTarget?.world !== 'chat') return;
+    if (autoPreviewProjectIdRef.current === activeProjectId) return;
+    autoPreviewProjectIdRef.current = activeProjectId;
+    runProject(activeProjectId);
+  }, [activeProjectId, projectReturnTarget, runProject]);
 
   const confirmDesktopSyncPlan = (request: DesktopWorkspaceSyncConfirmationRequest) => {
     const message = buildLocalizedDesktopSyncConfirmationMessage(request, t);

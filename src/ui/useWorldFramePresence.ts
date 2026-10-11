@@ -19,9 +19,40 @@ export function resolveWorldPresenceForRender(
   previousWorld: World,
   activeWorld: World
 ): WorldFramePresence {
-  return previousWorld === activeWorld
+  const next = previousWorld === activeWorld
     ? current
     : createSwitchWorldPresence(current, activeWorld);
+  return ensureActiveWorldMounted(next, activeWorld);
+}
+
+// The active world must stay mounted on every render, including the render right
+// after activeWorld flips and before the switch effect runs. Without this, a stale
+// settled presence could unmount the world we just navigated into, losing its local
+// state such as a workspace return target.
+export function ensureActiveWorldMounted(
+  presence: WorldFramePresence,
+  activeWorld: World
+): WorldFramePresence {
+  const rendered =
+    (activeWorld === 'chat' && presence.renderChat) ||
+    (activeWorld === 'collection' && presence.renderCollection) ||
+    (activeWorld === 'group' && presence.renderGroup);
+  const hidden =
+    (activeWorld === 'chat' && presence.hideChat) ||
+    (activeWorld === 'collection' && presence.hideCollection) ||
+    (activeWorld === 'group' && presence.hideGroup);
+
+  if (rendered && !hidden) return presence;
+
+  return {
+    ...presence,
+    renderChat: activeWorld === 'chat' ? true : presence.renderChat,
+    renderCollection: activeWorld === 'collection' ? true : presence.renderCollection,
+    renderGroup: activeWorld === 'group' ? true : presence.renderGroup,
+    hideChat: activeWorld === 'chat' ? false : presence.hideChat,
+    hideCollection: activeWorld === 'collection' ? false : presence.hideCollection,
+    hideGroup: activeWorld === 'group' ? false : presence.hideGroup
+  };
 }
 
 export function createSettledWorldPresence(activeWorld: World): WorldFramePresence {
