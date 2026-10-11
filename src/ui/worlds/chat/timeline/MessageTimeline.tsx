@@ -50,6 +50,17 @@ function getLatestUserMessageId(messages: ChatMessage[]) {
   return null;
 }
 
+function getLatestConversationalMessageId(messages: ChatMessage[]) {
+  for (let index = messages.length - 1; index >= 0; index -= 1) {
+    const message = messages[index];
+    if (message.voiceCall || message.toolInvocation) continue;
+    if (message.role === 'user' || message.role === 'assistant') {
+      return message.id;
+    }
+  }
+  return null;
+}
+
 function resolveEmptyConversationSignature(persona: Persona | null, fallbackAssistantName: string, fallbackPurpose: string) {
   const name = persona?.name.trim() || fallbackAssistantName.trim() || 'Polaris';
   const purpose = persona?.purpose.trim() || persona?.description.trim() || fallbackPurpose;
@@ -183,6 +194,7 @@ export function MessageTimeline({ isWorldSettled }: MessageTimelineProps) {
   }, []);
   const latestMessageId = messages[messages.length - 1]?.id ?? null;
   const latestUserMessageId = getLatestUserMessageId(messages);
+  const latestConversationalMessageId = getLatestConversationalMessageId(messages);
   const [enteringMessageIds, setEnteringMessageIds] = useState<string[]>([]);
   const previousConversationIdRef = useRef<string | null>(conversationId);
   const previousLatestMessageIdRef = useRef<string | null>(latestMessageId);
@@ -543,6 +555,7 @@ export function MessageTimeline({ isWorldSettled }: MessageTimelineProps) {
             && isTerminalAssistantInUserTurn
             && !ui.sending
             && Boolean(message.content.trim());
+          const isLatestMessage = message.id === latestConversationalMessageId;
 
           const rowState: MessageRowState = {
             editing: ui.editing?.messageId === message.id ? ui.editing : null,
@@ -582,6 +595,7 @@ export function MessageTimeline({ isWorldSettled }: MessageTimelineProps) {
                 userBubbleIndex={userBubbleIndex}
                 isAssistantContinuation={isAssistantContinuation}
                 isTerminalAssistantInUserTurn={isTerminalAssistantInUserTurn}
+                isLatestMessage={isLatestMessage}
                 taskReceiptAction={taskReceipt ? {
                   status: taskReceipt.task.status,
                   expanded: expandedTaskReceiptMessageId === message.id,

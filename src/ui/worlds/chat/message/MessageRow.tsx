@@ -96,6 +96,7 @@ type MessageRowProps = {
   userBubbleIndex?: number;
   isAssistantContinuation?: boolean;
   isTerminalAssistantInUserTurn?: boolean;
+  isLatestMessage?: boolean;
   taskReceiptAction?: MessageTaskReceiptAction | null;
 };
 
@@ -121,6 +122,7 @@ function MessageRowComponent({
   userBubbleIndex,
   isAssistantContinuation = false,
   isTerminalAssistantInUserTurn = true,
+  isLatestMessage = false,
   taskReceiptAction = null
 }: MessageRowProps) {
   const { t } = useI18n();
@@ -262,6 +264,8 @@ function MessageRowComponent({
       messageContent={message.content}
       speechContent={speechContent}
       speechCache={speechCacheMatches ? message.voiceCache ?? null : null}
+      autoSpeakKey={isAssistantReply && isLatestMessage && !isStreamingLike ? message.id : null}
+      autoSpeakAt={isAssistantReply && isLatestMessage && !isStreamingLike ? message.timestamp : null}
       role={message.role === 'assistant' ? 'assistant' : 'user'}
       onSetCommandStatus={actions.setCommandStatus}
       onCodeCardAction={() => actions.codeCardAction(message)}
@@ -612,6 +616,7 @@ function areMessageRowPropsEqual(previous: MessageRowProps, next: MessageRowProp
     && previous.userBubbleIndex === next.userBubbleIndex
     && previous.isAssistantContinuation === next.isAssistantContinuation
     && previous.isTerminalAssistantInUserTurn === next.isTerminalAssistantInUserTurn
+    && previous.isLatestMessage === next.isLatestMessage
     && previous.taskReceiptAction === next.taskReceiptAction
     && previous.message.memoryEvidence === next.message.memoryEvidence
     && previous.state.editing === next.state.editing

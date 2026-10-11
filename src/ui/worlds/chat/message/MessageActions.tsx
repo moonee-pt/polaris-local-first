@@ -14,6 +14,11 @@ import { useI18n } from '../../../../i18n';
 import { MessageMemoryEvidence } from './MessageMemoryEvidence';
 import { getAssistantAmbiencePlan } from './messageSpeechText';
 
+/** Replies whose voice already started on its own; a re-render must never replay one. */
+const autoSpokenMessageIds = new Set<string>();
+/** Read-aloud only starts by itself for replies that land while the app is open. */
+const AUTO_SPEAK_READY_AT = Date.now();
+
 export type MessageTaskReceiptAction = {
   status: ConversationTaskStatus;
   expanded: boolean;
@@ -34,6 +39,9 @@ type MessageActionsProps = {
   messageContent: string;
   speechContent: string;
   speechCache?: ChatMessageVoiceCache | null;
+  /** Set on the newest settled reply so its voice can start without a tap. */
+  autoSpeakKey?: string | null;
+  autoSpeakAt?: number | null;
   role: 'assistant' | 'user';
   onSetCommandStatus: (text: string, isError?: boolean) => void;
   onCodeCardAction: () => void;
@@ -57,6 +65,8 @@ export function MessageActions({
   messageContent,
   speechContent,
   speechCache = null,
+  autoSpeakKey = null,
+  autoSpeakAt = null,
   role,
   onSetCommandStatus,
   onCodeCardAction,
@@ -75,6 +85,7 @@ export function MessageActions({
   const [assistantDraft, setAssistantDraft] = useState(messageContent);
   const abortRef = useRef<AbortController | null>(null);
   const voiceGeneration = useRuntimeStore((state) => state.voiceGeneration);
+  const autoSpeakRef = useRef<(() => void) | null>(null);
   const showCodeCardAction = codeCardActionMode !== 'hidden';
   const hasMemoryEvidence = role === 'assistant' && Boolean(memoryEvidence?.items.length);
   const hasSpeechCache = role === 'assistant' && Boolean(speechCache?.assetId);
@@ -120,6 +131,17 @@ export function MessageActions({
   useEffect(() => () => {
     stopSpeechPlayback();
   }, []);
+
+  useEffect(() => {
+    if (!autoSpeakKey || autoSpeakAt === null || autoSpeakAt === undefined) return;
+    if (autoSpeakAt < AUTO_SPEAK_READY_AT) return;
+    if (autoSpokenMessageIds.has(autoSpeakKey)) return;
+    if (role !== 'assistant' || !speakableContent) return;
+    if (!canUseConfiguredSpeech && !hasSpeechCache) return;
+    if (!getAssistantAmbiencePlan(messageContent).cues.length) return;
+    autoSpokenMessageIds.add(autoSpeakKey);
+    autoSpeakRef.current?.();
+  }, [autoSpeakKey, autoSpeakAt, role, speakableContent, canUseConfiguredSpeech, hasSpeechCache, messageContent]);
 
   if (!canCopyAssistant && !canSpeakAssistant && !hasAssistantMore && !showCodeCardAction && !taskReceiptAction) {
     return null;
@@ -231,14 +253,9 @@ export function MessageActions({
     }
   };
 
-  const toggleSpeech = () => {
-    if (!canSpeakAssistant || speechLoading) return;
+  const beginSpeech = () => {
     const text = speakableContent;
     if (!text) return;
-    if (speaking) {
-      stopSpeechPlayback();
-      return;
-    }
     primeChatSpeechAudio();
     stopSpeechPlayback();
     if (speechCache?.assetId) {
@@ -251,6 +268,16 @@ export function MessageActions({
     }
     onSetCommandStatus(t('chat.messageActions.systemVoiceFallback'));
     playNativeSpeech(text);
+  };
+  autoSpeakRef.current = beginSpeech;
+
+  const toggleSpeech = () => {
+    if (!canSpeakAssistant || speechLoading) return;
+    if (speaking) {
+      stopSpeechPlayback();
+      return;
+    }
+    beginSpeech();
   };
 
   const closeAssistantSheet = () => {
