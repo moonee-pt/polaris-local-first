@@ -148,6 +148,8 @@ export function buildConversationCatalogLocalDataRow(args: ChatConversationLocal
   const value: ConversationCatalogRow = {
     id: snapshot.id,
     title: snapshot.title,
+    ...(snapshot.progressTitle ? { progressTitle: snapshot.progressTitle } : {}),
+    ...(snapshot.progressTitleRound != null ? { progressTitleRound: snapshot.progressTitleRound } : {}),
     kind: snapshot.kind ?? 'direct',
     collaboratorId: snapshot.collaboratorId ?? null,
     group: snapshot.group,

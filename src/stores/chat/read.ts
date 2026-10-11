@@ -279,6 +279,8 @@ function toConversation(catalog: ConversationCatalogRow, record: ConversationRec
   return {
     id: catalog.id,
     title: normalizeConversationTitle(catalog.title, messages),
+    progressTitle: catalog.progressTitle,
+    progressTitleRound: catalog.progressTitleRound,
     kind: catalog.kind ?? 'direct',
     collaboratorId: catalog.collaboratorId,
     group: catalog.group,

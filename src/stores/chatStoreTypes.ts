@@ -66,6 +66,7 @@ export type ChatState = {
   setConversationTask: (conversationId: string, task: ConversationTaskState | null) => void;
   touchConversation: (conversationId: string) => void;
   renameConversation: (conversationId: string, title: string) => void;
+  setConversationProgressTitle: (conversationId: string, progressTitle: string, round: number) => void;
   toggleConversationPinned: (conversationId: string) => void;
   orphanConversation: (conversationId: string) => void;
   clearConversationAttachmentsByAssetIds: (assetIds: string[], clearedAt?: number) => void;

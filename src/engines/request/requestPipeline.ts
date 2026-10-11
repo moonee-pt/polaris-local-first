@@ -74,6 +74,7 @@ export async function requestCollaboratorReply(params: {
   onAudit?: (audit: AssistantRequestAudit) => void;
   onImageUnderstandingResults?: (results: RequestImageUnderstandingResult[]) => void;
   modeInstruction?: string;
+  progressInstruction?: string;
 }): Promise<AssistantReply> {
   const {
     api,
@@ -97,7 +98,8 @@ export async function requestCollaboratorReply(params: {
     onProgress,
     onAudit,
     onImageUnderstandingResults,
-    modeInstruction
+    modeInstruction,
+    progressInstruction
   } = params;
   const prepared = await prepareCollaboratorReplyRequest({
     api,
@@ -116,6 +118,7 @@ export async function requestCollaboratorReply(params: {
     toolContext,
     currentTask,
     modeInstruction,
+    progressInstruction,
     nickname,
     signal
   });

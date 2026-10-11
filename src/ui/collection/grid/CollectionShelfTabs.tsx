@@ -69,7 +69,7 @@ export function CollectionShelfTabs({
                 <Icon
                   name={SHELF_ICON_BY_ID[tab.shelf]}
                   size={20}
-                  color={active ? 'polarisNavGradient' : isDialoguePrimary ? 'polarisNavLineGradient' : 'currentColor'}
+                  color={active ? 'polarisNavGradient' : 'currentColor'}
                 />
               </span>
               <span className="shelf-tab-label">{tab.label}</span>

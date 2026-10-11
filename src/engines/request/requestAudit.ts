@@ -19,6 +19,7 @@ export type AssistantPromptPartName =
   | 'model_runtime_context'
   | 'regex_trigger_context'
   | 'speech_cue_instruction'
+  | 'progress_title_instruction'
   | 'language_style_prompt'
   | 'task_seed_context'
   | 'task_runtime_context'

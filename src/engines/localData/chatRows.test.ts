@@ -144,6 +144,8 @@ describe('conversation durable projection contract', () => {
     expect(CONVERSATION_FIELD_CLASSIFICATION).toEqual({
       id: 'durable',
       title: 'durable',
+      progressTitle: 'durable',
+      progressTitleRound: 'durable',
       kind: 'durable',
       collaboratorId: 'durable',
       group: 'durable',
@@ -160,6 +162,8 @@ describe('conversation durable projection contract', () => {
     expect(CONVERSATION_DURABLE_FIELDS).toEqual([
       'id',
       'title',
+      'progressTitle',
+      'progressTitleRound',
       'kind',
       'collaboratorId',
       'group',

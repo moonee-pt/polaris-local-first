@@ -19,6 +19,8 @@ export type TypedChatSqliteConversationMetadata = Pick<
   Conversation,
   | 'id'
   | 'title'
+  | 'progressTitle'
+  | 'progressTitleRound'
   | 'kind'
   | 'collaboratorId'
   | 'group'

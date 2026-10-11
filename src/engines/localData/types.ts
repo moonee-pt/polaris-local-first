@@ -146,6 +146,9 @@ export type ChatLegacyCatalogRef = {
 export type ConversationCatalogRow = {
   id: string;
   title: string;
+  // Assistant-written progress title; on the catalog so list rows render it without bodies.
+  progressTitle?: string;
+  progressTitleRound?: number;
   kind?: 'direct' | 'group';
   collaboratorId: string | null;
   group?: GroupConversationState;

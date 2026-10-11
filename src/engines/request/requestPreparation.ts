@@ -588,6 +588,7 @@ export async function prepareCollaboratorReplyRequest(params: {
   requestVectorEmbeddings?: RequestSemanticVectorEmbeddingClient;
   requestImageUnderstanding?: ImageUnderstandingRequestReply;
   modeInstruction?: string;
+  progressInstruction?: string;
 }): Promise<{
   assistantName: string;
   modelId: string;
@@ -597,7 +598,7 @@ export async function prepareCollaboratorReplyRequest(params: {
   conversation: RequestMessage[];
   imageUnderstandingResults: RequestImageUnderstandingResult[];
 }> {
-  const { api, persona, personas, messages, toolLedger, toolContext, currentTask, nickname, modeInstruction } = params;
+  const { api, persona, personas, messages, toolLedger, toolContext, currentTask, nickname, modeInstruction, progressInstruction } = params;
   const startedAt = runtimeNow();
   const requestId = createUid('request');
   const preparedAdvanced = resolvePreparedAdvancedSettings({
@@ -648,6 +649,7 @@ export async function prepareCollaboratorReplyRequest(params: {
     currentTask,
     toolProtocolMode,
     modeInstruction,
+    progressInstruction,
     messages: requestSourceMessages
   });
   const promptPartsMs = runtimeNow() - stepStartedAt;

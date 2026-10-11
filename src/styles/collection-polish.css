@@ -22,14 +22,6 @@
   letter-spacing: 0.015em;
 }
 
-.shelf-tab--dialogue-primary {
-  opacity: 1;
-}
-
-.shelf-tab--dialogue-primary:not(.active) {
-  opacity: 1;
-}
-
 .collection-filter-panel,
 .dialogue-filter-panel {
   margin: 1px 0 11px;
@@ -139,13 +131,6 @@
     gap: 2px;
   }
 
-  .shelf-tab--dialogue-primary {
-    min-height: 39px;
-    padding: 1px 4px 0;
-    gap: 2px;
-    color: var(--collection-tab-text-active);
-  }
-
   .shelf-tab-icon {
     width: 24px;
     height: 24px;
@@ -156,8 +141,6 @@
     height: 32px;
     margin-bottom: -7px;
     transform: translateY(-6px);
-    opacity: 1;
-    filter: drop-shadow(0 5px 12px rgba(108, 98, 128, 0.1));
   }
 
   .shelf-tab--dialogue-primary.active .shelf-tab-icon {
@@ -168,13 +151,6 @@
     font-size: 9.5px;
     line-height: 1.08;
     letter-spacing: 0;
-  }
-
-  .shelf-tab--dialogue-primary .shelf-tab-label {
-    color: color-mix(in srgb, var(--collection-tab-text-active) 88%, #111111 12%);
-    font-size: 9.5px;
-    font-weight: 650;
-    text-shadow: none;
   }
 
   .chip {

@@ -23,6 +23,7 @@ export function buildAssistantPromptLayers(params: {
   toolContext?: AssistantToolContext;
   toolProtocolMode?: AssistantToolPromptProtocolMode;
   modeInstruction?: string;
+  progressInstruction?: string;
 }): string[] {
   return buildAssistantPromptParts(params)
     .filter((part) => part.enabled)
@@ -42,8 +43,9 @@ export function buildAssistantPromptParts(params: {
   toolContext?: AssistantToolContext;
   toolProtocolMode?: AssistantToolPromptProtocolMode;
   modeInstruction?: string;
+  progressInstruction?: string;
 }): AssistantPromptPart[] {
-  const { personaPrompt, personaPromptSource, templateContext, messages, regexTriggers, languageStylePrompt, currentTask, includeRuntimeClockContext, promptInjections, toolContext, toolProtocolMode, modeInstruction } = params;
+  const { personaPrompt, personaPromptSource, templateContext, messages, regexTriggers, languageStylePrompt, currentTask, includeRuntimeClockContext, promptInjections, toolContext, toolProtocolMode, modeInstruction, progressInstruction } = params;
   const systemIdentityEntries = buildSystemIdentityEntries();
   const identityEntries = buildIdentityEntries({
     personaPrompt,
@@ -85,11 +87,23 @@ export function buildAssistantPromptParts(params: {
     charCount: 0
   };
 
+  const progressInstructionEntry = {
+    name: 'progress_title_instruction' as const,
+    label: '进度标题',
+    role: 'system' as const,
+    layer: 'context' as const,
+    truncationPriority: 59,
+    content: progressInstruction?.trim() ?? '',
+    enabled: false,
+    charCount: 0
+  };
+
   return [
     ...systemIdentityEntries,
     ...identityEntries,
     ...capabilityEntries,
     modeInstructionEntry,
+    progressInstructionEntry,
     languageStyleEntry,
     ...(runtimeClockEntry ? [runtimeClockEntry] : []),
     ...(modelRuntimeEntry ? [modelRuntimeEntry] : []),

@@ -121,6 +121,8 @@ function toConversationMetadata(conversation: Conversation): TypedChatSqliteConv
   return {
     id: conversation.id,
     title: conversation.title,
+    progressTitle: conversation.progressTitle,
+    progressTitleRound: conversation.progressTitleRound,
     kind: conversation.kind,
     collaboratorId: conversation.collaboratorId,
     group: conversation.group,

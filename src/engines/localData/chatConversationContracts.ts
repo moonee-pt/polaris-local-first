@@ -13,6 +13,8 @@ export type ConversationProjectionRole = 'durable' | 'derived' | 'transient';
 export const CONVERSATION_FIELD_CLASSIFICATION = {
   id: 'durable',
   title: 'durable',
+  progressTitle: 'durable',
+  progressTitleRound: 'durable',
   kind: 'durable',
   collaboratorId: 'durable',
   group: 'durable',
@@ -40,6 +42,8 @@ export type ConversationDurableSnapshot = Pick<Conversation, ConversationDurable
 export const CONVERSATION_DURABLE_FIELDS = [
   'id',
   'title',
+  'progressTitle',
+  'progressTitleRound',
   'kind',
   'collaboratorId',
   'group',
@@ -86,6 +90,8 @@ export function toConversationDurableSnapshot(conversation: Conversation): Conve
   return {
     id: conversation.id,
     title: conversation.title,
+    progressTitle: conversation.progressTitle,
+    progressTitleRound: conversation.progressTitleRound,
     kind: conversation.kind,
     collaboratorId: conversation.collaboratorId,
     group: conversation.group,

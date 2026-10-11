@@ -155,6 +155,10 @@ export interface ConversationTaskState {
 export interface Conversation {
   id: string;
   title: string;
+  // Title the assistant writes about the current progress, shown beside `title`.
+  progressTitle?: string;
+  // How many of the user's turns it took when that title was written; paces the next change.
+  progressTitleRound?: number;
   kind?: 'direct' | 'group';
   collaboratorId: string | null;
   group?: GroupConversationState;

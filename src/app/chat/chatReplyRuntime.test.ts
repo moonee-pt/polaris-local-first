@@ -234,6 +234,7 @@ describe('requestReply task activation', () => {
         getConversationMessages: vi.fn(() => conversationMessages),
         replaceConversationMessages: vi.fn(),
         getConversationTask: vi.fn(() => null),
+        setConversationProgressTitle: vi.fn(),
         setConversationTask: vi.fn(),
         updateMessage: vi.fn((_conversationId, messageId, patch) => {
           conversationMessages = conversationMessages.map((message) =>
@@ -336,6 +337,7 @@ describe('requestReply task activation', () => {
         getConversationMessages: vi.fn(() => conversationMessages),
         replaceConversationMessages: vi.fn(),
         getConversationTask: vi.fn(() => null),
+        setConversationProgressTitle: vi.fn(),
         setConversationTask: vi.fn(),
         updateMessage: vi.fn((_conversationId, messageId, patch) => {
           conversationMessages = conversationMessages.map((message) =>
@@ -452,6 +454,7 @@ describe('requestReply task activation', () => {
         getConversationMessages: vi.fn(() => conversationMessages),
         replaceConversationMessages: vi.fn(),
         getConversationTask: vi.fn(() => null),
+        setConversationProgressTitle: vi.fn(),
         setConversationTask: vi.fn(),
         updateMessage: vi.fn((_conversationId, messageId, patch) => {
           conversationMessages = conversationMessages.map((message) =>
@@ -550,6 +553,7 @@ describe('requestReply task activation', () => {
           conversationMessages = nextMessages;
         }),
         getConversationTask: vi.fn(() => currentTask),
+        setConversationProgressTitle: vi.fn(),
         setConversationTask: vi.fn((_conversationId, nextTask) => {
           currentTask = nextTask;
         }),
@@ -649,6 +653,7 @@ describe('requestReply task activation', () => {
         getConversationMessages: vi.fn(() => conversationMessages),
         replaceConversationMessages: vi.fn(),
         getConversationTask: vi.fn(() => currentTask),
+        setConversationProgressTitle: vi.fn(),
         setConversationTask: vi.fn((_conversationId, nextTask) => {
           currentTask = nextTask;
         }),
@@ -744,6 +749,7 @@ describe('requestReply task activation', () => {
         getConversationMessages: vi.fn(() => conversationMessages),
         replaceConversationMessages: vi.fn(),
         getConversationTask: vi.fn(() => currentTask),
+        setConversationProgressTitle: vi.fn(),
         setConversationTask: vi.fn((_conversationId, nextTask) => {
           currentTask = nextTask;
         }),
@@ -830,6 +836,7 @@ describe('requestReply task activation', () => {
         getConversationMessages: vi.fn(() => conversationMessages),
         replaceConversationMessages: vi.fn(),
         getConversationTask: vi.fn(() => currentTask),
+        setConversationProgressTitle: vi.fn(),
         setConversationTask: vi.fn((_conversationId, nextTask) => {
           currentTask = nextTask;
         }),
@@ -934,6 +941,7 @@ describe('requestReply task activation', () => {
         getConversationMessages: vi.fn(() => conversationMessages),
         replaceConversationMessages: vi.fn(),
         getConversationTask: vi.fn(() => currentTask),
+        setConversationProgressTitle: vi.fn(),
         setConversationTask: vi.fn((_conversationId, nextTask) => {
           currentTask = nextTask;
         }),
@@ -1095,6 +1103,7 @@ describe('requestReply task activation', () => {
         getConversationMessages: vi.fn(() => conversationMessages),
         replaceConversationMessages: vi.fn(),
         getConversationTask: vi.fn(() => currentTask),
+        setConversationProgressTitle: vi.fn(),
         setConversationTask: vi.fn((_conversationId, nextTask) => {
           currentTask = nextTask;
         }),
@@ -1240,6 +1249,7 @@ describe('requestReply task activation', () => {
         getConversationMessages: vi.fn(() => conversationMessages),
         replaceConversationMessages: vi.fn(),
         getConversationTask: vi.fn(() => currentTask),
+        setConversationProgressTitle: vi.fn(),
         setConversationTask: vi.fn((_conversationId, nextTask) => {
           currentTask = nextTask;
         }),
@@ -1368,6 +1378,7 @@ describe('requestReply task activation', () => {
         getConversationMessages: vi.fn(() => conversationMessages),
         replaceConversationMessages: vi.fn(),
         getConversationTask: vi.fn(() => null),
+        setConversationProgressTitle: vi.fn(),
         setConversationTask: vi.fn(),
         updateMessage: vi.fn((_conversationId, messageId, patch) => {
           conversationMessages = conversationMessages.map((message) =>

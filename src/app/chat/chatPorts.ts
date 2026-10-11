@@ -255,6 +255,7 @@ export type ChatReplyStoreBindings = {
       options?: { mode?: import('../../types/domain').ConversationTaskMode }
     ) => ConversationTaskState | null;
     setConversationTask: (conversationId: string, task: ConversationTaskState | null) => void;
+    setConversationProgressTitle: (conversationId: string, progressTitle: string, round: number) => void;
     readLatestState: () => {
       conversations: Conversation[];
       pendingWorkspaceProposals: PendingWorkspaceProposalRecord[];

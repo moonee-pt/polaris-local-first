@@ -91,40 +91,22 @@ export function Icon({ name, size = 18, color = 'currentColor' }: Props) {
   const polarisStarGlowGradientId = `polarisStarGlow${gradientId}`;
   const polarisStarGlintGradientId = `polarisStarGlint${gradientId}`;
   const polarisNavGradientId = `polarisNav${gradientId}`;
-  const polarisNavLineGradientId = `polarisNavLine${gradientId}`;
   const personaCreateCardGradientId = `personaCreateCard${gradientId}`;
   const personaCreateSparkGradientId = `personaCreateSpark${gradientId}`;
   const personaCustomCardGradientId = `personaCustomCard${gradientId}`;
   const personaCustomInkGradientId = `personaCustomInk${gradientId}`;
   const polarisStarDeepSpace = color === 'polarisDeepSpace';
-  const navGradientActive = color === 'polarisNavGradient';
-  const navGradientLine = color === 'polarisNavLineGradient';
-  const navFill = navGradientActive
-    ? `url(#${polarisNavGradientId})`
-    : navGradientLine
-      ? `url(#${polarisNavLineGradientId})`
-      : color;
-  const navDetail = navGradientActive ? 'rgba(255,255,255,0.68)' : navFill;
-  const navSoftDetail = navGradientActive ? 'rgba(255,255,255,0.48)' : navFill;
   const navActive = color === 'polarisNavGradient';
-  const navDefs = navGradientActive || navGradientLine
+  const navFill = navActive ? `url(#${polarisNavGradientId})` : color;
+  const navDetail = navActive ? 'rgba(213,136,161,0.42)' : navFill;
+  const navSoftDetail = navActive ? 'rgba(213,136,161,0.28)' : navFill;
+  const navDefs = navActive
     ? (
       <defs>
-        {navGradientActive ? (
-          <linearGradient id={polarisNavGradientId} x1="4" y1="4" x2="20" y2="20" gradientUnits="userSpaceOnUse">
-            <stop offset="0" stopColor="#8fe8ff" />
-            <stop offset="0.38" stopColor="#a98dff" />
-            <stop offset="0.68" stopColor="#fff08a" />
-            <stop offset="1" stopColor="#ff9fce" />
-          </linearGradient>
-        ) : null}
-        {navGradientLine ? (
-          <linearGradient id={polarisNavLineGradientId} x1="4" y1="4" x2="20" y2="20" gradientUnits="userSpaceOnUse">
-            <stop offset="0" stopColor="#8d879b" />
-            <stop offset="0.48" stopColor="#9d92bb" />
-            <stop offset="1" stopColor="#b2a071" />
-          </linearGradient>
-        ) : null}
+        <linearGradient id={polarisNavGradientId} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#fff2f6" />
+          <stop offset="1" stopColor="#f6b9c9" />
+        </linearGradient>
       </defs>
     )
     : null;

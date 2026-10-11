@@ -6,7 +6,7 @@ import { runImpactAction, runSelectionAction } from '../../haptics';
 import { useConversationCardContext } from './ConversationCardContext';
 import { useSwipeDelete } from './useSwipeDelete';
 import { useTapIntentGuard } from '../useTapIntentGuard';
-import { collectionArchiveDateLabel, collectionRelativeDateLabel } from '../collectionUtils';
+import { collectionRelativeDateLabel, collectionArchiveDateTimeLabel } from '../collectionUtils';
 
 type ConversationCardItemProps = {
   conversation: ConversationCardSummary;
@@ -118,6 +118,17 @@ export const ConversationCardItem = memo(function ConversationCardItem({
           <div className="conversation-card-actions" data-swipe-delete-ignore="true">
             <button
               type="button"
+              className="micro-action-btn"
+              onClick={(event) => {
+                runSelectionAction(() => onStartConversationRename(conversation.id, conversation.title), { element: event.currentTarget });
+              }}
+              title={t('collection.dialogue.rename')}
+              aria-label={t('collection.dialogue.renameAria', { title: conversationTitle })}
+            >
+              <Icon name="edit" size={13} />
+            </button>
+            <button
+              type="button"
               className={`micro-action-btn ${conversation.pinnedAt ? 'active' : ''}`}
               onClick={(event) => {
                 runSelectionAction(() => onConversationPinToggle(conversation.id), { element: event.currentTarget });
@@ -188,25 +199,15 @@ export const ConversationCardItem = memo(function ConversationCardItem({
               <div className={`conversation-card-title-row ${hasInlineStateLabels ? 'has-inline-states' : ''}`}>
                 <small className={`conversation-card-archive-date ${conversation.pinnedAt ? 'pinned' : ''}`}>
                   {conversation.pinnedAt ? <Icon name="polarisStar" size={10} /> : null}
-                  <span>{collectionArchiveDateLabel(conversation.updatedAt)}</span>
+                  <span>{collectionArchiveDateTimeLabel(conversation.updatedAt)}</span>
                 </small>
                 <div className="conversation-card-title-line">
-                  <h3>{conversationTitle}</h3>
-                  {cardsExpanded ? (
-                    <button
-                      type="button"
-                      className="conversation-card-title-rename micro-action-btn"
-                      data-swipe-delete-ignore="true"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        runSelectionAction(() => onStartConversationRename(conversation.id, conversation.title), { element: event.currentTarget });
-                      }}
-                      title={t('collection.dialogue.rename')}
-                      aria-label={t('collection.dialogue.renameAria', { title: conversationTitle })}
-                    >
-                      <Icon name="edit" size={12} />
-                    </button>
-                  ) : null}
+                  <h3>
+                    <span className="conversation-card-title-mine">{conversationTitle}</span>
+                    {conversation.progressTitle ? (
+                      <span className="conversation-card-title-progress">{conversation.progressTitle}</span>
+                    ) : null}
+                  </h3>
                 </div>
                 {hasInlineStateLabels && (
                   <span className="conversation-card-inline-states">

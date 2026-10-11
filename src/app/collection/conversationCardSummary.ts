@@ -9,6 +9,7 @@ export type ConversationCardSummary = {
   id: string;
   title: string;
   displayTitle: string;
+  progressTitle: string;
   collaboratorId: string | null;
   activeProjectId: string | null;
   activeProjectTitle: string | null;
@@ -39,6 +40,7 @@ export function buildConversationCardSummary(
     id: conversation.id,
     title: conversation.title,
     displayTitle: displayConversationTitle(conversation),
+    progressTitle: conversation.progressTitle?.trim() ?? '',
     collaboratorId: resolveConversationCollaboratorId(conversation),
     activeProjectId: conversation.activeProjectId ?? null,
     activeProjectTitle: null,

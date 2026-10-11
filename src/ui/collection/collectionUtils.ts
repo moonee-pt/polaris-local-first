@@ -52,6 +52,13 @@ export function conversationArchiveDateLabel(conversation: Conversation) {
   return collectionArchiveDateLabel(conversation.updatedAt);
 }
 
+export function collectionArchiveDateTimeLabel(timestamp: number) {
+  const date = new Date(timestamp);
+  const hours = `${date.getHours()}`.padStart(2, '0');
+  const minutes = `${date.getMinutes()}`.padStart(2, '0');
+  return `${collectionArchiveDateLabel(timestamp)} ${hours}:${minutes}`;
+}
+
 export function collectionArchiveDateLabel(timestamp: number) {
   const date = new Date(timestamp);
   const year = date.getFullYear();

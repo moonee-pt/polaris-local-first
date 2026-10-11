@@ -173,6 +173,8 @@ function toCatalogRow(
   return {
     id: summary.id,
     title: summary.title,
+    ...(metadata?.progressTitle ? { progressTitle: metadata.progressTitle } : {}),
+    ...(metadata?.progressTitleRound != null ? { progressTitleRound: metadata.progressTitleRound } : {}),
     kind: summary.kind,
     collaboratorId: summary.collaboratorId,
     group: metadata?.group,

@@ -3,6 +3,7 @@ import {
   extractAssistantToolActions
 } from '../../engines/assistantToolProtocol';
 import type { AssistantNativeToolCall } from '../../engines/chatApi';
+import { parseAssistantProgressTitle } from '../../engines/conversationProgressTitleParser';
 import { parseAssistantTaskUpdate } from '../../engines/conversationTaskUpdateParser';
 import { extractProjectFileDraftActions } from '../../engines/tool-protocol/assistantProjectFileDrafts';
 import {
@@ -55,7 +56,8 @@ function uniqueSources(sources: AssistantToolIngressSource[]) {
  * actions, in the order recorded below.
  */
 export function resolveAssistantToolIngress(args: ResolveAssistantToolIngressArgs) {
-  const taskParsed = parseAssistantTaskUpdate(args.content);
+  const progressParsed = parseAssistantProgressTitle(args.content);
+  const taskParsed = parseAssistantTaskUpdate(progressParsed.displayContent);
   const actionParseContext = {
     activeProjectId: args.activeProjectId ?? null,
     mcpTools: args.mcpTools
@@ -115,7 +117,8 @@ export function resolveAssistantToolIngress(args: ResolveAssistantToolIngressArg
       },
       sources: authoritativeBatch.sources.length ? authoritativeBatch.sources : ['none' as const],
       sanitizedContent,
-      taskUpdate: taskParsed.taskUpdate
+      taskUpdate: taskParsed.taskUpdate,
+      progressTitle: progressParsed.progressTitle
     };
   }
 
@@ -160,7 +163,8 @@ export function resolveAssistantToolIngress(args: ResolveAssistantToolIngressArg
       parsed: recovered,
       sources: [recovery.source],
       sanitizedContent,
-      taskUpdate: taskParsed.taskUpdate
+      taskUpdate: taskParsed.taskUpdate,
+      progressTitle: progressParsed.progressTitle
     };
   }
 
@@ -172,6 +176,7 @@ export function resolveAssistantToolIngress(args: ResolveAssistantToolIngressArg
     },
     sources: authoritativeBatch.sources.length ? authoritativeBatch.sources : ['none' as const],
     sanitizedContent,
-    taskUpdate: taskParsed.taskUpdate
+    taskUpdate: taskParsed.taskUpdate,
+    progressTitle: progressParsed.progressTitle
   };
 }

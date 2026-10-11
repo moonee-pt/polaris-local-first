@@ -12,6 +12,8 @@ import {
 import { requestCollaboratorReply } from '../../engines/request/requestPipeline';
 import { VOICE_CALL_MODE_INSTRUCTION } from '../../config/prompts/callModePrompt';
 import { SPEECH_CUE_INSTRUCTION } from '../../config/prompts/speechCuePrompt';
+import { buildProgressTitleInstruction } from '../../config/prompts/progressTitlePrompt';
+import { shouldApplyProgressTitleChange } from '../../engines/conversationProgressTitleParser';
 import { useVoiceCallSession } from '../call/voiceCallSession';
 import type { AssistantReply } from '../../engines/chatApi';
 import type { AssistantRequestAudit } from '../../engines/request/requestAudit';
@@ -94,6 +96,7 @@ type RequestReplyArgs = {
     | 'getConversationMessages'
     | 'replaceConversationMessages'
     | 'setConversationTask'
+    | 'setConversationProgressTitle'
     | 'updateMessage'
     | 'persistToDb'
   >;
@@ -385,6 +388,9 @@ async function requestReplyRound({
       modeInstruction: useVoiceCallSession.getState().active
         ? `${SPEECH_CUE_INSTRUCTION}\n\n${VOICE_CALL_MODE_INSTRUCTION}`
         : SPEECH_CUE_INSTRUCTION,
+      progressInstruction: writableConversation.conversation.kind === 'group'
+        ? undefined
+        : buildProgressTitleInstruction(writableConversation.conversation.progressTitle),
       signal: streaming.controller.signal,
       onProgress: streaming.queueProgress,
       onAudit: (audit) => {
@@ -422,7 +428,7 @@ async function requestReplyRound({
 
     const latestPlaceholder = chat.findConversationMessage(conversationId, placeholderId);
     const finalContent = reply.content.trim() ? reply.content : latestPlaceholder?.content ?? reply.content;
-    const { parsed, visibleContent, isToolOnlyTurn, taskUpdate } = parseAssistantReplyContent(
+    const { parsed, visibleContent, isToolOnlyTurn, taskUpdate, progressTitle } = parseAssistantReplyContent(
       finalContent,
       modelTier,
       toolContextWithMcp.themeToolMode ?? 'stable',
@@ -536,6 +542,18 @@ async function requestReplyRound({
         && !isConversationTaskTerminal(nextTask.status);
       latestTaskState = nextTask;
       chat.setConversationTask(conversationId, nextTask);
+    }
+    // The model is shown the current progress title every turn and repeats it while it
+    // still fits, so a change here means it judged the thread moved on. The round gap
+    // only stops a reworded synonym from making the list row flicker.
+    const userRoundCount = chat
+      .getConversationMessages(conversationId)
+      .filter((message) => message.role === 'user').length;
+    if (progressTitle && shouldApplyProgressTitleChange({
+      userRoundCount,
+      lastAppliedRound: writableConversation.conversation.progressTitleRound ?? null
+    })) {
+      chat.setConversationProgressTitle(conversationId, progressTitle, userRoundCount);
     }
     throwIfAborted(streaming.controller.signal);
 

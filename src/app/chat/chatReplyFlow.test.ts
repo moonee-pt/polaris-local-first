@@ -92,6 +92,7 @@ describe('createChatReplyRunner', () => {
           getRuntimeFeedbackEvents: vi.fn(() => []),
           getConversationTask: vi.fn(() => null),
           ensureConversationTask,
+          setConversationProgressTitle: vi.fn(),
           setConversationTask: vi.fn(),
           readLatestState: () => ({
             conversations: [{
@@ -362,6 +363,7 @@ describe('createChatReplyRunner', () => {
           getRuntimeFeedbackEvents: vi.fn(() => []),
           getConversationTask: vi.fn(() => null),
           ensureConversationTask: vi.fn(() => null),
+          setConversationProgressTitle: vi.fn(),
           setConversationTask: vi.fn(),
           readLatestState: () => ({
             conversations: latestConversations,
@@ -608,6 +610,7 @@ describe('createChatReplyRunner', () => {
           getRuntimeFeedbackEvents: vi.fn(() => []),
           getConversationTask: vi.fn(() => null),
           ensureConversationTask: vi.fn(() => null),
+          setConversationProgressTitle: vi.fn(),
           setConversationTask: vi.fn(),
           readLatestState: () => ({
             conversations: latestConversations,
@@ -769,6 +772,7 @@ describe('createChatReplyRunner', () => {
           getRuntimeFeedbackEvents: vi.fn(() => []),
           getConversationTask: vi.fn(() => null),
           ensureConversationTask: vi.fn(() => null),
+          setConversationProgressTitle: vi.fn(),
           setConversationTask: vi.fn(),
           readLatestState: () => ({
             conversations: latestConversations,

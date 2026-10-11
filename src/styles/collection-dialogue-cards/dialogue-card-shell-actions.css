@@ -164,7 +164,7 @@
 .conversation-card .conversation-card-edit { padding-left: var(--collection-dialogue-card-copy-padding-left); }
 
 .conversation-card .card-meta-row {
-  padding-right: 88px;
+  padding-right: 104px;
   margin-bottom: 0;
   align-items: flex-start;
   gap: 8px;

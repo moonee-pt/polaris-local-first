@@ -13,6 +13,7 @@ import {
   createGroupConversationRecord,
   orphanConversationInRecords,
   renameConversationInRecords,
+  setConversationProgressTitleInRecords,
   toggleConversationPinnedInRecords,
   touchConversationInRecords,
   updateGroupConversationInRecords
@@ -34,6 +35,7 @@ type ChatConversationActions = Pick<
   | 'updateGroupConversation'
   | 'touchConversation'
   | 'renameConversation'
+  | 'setConversationProgressTitle'
   | 'toggleConversationPinned'
   | 'orphanConversation'
 >;
@@ -129,6 +131,22 @@ export function createChatConversationActions(
         if (!conversations) return state;
         return {
           conversations: sortConversations(conversations),
+          ...markConversationDirty(state, conversationId)
+        };
+      });
+    },
+
+    setConversationProgressTitle: (conversationId, progressTitle, round) => {
+      set((state) => {
+        const conversations = setConversationProgressTitleInRecords(
+          state.conversations,
+          conversationId,
+          progressTitle,
+          round
+        );
+        if (!conversations) return state;
+        return {
+          conversations,
           ...markConversationDirty(state, conversationId)
         };
       });

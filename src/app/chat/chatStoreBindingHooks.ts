@@ -39,6 +39,7 @@ export function useChatConversationStoreBindings() {
     removePendingWorkspaceProposal: useChatStore((state) => state.removePendingWorkspaceProposal),
     appendRuntimeFeedbackEvent: useChatStore((state) => state.appendRuntimeFeedbackEvent),
     renameConversation: useChatStore((state) => state.renameConversation),
+    setConversationProgressTitle: useChatStore((state) => state.setConversationProgressTitle),
     toggleConversationPinned: useChatStore((state) => state.toggleConversationPinned),
     deleteConversation: useChatStore((state) => state.deleteConversation),
     clearConversationAttachmentsByAssetIds: useChatStore((state) => state.clearConversationAttachmentsByAssetIds),
