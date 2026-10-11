@@ -1,6 +1,6 @@
 import { TOOL_DRAFT_BLOCK_PATTERN } from '../../../../app/chat/chatMarkdownPatterns';
 import { stripCodeBlocksFromMessage } from '../../../../engines/codeCardEngine';
-import { stripFleshCues } from '../../../../engines/voice/fleshAmbience';
+import { readFleshCues, stripFleshCues, type FleshCue } from '../../../../engines/voice/fleshAmbience';
 import { stripCrowdLaughterTags, stripPerformanceTags } from '../../../../engines/voice/performanceTags';
 import type { VoiceCallCaptionSourcePart } from '../../../../engines/voice/voiceCallCaption';
 
@@ -114,6 +114,18 @@ export function buildAssistantSpeechText(content: string) {
   const hasSpokenLines = segments.some((segment) => segment.kind === 'speech' && segment.text.trim());
   const spoken = hasSpokenLines ? joinSpokenSegments(segments) : stripStageDirections(cleaned);
   return stripCrowdLaughterTags(stripFleshCues(normalizeSpeechWhitespace(spoken)));
+}
+
+export type AssistantVoiceContent = {
+  ttsText: string;
+  cues: FleshCue[];
+};
+
+/** What this reply sends to the voice engine, plus the background track it asks for. */
+export function getAssistantVoiceContent(content: string): AssistantVoiceContent | null {
+  const cues = readFleshCues(content);
+  const ttsText = buildAssistantSpeechText(content);
+  return cues.length || ttsText ? { ttsText, cues } : null;
 }
 
 /**

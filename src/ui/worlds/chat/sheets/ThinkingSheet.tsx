@@ -5,8 +5,8 @@ import { useI18n } from '../../../../i18n';
 import { Icon } from '../../../Icon';
 import { toolIconName } from '../chatToolIcons';
 import { buildThinkingSessionSummary, createThinkingSummaryCopy } from '../thinkingSummary';
-import { buildAssistantSpeechText } from '../message/messageSpeechText';
-import { readFleshCues, type FleshAmbiencePreset, type FleshCue } from '../../../../engines/voice/fleshAmbience';
+import { getAssistantVoiceContent } from '../message/messageSpeechText';
+import type { FleshAmbiencePreset, FleshCue } from '../../../../engines/voice/fleshAmbience';
 import type { I18nKey } from '../../../../i18n/messages';
 
 type ThinkingSheetProps = {
@@ -72,19 +72,16 @@ export function ThinkingSheet({
     [copy, message, messages]
   );
 
-  const voice = useMemo(() => {
-    if (!message || message.role !== 'assistant') return null;
-    const cues = readFleshCues(message.content);
-    const ttsText = buildAssistantSpeechText(message.content);
-    if (!cues.length && !ttsText) return null;
-    return { ttsText, cues };
-  }, [message]);
+  const voice = useMemo(
+    () => (message && message.role === 'assistant' ? getAssistantVoiceContent(message.content) : null),
+    [message]
+  );
 
   useEffect(() => {
     setRawExpanded(false);
   }, [message?.id]);
 
-  if (!message || !session) return null;
+  if (!message || (!session && !voice)) return null;
 
   return (
     <div className="thinking-summary-overlay" role="dialog" aria-modal="true" aria-label={t('chat.thinking.sheetAria')}>
@@ -97,12 +94,12 @@ export function ThinkingSheet({
           </button>
           <div className="thinking-summary-title">
             <strong>Summary</strong>
-            <span>{[message.assistantName || assistantName, session.statsLabel].filter(Boolean).join(' · ')}</span>
+            <span>{[message.assistantName || assistantName, session?.statsLabel].filter(Boolean).join(' · ')}</span>
           </div>
           <div className="thinking-summary-spacer" aria-hidden="true" />
         </div>
         <div className="thinking-summary-list">
-          {session.steps.map((step) => (
+          {(session?.steps ?? []).map((step) => (
             <article key={step.id} className={`thinking-summary-step ${step.kind}`}>
               <div className="thinking-summary-item-rail" aria-hidden="true">
                 <span className={`thinking-summary-item-dot ${step.kind} ${step.kind === 'tool' ? step.tool.status : ''}`}>
@@ -152,49 +149,44 @@ export function ThinkingSheet({
 
         {voice ? (
           <section className="thinking-summary-voice">
-            <span className="thinking-summary-voice-kicker">{t('chat.thinking.voice.title')}</span>
-            <div className="thinking-summary-voice-row">
-              <span className="thinking-summary-voice-label">{t('chat.thinking.voice.tts')}</span>
-              <pre className="thinking-summary-voice-tts">{voice.ttsText || '—'}</pre>
-            </div>
-            <div className="thinking-summary-voice-row">
-              <span className="thinking-summary-voice-label">{t('chat.thinking.voice.track')}</span>
-              {voice.cues.length ? (
-                <div className="thinking-summary-voice-track">
-                  {voice.cues.map((cue, index) => (
-                    <span key={`voice-cue-${index}`} className="thinking-summary-voice-track-item">
-                      {describeFleshCue(cue, t)}
-                    </span>
-                  ))}
-                </div>
-              ) : (
-                <span className="thinking-summary-voice-track-empty">{t('chat.thinking.voice.trackEmpty')}</span>
-              )}
-            </div>
+            {voice.ttsText ? (
+              <pre className="thinking-summary-voice-tts">{voice.ttsText}</pre>
+            ) : null}
+            {voice.cues.length ? (
+              <div className="thinking-summary-voice-track">
+                {voice.cues.map((cue, index) => (
+                  <span key={`voice-cue-${index}`} className="thinking-summary-voice-track-item">
+                    {describeFleshCue(cue, t)}
+                  </span>
+                ))}
+              </div>
+            ) : null}
           </section>
         ) : null}
 
-        <div className="thinking-summary-raw">
-          <button
-            type="button"
-            className="thinking-summary-raw-toggle"
-            onClick={() => setRawExpanded((value) => !value)}
-            aria-expanded={rawExpanded}
-          >
-            <span>{t('chat.thinking.raw')}</span>
-            <Icon name={rawExpanded ? 'chevronUp' : 'chevronDown'} size={14} />
-          </button>
-          {rawExpanded ? (
-            <div className="thinking-summary-raw-sections">
-              {session.rawSections.map((section) => (
-                <section key={section.id} className="thinking-summary-raw-section">
-                  <span className="thinking-summary-raw-kicker">{section.label}</span>
-                  <pre className="thinking-summary-raw-body">{section.content}</pre>
-                </section>
-              ))}
-            </div>
-          ) : null}
-        </div>
+        {session && session.rawSections.length > 0 ? (
+          <div className="thinking-summary-raw">
+            <button
+              type="button"
+              className="thinking-summary-raw-toggle"
+              onClick={() => setRawExpanded((value) => !value)}
+              aria-expanded={rawExpanded}
+            >
+              <span>{t('chat.thinking.raw')}</span>
+              <Icon name={rawExpanded ? 'chevronUp' : 'chevronDown'} size={14} />
+            </button>
+            {rawExpanded ? (
+              <div className="thinking-summary-raw-sections">
+                {session.rawSections.map((section) => (
+                  <section key={section.id} className="thinking-summary-raw-section">
+                    <span className="thinking-summary-raw-kicker">{section.label}</span>
+                    <pre className="thinking-summary-raw-body">{section.content}</pre>
+                  </section>
+                ))}
+              </div>
+            ) : null}
+          </div>
+        ) : null}
       </div>
     </div>
   );

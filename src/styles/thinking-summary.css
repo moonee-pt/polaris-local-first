@@ -87,6 +87,11 @@
   padding-right: var(--thinking-summary-list-right-pad);
 }
 
+/* A reply with no reasoning and no tools opens straight onto its voice section. */
+.thinking-summary-list:empty {
+  display: none;
+}
+
 .thinking-summary-step {
   display: grid;
   grid-template-columns: var(--thinking-summary-rail-width) minmax(0, 1fr);
@@ -345,24 +350,6 @@
   gap: 12px;
 }
 
-.thinking-summary-voice-kicker {
-  display: inline-block;
-  font-size: 10px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-}
-
-.thinking-summary-voice-row {
-  display: grid;
-  gap: 6px;
-}
-
-.thinking-summary-voice-label {
-  font-size: var(--type-caption);
-  color: var(--text-soft);
-}
-
 .thinking-summary-voice-tts {
   margin: 0;
   color: var(--text);
@@ -373,8 +360,7 @@
   word-break: break-word;
 }
 
-.thinking-summary-voice-track,
-.thinking-summary-voice-track-empty {
+.thinking-summary-voice-track {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
@@ -389,11 +375,6 @@
   color: var(--text-muted);
   font-size: var(--type-caption);
   line-height: 1.6;
-}
-
-.thinking-summary-voice-track-empty {
-  color: var(--text-muted);
-  font-size: var(--type-caption);
 }
 
 @media (max-width: 640px) {

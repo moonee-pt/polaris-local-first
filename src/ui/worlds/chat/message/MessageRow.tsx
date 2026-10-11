@@ -21,7 +21,7 @@ import { MessageMeta } from './MessageMeta';
 import { MessageGeneratedImages } from './MessageGeneratedImages';
 import { MessageToolEvent } from './MessageToolEvent';
 import { isProjectedCodeToolName } from './projectedCodeTools';
-import { buildAssistantSpeechText } from './messageSpeechText';
+import { getAssistantVoiceContent } from './messageSpeechText';
 import { messageSpeechCacheMatchesText } from '../../../../app/chat/messageSpeechCache';
 import {
   buildVisibleToolProductCardMessageIds,
@@ -169,10 +169,11 @@ function MessageRowComponent({
     () => buildVisibleToolProductCardMessageIds(toolMessages),
     [toolMessages]
   );
-  const speechContent = useMemo(
-    () => (isAssistantReply ? buildAssistantSpeechText(message.content) : ''),
+  const voiceContent = useMemo(
+    () => (isAssistantReply ? getAssistantVoiceContent(message.content) : null),
     [isAssistantReply, message.content]
   );
+  const speechContent = voiceContent?.ttsText ?? '';
   const [speechCacheMatches, setSpeechCacheMatches] = useState(false);
   useEffect(() => {
     const cache = message.voiceCache;
@@ -248,7 +249,7 @@ function MessageRowComponent({
   const messageActions = isAssistantReply && !state.editing ? (
     <MessageActions
       canCopyAssistant={message.role === 'assistant' && !message.toolInvocation && !isStreamingLike && isTerminalAssistantInUserTurn && Boolean(message.content.trim())}
-      canOpenThinkingSummary={showThinking && showChatAvatars && Boolean(message.thinkingText)}
+      canOpenThinkingSummary={showThinking && (Boolean(message.thinkingText) || Boolean(voiceContent))}
       memoryEvidence={message.memoryEvidence ?? null}
       canRetryAssistant={state.canRetry}
       canEditAssistant={state.canEditAssistant}
