@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useVoiceCallSession } from '../../app/call/voiceCallSession';
+import { useReadingSession } from '../../app/reading/readingSession';
 import {
   getRunCodeSandboxProfile,
   lockRunCodeSandbox,
@@ -177,6 +178,18 @@ export function AppTopbar({
                 aria-label={t('chat.composer.startCall')}
               >
                 <Icon name="phone" size={18} />
+              </button>
+            )}
+
+            {state.activeWorld === 'chat' && (
+              <button
+                type="button"
+                className="action-btn icon-btn topbar-reading-btn"
+                onClick={(event) => handleSelectionAction(() => useReadingSession.getState().open(), event.currentTarget)}
+                title={t('chat.reading.open')}
+                aria-label={t('chat.reading.open')}
+              >
+                <Icon name="openBook" size={18} />
               </button>
             )}
 

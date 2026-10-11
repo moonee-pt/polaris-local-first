@@ -41,7 +41,6 @@ type ComposerQuickActionsProps = {
   interactionLocked: boolean;
   onSetPickerOpen: (open: boolean) => void;
   onStartVoiceCall?: () => void;
-  onOpenReading?: () => void;
 };
 
 const FILE_ACCEPT =
@@ -51,8 +50,7 @@ export function ComposerQuickActions({
   pickerOpen,
   interactionLocked,
   onSetPickerOpen,
-  onStartVoiceCall,
-  onOpenReading
+  onStartVoiceCall
 }: ComposerQuickActionsProps) {
   const { t } = useI18n();
 
@@ -86,20 +84,6 @@ export function ComposerQuickActions({
           }}
         >
           <Icon name="phone" size={15} />
-        </button>
-      ) : null}
-      {onOpenReading ? (
-        <button
-          type="button"
-          className="composer-slot-btn composer-slot-btn-reading"
-          title={t('chat.reading.open')}
-          aria-label={t('chat.reading.open')}
-          disabled={interactionLocked}
-          onClick={(event) => {
-            runSelectionAction(onOpenReading, { element: event.currentTarget });
-          }}
-        >
-          <Icon name="openBook" size={15} />
         </button>
       ) : null}
     </div>

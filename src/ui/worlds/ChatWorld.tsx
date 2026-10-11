@@ -1,6 +1,7 @@
 import type { ComponentProps, DragEvent } from 'react';
-import { Suspense, lazy, useEffect, useRef, useState } from 'react';
+import { Suspense, lazy, useEffect, useRef } from 'react';
 import { useVoiceCallSession } from '../../app/call/voiceCallSession';
+import { useReadingSession } from '../../app/reading/readingSession';
 import { loadThinkingSheetModule } from '../app-shell/appShellLazyModules';
 import { CollaboratorScopeStrip } from '../collection/grid/CollaboratorScopeStrip';
 import { VoiceCallStage } from './call/VoiceCallStage';
@@ -43,10 +44,12 @@ function ChatWorldLayout({ shell }: ChatWorldProps) {
   const voiceCallActive = useVoiceCallSession((state) => state.active);
   const openVoiceCall = useVoiceCallSession((state) => state.open);
   const closeVoiceCall = useVoiceCallSession((state) => state.close);
-  const [readingOpen, setReadingOpen] = useState(false);
+  const readingOpen = useReadingSession((state) => state.active);
+  const closeReading = useReadingSession((state) => state.close);
 
   useEffect(() => () => {
     useVoiceCallSession.getState().close();
+    useReadingSession.getState().close();
   }, []);
 
   const thinkingSummaryMessage = ui.thinkingSummaryMessageId
@@ -95,13 +98,13 @@ function ChatWorldLayout({ shell }: ChatWorldProps) {
       </div>
       <div className="chat-dock">
         <ComposerOptionBar />
-        <ChatComposer onStartVoiceCall={openVoiceCall} onOpenReading={() => setReadingOpen(true)} />
+        <ChatComposer onStartVoiceCall={openVoiceCall} />
       </div>
       {voiceCallActive ? (
         <VoiceCallStage onClose={closeVoiceCall} />
       ) : null}
       {readingOpen ? (
-        <ChatReadingStage onClose={() => setReadingOpen(false)} />
+        <ChatReadingStage onClose={closeReading} />
       ) : null}
       {thinkingSummaryMessage ? (
         <Suspense fallback={null}>
