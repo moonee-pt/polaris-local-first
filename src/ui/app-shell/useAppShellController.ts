@@ -226,6 +226,7 @@ export function useAppShellController() {
     activeThemePreview,
     theme,
     collectionShelf,
+    setCollectionShelf,
     toggleWorld,
     derived,
     collection,

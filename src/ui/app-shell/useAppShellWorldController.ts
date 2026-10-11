@@ -13,6 +13,7 @@ type UseAppShellWorldControllerArgs = {
   activeThemePreview: Parameters<typeof buildTopbarProps>[0]['activeThemePreview'];
   theme: Parameters<typeof useThemeDomEffects>[0];
   collectionShelf: Parameters<typeof buildTopbarProps>[0]['collectionShelf'];
+  setCollectionShelf: (shelf: Parameters<typeof buildTopbarProps>[0]['collectionShelf']) => void;
   toggleWorld: () => void;
   derived: {
     topbarTitle: string;
@@ -50,6 +51,7 @@ export function useAppShellWorldController({
   activeThemePreview,
   theme,
   collectionShelf,
+  setCollectionShelf,
   toggleWorld,
   derived,
   collection,
@@ -103,6 +105,8 @@ export function useAppShellWorldController({
       preloadLazyModule(nextWorld === 'chat' ? loadChatWorldModule : loadCollectionWorldModule);
       if (nextWorld === 'chat') {
         navigationActions.prepareChatForWorldReturn();
+      } else {
+        setCollectionShelf('dialogue');
       }
       toggleWorld();
     },
