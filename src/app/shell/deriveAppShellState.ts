@@ -37,7 +37,6 @@ export function deriveAppShellState({
     ? personas.find((persona) => persona.id === activeConversationCollaboratorId) ?? currentCollaborator
     : null;
   const chatCollaborator = currentCollaborator ?? activeConversationCollaborator;
-  const hasActiveConversation = Boolean(activeConversationTitle);
   const activeRenderLoad = effectiveWorld === 'collection'
     ? collectionRenderItemCount
     : effectiveWorld === 'chat'
@@ -70,7 +69,7 @@ export function deriveAppShellState({
   const showTopbarTitle = !isAggregateCollectionScope;
   const topbarCollaborator = effectiveWorld === 'collection'
     ? currentCollaborator
-    : effectiveWorld === 'chat' && hasActiveConversation
+    : effectiveWorld === 'chat'
       ? chatCollaborator
       : null;
   const topbarTitle = topbarCollaborator?.name || 'Polaris';

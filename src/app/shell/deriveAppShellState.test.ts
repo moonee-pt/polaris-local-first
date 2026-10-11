@@ -76,4 +76,16 @@ describe('deriveAppShellState', () => {
     expect(state.showTopbarShell).toBe(false);
     expect(state.showTopbarTitle).toBe(true);
   });
+
+  it('shows the current collaborator in a fresh chat with no title yet', () => {
+    const state = deriveAppShellState({
+      ...baseArgs,
+      activeWorld: 'chat',
+      activeConversationTitle: null,
+      activeConversationCollaboratorId: null
+    });
+
+    expect(state.topbarTitle).toBe(persona.name);
+    expect(state.topbarTitleTone).toBe('collaborator');
+  });
 });
