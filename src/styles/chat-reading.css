@@ -1,0 +1,172 @@
+/* Reading page: one paper surface, one accent (the persona color), neutral grays. */
+.chat-reading-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  justify-content: center;
+  background: var(--warm-bg);
+  color: var(--warm-text);
+  overflow: hidden;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.chat-reading-stage-inner {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 760px;
+  min-height: 0;
+}
+
+.chat-reading-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+  padding: 14px 18px 12px;
+  border-bottom: 1px solid var(--warm-border);
+  background: var(--warm-surface);
+}
+
+.chat-reading-head-copy {
+  min-width: 0;
+}
+
+.chat-reading-head-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.chat-reading-head-meta {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--warm-text-muted);
+}
+
+.chat-reading-head-spacer {
+  flex: 1 1 auto;
+}
+
+.chat-reading-control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 34px;
+  min-width: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--warm-border);
+  background: var(--warm-surface-solid);
+  color: var(--warm-text-soft);
+  font-size: 13px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.chat-reading-control.is-primary {
+  border-color: transparent;
+  background: var(--warm-text);
+  color: #ffffff;
+}
+
+.chat-reading-control:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.chat-reading-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 18px 20px 45vh;
+  scroll-behavior: smooth;
+}
+
+.chat-reading-block {
+  margin: 0 0 24px;
+  border-left: 2px solid transparent;
+  padding-left: 12px;
+}
+
+.chat-reading-block.is-active {
+  border-left-color: var(--reading-accent, var(--warm-text));
+}
+
+.chat-reading-block.is-user .chat-reading-speaker,
+.chat-reading-block.is-user .chat-reading-text {
+  color: var(--warm-text-soft);
+}
+
+.chat-reading-speaker {
+  margin: 0 0 6px;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: var(--warm-text-muted);
+}
+
+.chat-reading-text {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.95;
+  word-break: break-word;
+}
+
+.chat-reading-seg.is-speech + .chat-reading-seg.is-speech {
+  margin-left: 1px;
+}
+
+.chat-reading-seg.is-stage {
+  color: var(--warm-text-muted);
+  font-size: 14px;
+}
+
+.chat-reading-seg.is-read {
+  color: var(--warm-text-muted);
+}
+
+.chat-reading-seg.is-active {
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--reading-accent, #111111) 12%, transparent);
+  box-shadow: inset 0 -2px 0 var(--reading-accent, #111111);
+}
+
+.chat-reading-read {
+  color: var(--warm-text-muted);
+}
+
+.chat-reading-notice {
+  margin: 0 0 16px;
+  font-size: 12px;
+  color: var(--warm-text-muted);
+}
+
+.chat-reading-empty {
+  margin: 0;
+  padding: 40px 4px;
+  font-size: 14px;
+  color: var(--warm-text-muted);
+}
+
+.chat-reading-entry-row {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 2px 6px;
+}
+
+.chat-reading-entry {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--warm-border);
+  background: var(--warm-surface);
+  color: var(--warm-text-soft);
+  font-size: 12px;
+  cursor: pointer;
+}

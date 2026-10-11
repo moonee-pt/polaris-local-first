@@ -1,9 +1,11 @@
 import type { ComponentProps, DragEvent } from 'react';
-import { Suspense, lazy, useEffect, useRef } from 'react';
+import { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { useVoiceCallSession } from '../../app/call/voiceCallSession';
 import { loadThinkingSheetModule } from '../app-shell/appShellLazyModules';
 import { CollaboratorScopeStrip } from '../collection/grid/CollaboratorScopeStrip';
 import { VoiceCallStage } from './call/VoiceCallStage';
+import { ChatReadingEntry } from './reading/ChatReadingEntry';
+import { ChatReadingStage } from './reading/ChatReadingStage';
 import { ChatComposer } from './chat/composer/ChatComposer';
 import { useComposerFileIngest } from './chat/composer/useComposerFileIngest';
 import { ChatProvider } from './chat/ChatProvider';
@@ -41,6 +43,7 @@ function ChatWorldLayout({ shell }: ChatWorldProps) {
   const voiceCallActive = useVoiceCallSession((state) => state.active);
   const openVoiceCall = useVoiceCallSession((state) => state.open);
   const closeVoiceCall = useVoiceCallSession((state) => state.close);
+  const [readingOpen, setReadingOpen] = useState(false);
 
   useEffect(() => () => {
     useVoiceCallSession.getState().close();
@@ -91,10 +94,14 @@ function ChatWorldLayout({ shell }: ChatWorldProps) {
         <MessageTimeline isWorldSettled={shell.isActiveWorld && !shell.isWorldSwitching} />
       </div>
       <div className="chat-dock">
+        <ChatReadingEntry onOpen={() => setReadingOpen(true)} />
         <ChatComposer onStartVoiceCall={openVoiceCall} />
       </div>
       {voiceCallActive ? (
         <VoiceCallStage onClose={closeVoiceCall} />
+      ) : null}
+      {readingOpen ? (
+        <ChatReadingStage onClose={() => setReadingOpen(false)} />
       ) : null}
       {thinkingSummaryMessage ? (
         <Suspense fallback={null}>
