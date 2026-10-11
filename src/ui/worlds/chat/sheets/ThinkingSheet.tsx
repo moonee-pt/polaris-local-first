@@ -118,11 +118,6 @@ export function ThinkingSheet({
         <div className="thinking-summary-list">
           {(session?.steps ?? []).map((step) => (
             <article key={step.id} className={`thinking-summary-step ${step.kind}`}>
-              <div className="thinking-summary-item-rail" aria-hidden="true">
-                <span className={`thinking-summary-item-dot ${step.kind} ${step.kind === 'tool' ? step.tool.status : ''}`}>
-                  {step.kind === 'tool' ? <Icon name={toolIconName(step.tool)} size={12} /> : null}
-                </span>
-              </div>
               <div className={`thinking-summary-step-shell ${step.kind} ${step.kind === 'tool' ? step.tool.status : ''}`}>
                 {step.kind === 'thinking' ? (
                   <div className="thinking-summary-phase-list">
