@@ -220,11 +220,39 @@ export type RichOptionsBlock = {
 
 const RICH_OPTIONS_MAX = 6;
 
-export function parseRichOptionsBlock(markup: string): RichOptionsBlock | null {
-  const match = markup.trim().match(/^<polaris-options(?:\s[^>]*)?>([\s\S]*?)<\/polaris-options>$/i);
-  if (!match) return null;
+const RICH_OPTIONS_OPEN = /^<polaris-options(?:\s[^>]*)?>/i;
+const RICH_OPTIONS_CLOSE = /<\/polaris-options>\s*$/i;
 
-  const options = Array.from((match[1] ?? '').matchAll(/<option>([\s\S]*?)<\/option>/gi))
+function isOnlyOptionMarkup(value: string) {
+  const trimmed = value.trim();
+  return RICH_OPTIONS_OPEN.test(trimmed) && RICH_OPTIONS_CLOSE.test(trimmed);
+}
+
+/**
+ * Models like to quote the option markup back as code, either in a fenced block or wrapped in
+ * backticks, and sometimes leave it on the same line as the prose. Unwrap those, and give the
+ * block its own lines, so the reader gets choices instead of looking at the tags.
+ */
+export function normalizeOptionBarMarkup(content: string) {
+  if (!content.includes('<polaris-options')) return content;
+
+  let text = content.replace(/```[^\n`]*\n([\s\S]*?)```/g, (whole, body: string) =>
+    isOnlyOptionMarkup(body) ? `\n${body.trim()}\n` : whole
+  );
+  text = text.replace(/`{1,3}([^`]*)`{1,3}/g, (whole, body: string) =>
+    isOnlyOptionMarkup(body) ? `\n${body.trim()}\n` : whole
+  );
+  text = text.replace(/([^\n])[ \t]*(<polaris-options)/gi, '$1\n\n$2');
+  text = text.replace(/(<\/polaris-options>)[ \t]*([^\n])/gi, '$1\n\n$2');
+  return text;
+}
+
+export function parseRichOptionsBlock(markup: string): RichOptionsBlock | null {
+  const trimmed = markup.trim();
+  if (!RICH_OPTIONS_OPEN.test(trimmed)) return null;
+
+  const inner = trimmed.replace(RICH_OPTIONS_OPEN, '').replace(RICH_OPTIONS_CLOSE, '');
+  const options = Array.from(inner.matchAll(/<option>([\s\S]*?)<\/option>/gi))
     .map((entry) => (entry[1] ?? '').replace(/\s+/g, ' ').trim())
     .filter(Boolean)
     .slice(0, RICH_OPTIONS_MAX);

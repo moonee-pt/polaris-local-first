@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { parseRichCardBlock, parseRichDetailsBlock, parseRichOptionsBlock, renderRichInlineContent } from './messageRichMarkup';
+import {
+  normalizeOptionBarMarkup,
+  parseRichCardBlock,
+  parseRichDetailsBlock,
+  parseRichOptionsBlock,
+  renderRichInlineContent
+} from './messageRichMarkup';
 
 describe('messageRichMarkup', () => {
   it('parses details blocks', () => {
@@ -16,6 +22,25 @@ describe('messageRichMarkup', () => {
       kicker: '夜色',
       tone: 'rose',
       body: '慢一点说话'
+    });
+  });
+
+  it('unwraps option markup that came back as code', () => {
+    const fenced = ['开始吗？', '', '```html', '<polaris-options><option>先聊天气</option></polaris-options>', '```'].join('\n');
+    expect(normalizeOptionBarMarkup(fenced)).not.toContain('```');
+    expect(normalizeOptionBarMarkup(fenced)).toContain('\n<polaris-options>');
+
+    const inlined = '开始吗？`<polaris-options><option>先聊天气</option></polaris-options>`';
+    expect(normalizeOptionBarMarkup(inlined)).not.toContain('`');
+
+    const sameLine = '开始吗？<polaris-options><option>先聊天气</option></polaris-options>好';
+    expect(normalizeOptionBarMarkup(sameLine)).toContain('\n\n<polaris-options>');
+    expect(normalizeOptionBarMarkup(sameLine)).toContain('</polaris-options>\n\n好');
+  });
+
+  it('reads an option block whose closing tag has not arrived yet', () => {
+    expect(parseRichOptionsBlock('<polaris-options><option>先聊天气</option>')).toEqual({
+      options: ['先聊天气']
     });
   });
 

@@ -12,6 +12,7 @@ import { runSuccessAction } from '../../../haptics';
 import { MessageCode } from './MessageCode';
 import { MessageCodeBlockView } from './MessageCodeBlockView';
 import { MessageMarkdown } from './MessageMarkdown';
+import { normalizeOptionBarMarkup } from './messageRichMarkup';
 import { MessageThinkingProjection } from './MessageThinkingProjection';
 import { isCodeWriteToolName, isProjectedCodeToolName } from './projectedCodeTools';
 
@@ -307,11 +308,14 @@ export function MessageContent({
   const optionBar = isAssistantMessage && onSelectOption
     ? { onSelectOption, optionsInteractive }
     : undefined;
-  const displayedMessageContent = useSmoothStreamingText(
+  const streamedMessageContent = useSmoothStreamingText(
     message.id,
     message.content,
     shouldSmoothStreamingMessageContent(message.content, smoothStreamingText)
   );
+  const displayedMessageContent = isAssistantMessage
+    ? normalizeOptionBarMarkup(streamedMessageContent)
+    : streamedMessageContent;
   const toolDraftBlocks = isAssistantMessage && !hasResolvedToolEvent ? extractToolDraftBlocks(displayedMessageContent) : [];
   const contentWithoutToolDrafts = isAssistantMessage ? stripToolDraftBlocks(displayedMessageContent) : displayedMessageContent;
   const thinkingText = isAssistantMessage ? (message.thinkingText?.trim() ?? '') : '';

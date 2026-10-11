@@ -102,6 +102,25 @@ describe('MessageMarkdown', () => {
     expect(html).toContain('第二段');
   });
 
+  it('renders a fenced option block as choices instead of code', () => {
+    const html = renderToStaticMarkup(
+      <MessageMarkdown
+        content={[
+          '想从哪边开始？',
+          '',
+          '```html',
+          '<polaris-options><option>先聊天气</option><option>先聊心情</option></polaris-options>',
+          '```'
+        ].join('\n')}
+      />
+    );
+
+    expect(html).toContain('message-option-bar');
+    expect(html).toContain('先聊天气');
+    expect(html).toContain('先聊心情');
+    expect(html).not.toContain('polaris-options');
+  });
+
   it('renders a static option bar when no selection handler is provided', () => {
     const html = renderToStaticMarkup(
       <MessageMarkdown content={'<polaris-options><option>先聊天气</option><option>先聊心情</option></polaris-options>'} />

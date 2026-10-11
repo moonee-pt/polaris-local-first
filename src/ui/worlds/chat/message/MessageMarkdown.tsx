@@ -1,6 +1,7 @@
 import { useMemo, type ReactNode } from 'react';
 import { MessageCodeBlockView } from './MessageCodeBlockView';
 import {
+  normalizeOptionBarMarkup,
   parseRichCardBlock,
   parseRichDetailsBlock,
   parseRichOptionsBlock,
@@ -217,16 +218,17 @@ function parseMarkdownBlocks(content: string) {
       continue;
     }
 
-    if (/^<polaris-options(?:\s|>)/i.test(line)) {
+    if (/^\s*<polaris-options(?:\s|>)/i.test(line)) {
       const markupLines: string[] = [rawLine];
       index += 1;
       while (index < lines.length) {
-        markupLines.push(lines[index] ?? '');
-        if (/<\/polaris-options>\s*$/i.test((lines[index] ?? '').trim())) {
-          index += 1;
-          break;
-        }
+        const candidate = lines[index] ?? '';
+        const carriesOption = /<option/i.test(candidate);
+        const closes = /<\/polaris-options>/i.test(candidate);
+        if (!carriesOption && !closes) break;
+        markupLines.push(candidate);
         index += 1;
+        if (closes) break;
       }
       blocks.push({ type: 'options', markup: markupLines.join('\n') });
       continue;
@@ -435,7 +437,7 @@ function renderBlock(block: MarkdownBlock, index: number, keyPrefix = 'block', o
 }
 
 export function MessageMarkdown({ content, onSelectOption, optionsInteractive = false }: MessageMarkdownProps) {
-  const displayContent = useMemo(() => cleanDisplayText(content), [content]);
+  const displayContent = useMemo(() => normalizeOptionBarMarkup(cleanDisplayText(content)), [content]);
   const blocks = useMemo(() => parseMarkdownBlocks(displayContent.trim()), [displayContent]);
   const optionBar = useMemo<OptionBarRender | undefined>(() => (
     onSelectOption ? { interactive: optionsInteractive, onSelect: onSelectOption } : undefined

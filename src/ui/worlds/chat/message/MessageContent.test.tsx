@@ -20,6 +20,29 @@ describe('MessageContent', () => {
     expect(shouldSmoothStreamingMessageContent('普通回复', false)).toBe(false);
   });
 
+  it('shows a fenced option block as choices instead of a code block', () => {
+    const html = renderToStaticMarkup(
+      <MessageContent
+        message={createAssistantMessage([
+          '想从哪边开始？',
+          '',
+          '```html',
+          '<polaris-options><option>先聊这周发生的事</option><option>先说说我现在的心情</option></polaris-options>',
+          '```'
+        ].join('\n'))}
+        codeCardActionMode="hidden"
+        isCodeExpanded={false}
+        onToggleCodeExpanded={() => {}}
+        onApplyCustomCss={() => {}}
+        showThinking={false}
+      />
+    );
+
+    expect(html).toContain('message-option-bar');
+    expect(html).toContain('先聊这周发生的事');
+    expect(html).not.toContain('polaris-options');
+  });
+
   it('keeps ordinary narrated code blocks inline in the message body', () => {
     const html = renderToStaticMarkup(
       <MessageContent
