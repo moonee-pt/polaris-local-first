@@ -1,5 +1,6 @@
 import type { World } from '../../types/domain';
 
 export function shouldShowWorldSwitchVeil(activeWorld: World) {
-  return activeWorld !== 'group';
+  // Chat keeps only the topbar logo as the world toggle; the inline veil would duplicate it.
+  return activeWorld !== 'group' && activeWorld !== 'chat';
 }
