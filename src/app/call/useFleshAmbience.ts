@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   createFleshAmbienceLoop,
+  fleshClipFile,
   FLESH_CLIP_NAMES,
   FLESH_LOOP_CATEGORIES,
   type FleshAmbienceCategory,
@@ -17,25 +18,34 @@ const DUCK_LEVEL = 0.8;
 
 function resolveClipUrl(category: FleshAmbienceCategory, clip: string) {
   const base = import.meta.env.BASE_URL || '/';
-  return `${base}sfx/flesh/${category}/${clip}.ogg`;
+  return `${base}sfx/flesh/${fleshClipFile(category, clip)}`;
 }
 
 type ScheduledVoice = { source: AudioBufferSourceNode; gain: GainNode };
+
+type Bed = {
+  category: FleshLoopCategory;
+  loop: FleshAmbienceLoop;
+  startSec: number;
+  gain: GainNode;
+  voices: Set<ScheduledVoice>;
+};
 
 export type FleshAmbienceController = {
   active: boolean;
   ready: boolean;
   start: (category: FleshLoopCategory, preset: FleshAmbiencePreset) => void;
-  stop: () => void;
-  setPreset: (preset: FleshAmbiencePreset) => void;
+  stop: (category?: FleshLoopCategory) => void;
+  setPreset: (category: FleshLoopCategory, preset: FleshAmbiencePreset) => void;
   setDucked: (ducked: boolean) => void;
   playOneShot: (category: FleshAmbienceCategory) => void;
 };
 
 /**
- * Streams the short SFX pack into a continuous body track under the call.
+ * Streams the short SFX pack into one or more continuous beds under the call.
  * Nothing is pre-rendered: hits are planned on a rolling window and scheduled
- * straight onto the audio clock.
+ * straight onto the audio clock. Each category keeps its own bed, so a water
+ * track and a breath track run at the same time.
  */
 export function useFleshAmbience(): FleshAmbienceController {
   const contextRef = useRef<AudioContext | null>(null);
@@ -43,10 +53,9 @@ export function useFleshAmbience(): FleshAmbienceController {
   const duckRef = useRef<GainNode | null>(null);
   const bufferRef = useRef<Map<string, AudioBuffer>>(new Map());
   const pendingRef = useRef<Set<string>>(new Set());
-  const loopRef = useRef<FleshAmbienceLoop | null>(null);
-  const loopStartRef = useRef(0);
+  const bedsRef = useRef<Map<FleshLoopCategory, Bed>>(new Map());
   const timerRef = useRef<number | null>(null);
-  const voicesRef = useRef<Set<ScheduledVoice>>(new Set());
+  const oneShotVoicesRef = useRef<Set<ScheduledVoice>>(new Set());
   const [active, setActive] = useState(false);
   const [ready, setReady] = useState(false);
 
@@ -105,28 +114,63 @@ export function useFleshAmbience(): FleshAmbienceController {
     timerRef.current = null;
   }, []);
 
-  const scheduleHit = useCallback((context: AudioContext, category: FleshAmbienceCategory, clip: string, atSec: number, gain: number) => {
+  const scheduleHit = useCallback((
+    context: AudioContext,
+    category: FleshAmbienceCategory,
+    clip: string,
+    atSec: number,
+    gain: number,
+    output: AudioNode,
+    voices: Set<ScheduledVoice>
+  ) => {
     const buffer = bufferRef.current.get(`${category}/${clip}`);
-    if (!buffer || !duckRef.current) return;
+    if (!buffer) return;
     const source = context.createBufferSource();
     source.buffer = buffer;
     const gainNode = context.createGain();
     gainNode.gain.value = gain;
     source.connect(gainNode);
-    gainNode.connect(duckRef.current);
+    gainNode.connect(output);
     const voice: ScheduledVoice = { source, gain: gainNode };
-    voicesRef.current.add(voice);
+    voices.add(voice);
     source.onended = () => {
-      voicesRef.current.delete(voice);
+      voices.delete(voice);
       source.disconnect();
       gainNode.disconnect();
     };
     source.start(Math.max(context.currentTime, atSec));
   }, []);
 
-  const stop = useCallback(() => {
+  const retireBed = useCallback((bed: Bed) => {
+    bedsRef.current.delete(bed.category);
+    const context = contextRef.current;
+    if (!context) return;
+    const cutoff = context.currentTime + FADE_OUT_SEC;
+    bed.gain.gain.cancelScheduledValues(context.currentTime);
+    bed.gain.gain.setValueAtTime(bed.gain.gain.value, context.currentTime);
+    bed.gain.gain.linearRampToValueAtTime(0, cutoff);
+    for (const voice of bed.voices) {
+      try {
+        voice.source.stop(cutoff);
+      } catch {
+        // Already stopped.
+      }
+    }
+    window.setTimeout(() => {
+      bed.gain.disconnect();
+    }, (FADE_OUT_SEC + 0.2) * 1000);
+  }, []);
+
+  const stop = useCallback((category?: FleshLoopCategory) => {
+    if (category) {
+      const bed = bedsRef.current.get(category);
+      if (bed) retireBed(bed);
+    } else {
+      for (const bed of [...bedsRef.current.values()]) retireBed(bed);
+    }
+    if (bedsRef.current.size > 0) return;
+
     clearTimer();
-    loopRef.current = null;
     setActive(false);
     const context = contextRef.current;
     const master = masterRef.current;
@@ -135,49 +179,60 @@ export function useFleshAmbience(): FleshAmbienceController {
       master.gain.cancelScheduledValues(now);
       master.gain.setValueAtTime(master.gain.value, now);
       master.gain.linearRampToValueAtTime(0, now + FADE_OUT_SEC);
-      const cutoff = now + FADE_OUT_SEC;
-      for (const voice of voicesRef.current) {
-        try {
-          voice.source.stop(cutoff);
-        } catch {
-          // Already stopped.
-        }
-      }
     }
-  }, [clearTimer]);
+  }, [clearTimer, retireBed]);
 
   const start = useCallback((category: FleshLoopCategory, preset: FleshAmbiencePreset) => {
     const context = ensureGraph();
-    if (!context || !masterRef.current) return;
+    if (!context || !masterRef.current || !duckRef.current) return;
     void context.resume().catch(() => {});
+
+    const existing = bedsRef.current.get(category);
+    if (existing) {
+      existing.loop.setPreset(preset);
+      return;
+    }
+
     prefetchLoops(context, category);
-    loopRef.current = createFleshAmbienceLoop({
-      seed: Math.floor(Math.random() * 0x7fffffff),
+    const gain = context.createGain();
+    gain.gain.value = 1;
+    gain.connect(duckRef.current);
+    bedsRef.current.set(category, {
       category,
-      preset
+      loop: createFleshAmbienceLoop({
+        seed: Math.floor(Math.random() * 0x7fffffff),
+        category,
+        preset
+      }),
+      startSec: context.currentTime + 0.15,
+      gain,
+      voices: new Set()
     });
-    loopStartRef.current = context.currentTime + 0.15;
+
     const master = masterRef.current;
     const now = context.currentTime;
     master.gain.cancelScheduledValues(now);
     master.gain.setValueAtTime(master.gain.value, now);
     master.gain.linearRampToValueAtTime(1, now + FADE_IN_SEC);
+
     clearTimer();
     const tick = () => {
-      const loop = loopRef.current;
       const audio = contextRef.current;
-      if (!loop || !audio) return;
-      const startAt = loopStartRef.current;
-      const hits = loop.take(audio.currentTime + LOOKAHEAD_SEC - startAt);
-      for (const hit of hits) scheduleHit(audio, hit.category, hit.clip, startAt + hit.atSec, hit.gain);
+      if (!audio) return;
+      for (const bed of bedsRef.current.values()) {
+        const hits = bed.loop.take(audio.currentTime + LOOKAHEAD_SEC - bed.startSec);
+        for (const hit of hits) {
+          scheduleHit(audio, hit.category, hit.clip, bed.startSec + hit.atSec, hit.gain, bed.gain, bed.voices);
+        }
+      }
     };
     tick();
     timerRef.current = window.setInterval(tick, TICK_MS);
     setActive(true);
   }, [clearTimer, ensureGraph, prefetchLoops, scheduleHit]);
 
-  const setPreset = useCallback((preset: FleshAmbiencePreset) => {
-    loopRef.current?.setPreset(preset);
+  const setPreset = useCallback((category: FleshLoopCategory, preset: FleshAmbiencePreset) => {
+    bedsRef.current.get(category)?.loop.setPreset(preset);
   }, []);
 
   const setDucked = useCallback((ducked: boolean) => {
@@ -193,11 +248,20 @@ export function useFleshAmbience(): FleshAmbienceController {
 
   const playOneShot = useCallback((category: FleshAmbienceCategory) => {
     const context = ensureGraph();
-    if (!context) return;
+    if (!context || !duckRef.current) return;
     void context.resume().catch(() => {});
-    const clip = FLESH_CLIP_NAMES[category][0];
+    const names = FLESH_CLIP_NAMES[category];
+    const clip = names[Math.floor(Math.random() * names.length)];
     if (!clip) return;
-    const hit = () => scheduleHit(context, category, clip, context.currentTime + 0.05, 1);
+    const hit = () => scheduleHit(
+      context,
+      category,
+      clip,
+      context.currentTime + 0.05,
+      1,
+      duckRef.current as AudioNode,
+      oneShotVoicesRef.current
+    );
     if (bufferRef.current.has(`${category}/${clip}`)) {
       hit();
       return;
@@ -207,18 +271,19 @@ export function useFleshAmbience(): FleshAmbienceController {
 
   useEffect(() => () => {
     clearTimer();
-    for (const voice of voicesRef.current) {
+    for (const voice of oneShotVoicesRef.current) {
       try {
         voice.source.stop();
       } catch {
         // Already stopped.
       }
     }
-    voicesRef.current.clear();
+    oneShotVoicesRef.current.clear();
     void contextRef.current?.close().catch(() => {});
     contextRef.current = null;
     masterRef.current = null;
     duckRef.current = null;
+    bedsRef.current.clear();
   }, [clearTimer]);
 
   return { active, ready, start, stop, setPreset, setDucked, playOneShot };

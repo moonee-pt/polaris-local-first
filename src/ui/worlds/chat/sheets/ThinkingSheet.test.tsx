@@ -34,6 +34,12 @@ describe('thinking sheet voice section', () => {
     expect(markup).not.toContain('thinking-summary-raw-toggle');
   });
 
+  it('lists the breath track next to the body track', () => {
+    const markup = sheetMarkup(assistantMessage({ content: '"过来。"\n\n（他压着她[wet:hard][breath]）' }));
+    expect(markup).toContain('水声 · 重 · 循环');
+    expect(markup).toContain('喘气 · 中 · 循环');
+  });
+
   it('keeps the reasoning steps when the model did think', () => {
     const markup = sheetMarkup(assistantMessage({ content: '"好。"', thinkingText: '她在想要不要答应' }));
     expect(markup).toContain('thinking-summary-step');

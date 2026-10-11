@@ -4,7 +4,7 @@ import type { CodeCardActionMode } from '../../../../app/chat/chatDerivedState';
 import { readMessageSpeechCacheBlob, saveMessageSpeechCache } from '../../../../app/chat/messageSpeechCache';
 import { playChatSpeechBlob, primeChatSpeechAudio, stopChatSpeechAudio } from '../../../../app/chat/chatSpeechAudio';
 import { requestGeneratedSpeech } from '../../../../engines/voiceGenerationClient';
-import { readFleshCues } from '../../../../engines/voice/fleshAmbience';
+import { readFleshCues, selectAmbienceCues } from '../../../../engines/voice/fleshAmbience';
 import { useFleshAmbience } from '../../../../app/call/useFleshAmbience';
 import { writeTextToClipboard } from '../../../../infrastructure/clipboard';
 import { canUseNativeSystemBackupFiles, exportFileViaSystemFiles } from '../../../../native/systemBackupFiles';
@@ -172,7 +172,7 @@ export function MessageActions({
   }
 
   function applyMessageAmbience() {
-    for (const cue of readFleshCues(messageContent)) {
+    for (const cue of selectAmbienceCues(readFleshCues(messageContent))) {
       if (cue.kind === 'loop') startAmbience(cue.category, cue.preset);
       else playAmbienceOneShot(cue.category);
     }

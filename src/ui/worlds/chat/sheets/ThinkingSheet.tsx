@@ -22,7 +22,8 @@ const FLESH_CATEGORY_KEYS: Record<string, string> = {
   wet: 'wet',
   stroke: 'stroke',
   cum: 'cum',
-  pullout: 'pullout'
+  pullout: 'pullout',
+  breath: 'breath'
 };
 
 function describeFleshCue(cue: FleshCue, t: I18nTranslator['t']) {

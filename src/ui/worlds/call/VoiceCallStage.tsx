@@ -4,7 +4,7 @@ import { useVoiceCallPlayback } from '../../../app/call/useVoiceCallPlayback';
 import { primeCallAudio } from '../../../app/call/callAudio';
 import { useFleshAmbience } from '../../../app/call/useFleshAmbience';
 import type { VoiceCallCaptionSourcePart } from '../../../engines/voice/voiceCallCaption';
-import { readFleshCues } from '../../../engines/voice/fleshAmbience';
+import { readFleshCues, selectAmbienceCues } from '../../../engines/voice/fleshAmbience';
 import { useI18n } from '../../../i18n';
 import type { I18nKey } from '../../../i18n/messages';
 import { useChatActions, useChatPresentation, useChatStablePayload, useChatUi } from '../chat/context/ChatContext';
@@ -71,7 +71,7 @@ export function VoiceCallStage({ onClose }: VoiceCallStageProps) {
   }, [ambience, playback.status]);
 
   const applyFleshCues = (content: string) => {
-    for (const cue of readFleshCues(content)) {
+    for (const cue of selectAmbienceCues(readFleshCues(content))) {
       if (cue.kind === 'loop') ambience.start(cue.category, cue.preset);
       else ambience.playOneShot(cue.category);
     }

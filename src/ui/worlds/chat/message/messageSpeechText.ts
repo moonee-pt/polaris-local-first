@@ -1,6 +1,6 @@
 import { TOOL_DRAFT_BLOCK_PATTERN } from '../../../../app/chat/chatMarkdownPatterns';
 import { stripCodeBlocksFromMessage } from '../../../../engines/codeCardEngine';
-import { readFleshCues, stripFleshCues, type FleshCue } from '../../../../engines/voice/fleshAmbience';
+import { readFleshCues, selectAmbienceCues, stripFleshCues, type FleshCue } from '../../../../engines/voice/fleshAmbience';
 import { normalizePauseTagsForEngine, stripCrowdLaughterTags, stripPerformanceTags } from '../../../../engines/voice/performanceTags';
 import type { VoiceCallCaptionSourcePart } from '../../../../engines/voice/voiceCallCaption';
 
@@ -122,9 +122,9 @@ export type AssistantVoiceContent = {
   cues: FleshCue[];
 };
 
-/** What this reply sends to the voice engine, plus the background track it asks for. */
+/** What this reply sends to the voice engine, plus the background tracks that will actually run. */
 export function getAssistantVoiceContent(content: string): AssistantVoiceContent | null {
-  const cues = readFleshCues(content);
+  const cues = selectAmbienceCues(readFleshCues(content));
   const ttsText = buildAssistantSpeechText(content);
   return cues.length || ttsText ? { ttsText, cues } : null;
 }
