@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useI18n } from '../../../i18n';
 import { Icon, type IconName } from '../../Icon';
 import type { GroupWorldTab } from '../../../app/group/useGroupWorldController';
@@ -9,6 +10,7 @@ import { GroupCardsTab } from './GroupCardsTab';
 import { GroupImagesTab } from './GroupImagesTab';
 import { GroupSettingsTab } from './GroupSettingsTab';
 import type { GroupController } from './groupController';
+import { useGroupVoice } from './useGroupVoice';
 
 const TABS: Array<{ id: GroupWorldTab; icon: IconName; labelKey: 'group.tab.dialogue' | 'group.tab.cards' | 'group.tab.images' | 'group.tab.settings' }> = [
   { id: 'dialogue', icon: 'navDialogue', labelKey: 'group.tab.dialogue' },
@@ -96,6 +98,14 @@ function GroupConversationsSheet({ controller }: GroupRoomProps) {
 export function GroupRoom({ controller }: GroupRoomProps) {
   const { t } = useI18n();
   const group = controller.activeGroup;
+  const activeGroupId = group?.id ?? null;
+  const voice = useGroupVoice({
+    onSpeechCacheReady: (messageId, voiceCache) => controller.setMemberMessageVoiceCache(messageId, voiceCache),
+    onError: (message) => controller.setCommandStatus(message, true)
+  });
+  useEffect(() => {
+    voice.stopAll();
+  }, [activeGroupId]);
   if (!group?.group) return null;
 
   return (
@@ -127,6 +137,17 @@ export function GroupRoom({ controller }: GroupRoomProps) {
           </span>
         </button>
         <div className="group-room-member-strip" role="group">
+          <button
+            type="button"
+            className={`group-icon-btn group-voice-toggle ${voice.enabled ? 'is-on' : ''}`}
+            onClick={voice.toggleEnabled}
+            disabled={!voice.supported}
+            aria-pressed={voice.enabled}
+            aria-label={voice.enabled ? t('group.voice.autoOff') : t('group.voice.autoOn')}
+            title={voice.enabled ? t('group.voice.autoOff') : t('group.voice.autoOn')}
+          >
+            <Icon name="voice" size={16} />
+          </button>
           {controller.memberLiveStates.map(({ member, typing }) => (
             <button
               type="button"
@@ -144,7 +165,7 @@ export function GroupRoom({ controller }: GroupRoomProps) {
       <div className="group-room-body">
         {controller.activeTab === 'dialogue' ? (
           <div className="group-dialogue">
-            <GroupTimeline controller={controller} />
+            <GroupTimeline controller={controller} voice={voice} />
             <GroupComposer controller={controller} />
           </div>
         ) : null}

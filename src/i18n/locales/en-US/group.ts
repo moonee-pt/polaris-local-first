@@ -125,4 +125,12 @@ export const group = {
   'group.settings.backgroundImage.saveFailed': 'Failed to save the backdrop image',
   'group.settings.delete': 'Disband group',
   'group.settings.deleteConfirm': 'Tap again to confirm',
+  'group.voice.autoOn': 'Turn on auto-read',
+  'group.voice.autoOff': 'Turn off auto-read',
+  'group.voice.play': 'Read aloud',
+  'group.voice.stop': 'Stop',
+  'group.voice.generating': 'Generating',
+  'group.voice.playFailed': 'Playback failed',
+  'group.voice.configureFirst': 'Set up a voice provider first',
+  'group.voice.generateFailed': 'Voice generation failed',
 } as const;

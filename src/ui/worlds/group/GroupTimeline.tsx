@@ -8,9 +8,12 @@ import { splitFencedCode } from '../../../app/group/groupMessageCode';
 import type { ChatAttachment, ChatMessage, Persona } from '../../../types/domain';
 import { GroupAvatar } from './GroupAvatar';
 import type { GroupController } from './groupController';
+import { getAssistantVoiceContent } from '../chat/message/messageSpeechText';
+import type { GroupVoiceController } from './useGroupVoice';
 
 type GroupTimelineProps = {
   controller: GroupController;
+  voice: GroupVoiceController;
 };
 
 const GROUP_TIMELINE_BOTTOM_THRESHOLD = 160;
@@ -41,7 +44,8 @@ function MemberMessage({
   codeLinesLabel,
   controller,
   streaming = false,
-  activityHint = null
+  activityHint = null,
+  voice
 }: {
   message: ChatMessage;
   member: Persona | null;
@@ -53,6 +57,7 @@ function MemberMessage({
   controller: GroupController;
   streaming?: boolean;
   activityHint?: string | null;
+  voice: GroupVoiceController;
 }) {
   const { t } = useI18n();
   const [actionsOpen, setActionsOpen] = useState(false);
@@ -62,6 +67,10 @@ function MemberMessage({
   // 写代码是过程：群里压成小物件，完整代码在这位成员的私域里
   const { text, codeBlocks } = useMemo(() => splitFencedCode(message.content), [message.content]);
   const editing = editDraft !== null;
+  const hasVoice = Boolean(getAssistantVoiceContent(message.content)?.ttsText?.trim())
+    && (voice.supported || Boolean(message.voiceCache?.assetId));
+  const voiceSpeaking = voice.speakingId === message.id;
+  const voiceLoading = voice.isLoading(message.id);
 
   return (
     <div className="group-msg is-member">
@@ -133,6 +142,24 @@ function MemberMessage({
             </>
           )}
         </div>
+        {!editing && hasVoice ? (
+          <div className="group-msg-voice-row">
+            <button
+              type="button"
+              className={`group-msg-voice-btn ${voiceSpeaking ? 'is-speaking' : ''} ${voiceLoading ? 'is-loading' : ''}`}
+              onClick={(event) => {
+                event.stopPropagation();
+                voice.playMessage({ id: message.id, content: message.content, voiceCache: message.voiceCache ?? null });
+              }}
+              disabled={voiceLoading}
+              aria-pressed={voiceSpeaking}
+              aria-label={voiceLoading ? t('group.voice.generating') : voiceSpeaking ? t('group.voice.stop') : t('group.voice.play')}
+              title={voiceLoading ? t('group.voice.generating') : voiceSpeaking ? t('group.voice.stop') : t('group.voice.play')}
+            >
+              <Icon name={voiceLoading ? 'refresh' : voiceSpeaking ? 'pause' : 'voice'} size={14} />
+            </button>
+          </div>
+        ) : null}
         {editing ? (
           <div className="group-msg-actions">
             <button
@@ -216,7 +243,7 @@ function UserMessage({ message }: { message: ChatMessage }) {
   );
 }
 
-export function GroupTimeline({ controller }: GroupTimelineProps) {
+export function GroupTimeline({ controller, voice }: GroupTimelineProps) {
   const { t } = useI18n();
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const flowRef = useRef<HTMLDivElement | null>(null);
@@ -340,6 +367,31 @@ export function GroupTimeline({ controller }: GroupTimelineProps) {
     return () => observer.disconnect();
   }, [groupId, scrollToBottom]);
 
+  const voiceCandidates = useMemo(
+    () => timelineItems
+      .filter((item) => item.kind === 'member' && !item.streaming && Boolean(item.message.content.trim()))
+      .map((item) => ({
+        id: item.message.id,
+        content: item.message.content,
+        voiceCache: item.message.voiceCache ?? null
+      })),
+    [timelineItems]
+  );
+  const voiceCandidateKey = voiceCandidates.map((item) => item.id).join('|');
+  const seenAutoVoiceRef = useRef<{ groupId: string | null; ids: Set<string> }>({ groupId: null, ids: new Set() });
+  useEffect(() => {
+    if (!group) return;
+    const seen = seenAutoVoiceRef.current;
+    if (seen.groupId !== group.id) {
+      seenAutoVoiceRef.current = { groupId: group.id, ids: new Set(voiceCandidates.map((item) => item.id)) };
+      return;
+    }
+    const fresh = voiceCandidates.filter((item) => !seen.ids.has(item.id));
+    if (fresh.length === 0) return;
+    fresh.forEach((item) => seen.ids.add(item.id));
+    if (voice.enabled) fresh.forEach((item) => voice.enqueueAuto(item));
+  }, [group, voice, voiceCandidateKey]);
+
   if (!group) return null;
 
   return (
@@ -423,6 +475,7 @@ export function GroupTimeline({ controller }: GroupTimelineProps) {
               cardLabel={t('group.timeline.card')}
               codeLinesLabel={(lines) => t('group.timeline.codeLines', { lines })}
               controller={controller}
+              voice={voice}
               streaming={streaming}
               activityHint={
                 message.speakerCollaboratorId && activityKeyByMemberId.has(message.speakerCollaboratorId)

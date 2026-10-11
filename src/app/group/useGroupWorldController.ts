@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import type {
+  ChatMessageVoiceCache,
   Conversation,
   Persona
 } from '../../types/domain';
@@ -282,6 +283,13 @@ export function useGroupWorldController({ ui }: UseGroupWorldControllerArgs) {
     );
   }, [activeGroup, store.chat]);
 
+  const setMemberMessageVoiceCache = useCallback(async (messageId: string, voiceCache: ChatMessageVoiceCache) => {
+    if (!activeGroup) return;
+    const writableConversation = await store.chat.ensureConversationWritable(activeGroup.id);
+    if (!writableConversation) return;
+    store.chat.updateMessage(writableConversation, messageId, { voiceCache });
+  }, [activeGroup, store.chat]);
+
   const createGroup = useCallback((options: { title?: string; memberIds: string[] }) => {
     const members = store.persona.personas.filter((persona) => options.memberIds.includes(persona.id));
     if (members.length === 0) return null;
@@ -541,6 +549,7 @@ export function useGroupWorldController({ ui }: UseGroupWorldControllerArgs) {
     switchConversation,
     editMemberMessage,
     deleteMemberMessage,
+    setMemberMessageVoiceCache,
     laneMemberId,
     setLaneMemberId,
     personas: store.persona.personas,

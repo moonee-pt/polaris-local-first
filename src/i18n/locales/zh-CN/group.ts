@@ -125,4 +125,12 @@ export const group = {
   'group.settings.backgroundImage.saveFailed': '保存背景图失败',
   'group.settings.delete': '解散群聊',
   'group.settings.deleteConfirm': '再点一次，确认解散',
+  'group.voice.autoOn': '开启自动朗读',
+  'group.voice.autoOff': '关闭自动朗读',
+  'group.voice.play': '朗读',
+  'group.voice.stop': '停止',
+  'group.voice.generating': '生成中',
+  'group.voice.playFailed': '播放失败',
+  'group.voice.configureFirst': '先去设置里配好语音',
+  'group.voice.generateFailed': '语音生成失败',
 } as const;
