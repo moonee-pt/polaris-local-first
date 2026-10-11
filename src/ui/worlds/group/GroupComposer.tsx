@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState, type ChangeEvent, type KeyboardEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type ChangeEvent, type KeyboardEvent } from 'react';
 import { useI18n } from '../../../i18n';
 import { Icon } from '../../Icon';
 import { useAssetObjectUrl } from '../../useAssetObjectUrl';
@@ -47,6 +47,7 @@ export function GroupComposer({ controller }: GroupComposerProps) {
   const [pendingAttachments, setPendingAttachments] = useState<ChatAttachment[]>([]);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const resizeFrameRef = useRef<number | null>(null);
   const group = controller.activeGroup;
   const draft = group?.draft ?? '';
   const hasContent = draft.trim().length > 0 || pendingAttachments.length > 0;
@@ -65,19 +66,28 @@ export function GroupComposer({ controller }: GroupComposerProps) {
       query === '' || member.name.toLowerCase().includes(query));
   }, [controller.memberPersonas, mentionQuery]);
 
+  useEffect(() => {
+    const node = textareaRef.current;
+    if (!node) return;
+    if (resizeFrameRef.current !== null) cancelAnimationFrame(resizeFrameRef.current);
+    resizeFrameRef.current = requestAnimationFrame(() => {
+      resizeFrameRef.current = null;
+      node.style.height = 'auto';
+      node.style.height = `${Math.min(node.scrollHeight, 104)}px`;
+    });
+    return () => {
+      if (resizeFrameRef.current === null) return;
+      cancelAnimationFrame(resizeFrameRef.current);
+      resizeFrameRef.current = null;
+    };
+  }, [draft, group?.id]);
+
   const insertMention = (name: string) => {
     controller.updateDraft(draft.replace(MENTION_TAIL_PATTERN, `@${name} `));
     textareaRef.current?.focus();
   };
 
   if (!group) return null;
-
-  const resizeTextarea = () => {
-    const node = textareaRef.current;
-    if (!node) return;
-    node.style.height = 'auto';
-    node.style.height = `${Math.min(node.scrollHeight, 104)}px`;
-  };
 
   const handleFiles = async (event: ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -166,7 +176,6 @@ export function GroupComposer({ controller }: GroupComposerProps) {
             placeholder={t('group.composer.placeholder')}
             onChange={(event) => {
               controller.updateDraft(event.target.value);
-              resizeTextarea();
             }}
             onKeyDown={onKeyDown}
           />
