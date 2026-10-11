@@ -311,6 +311,56 @@
   pointer-events: none;
 }
 
+.collaborator-info-content .collaborator-identity-danger-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.collaborator-info-content .collaborator-identity-delete-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 36px;
+  padding: 0 16px;
+  border: 1px solid color-mix(in srgb, #b45f5f 32%, transparent);
+  border-radius: 9px;
+  background: color-mix(in srgb, #b45f5f 6%, transparent);
+  color: #b45f5f;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  cursor: pointer;
+  transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease;
+}
+
+.collaborator-info-content .collaborator-identity-delete-button span {
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.collaborator-info-content .collaborator-identity-delete-button svg {
+  color: inherit;
+}
+
+.collaborator-info-content .collaborator-identity-delete-button:hover,
+.collaborator-info-content .collaborator-identity-delete-button:focus-visible {
+  background: color-mix(in srgb, #b45f5f 12%, transparent);
+  border-color: color-mix(in srgb, #b45f5f 48%, transparent);
+  color: #9e4a4a;
+  outline: none;
+}
+
+.collaborator-info-content .collaborator-identity-danger-hint {
+  color: var(--text-muted);
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+
 /* 通栏细线：不撑宽盒子，靠伪元素画到面板边缘 */
 .collaborator-info-content .ps-toggle + .ps-toggle::before,
 .collaborator-info-content .memory-overview-card + .memory-overview-card::before,

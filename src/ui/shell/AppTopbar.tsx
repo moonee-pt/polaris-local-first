@@ -115,7 +115,7 @@ export function AppTopbar({
   const collectionSearchTitle = collectionCardsEditable ? t('common.editOrSearch') : t('common.search');
   const collectionSearchLabel = collectionSearchTitle;
   const collectionSearchIcon = collectionCardsEditable ? 'editList' : 'search';
-  const showCollaboratorGate = state.activeWorld === 'collection';
+  const showCollaboratorGate = state.activeWorld === 'collection' || state.activeWorld === 'chat';
 
   if (!state.showShell) {
     return null;

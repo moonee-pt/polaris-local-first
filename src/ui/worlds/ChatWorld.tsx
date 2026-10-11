@@ -1,7 +1,8 @@
-import type { DragEvent } from 'react';
+import type { ComponentProps, DragEvent } from 'react';
 import { Suspense, lazy, useEffect, useRef } from 'react';
 import { useVoiceCallSession } from '../../app/call/voiceCallSession';
 import { loadThinkingSheetModule } from '../app-shell/appShellLazyModules';
+import { CollaboratorScopeStrip } from '../collection/grid/CollaboratorScopeStrip';
 import { VoiceCallStage } from './call/VoiceCallStage';
 import { ChatComposer } from './chat/composer/ChatComposer';
 import { useComposerFileIngest } from './chat/composer/useComposerFileIngest';
@@ -25,6 +26,7 @@ type ChatWorldProps = {
     openToolbox: () => void;
     openProviderSettings: () => void;
   };
+  scopeDrawer: ComponentProps<typeof CollaboratorScopeStrip>;
   ui: ChatUiState;
 };
 
@@ -119,6 +121,7 @@ export function ChatWorld(props: ChatWorldProps) {
   return (
     <ChatProvider shell={normalizedShell} ui={props.ui}>
       <ChatWorldLayout {...props} />
+      <CollaboratorScopeStrip {...props.scopeDrawer} />
     </ChatProvider>
   );
 }

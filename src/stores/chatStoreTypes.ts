@@ -30,6 +30,7 @@ export type ChatState = {
   setInputDraft: (value: string) => void;
   setConversationDraft: (conversationId: string, value: string) => void;
   setActiveConversation: (id: string) => void;
+  clearActiveConversation: () => void;
   createConversation: (
     collaboratorId?: string | null,
     options?: {

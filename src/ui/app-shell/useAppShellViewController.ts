@@ -281,7 +281,7 @@ export function useAppShellViewController(props: AppShellViewControllerInput) {
 
   useEffect(() => {
     if (!collectionCollaboratorSwitchOpen) return;
-    if (!hasSidebarLayout && activeWorld === 'collection') return;
+    if (!hasSidebarLayout && (activeWorld === 'collection' || activeWorld === 'chat')) return;
     setCollectionCollaboratorSwitchOpen(false);
   }, [
     activeWorld,
@@ -290,11 +290,15 @@ export function useAppShellViewController(props: AppShellViewControllerInput) {
     setCollectionCollaboratorSwitchOpen
   ]);
 
+  const scopeDrawerEnabled = !hasSidebarLayout && collectionCollaboratorSwitchOpen;
   const collectionScopeDrawerOpen =
-    !hasSidebarLayout &&
+    scopeDrawerEnabled &&
     activeWorld === 'collection' &&
-    !worldPresence.hideCollection &&
-    collectionCollaboratorSwitchOpen;
+    !worldPresence.hideCollection;
+  const chatScopeDrawer = {
+    ...props.chatScopeDrawerData,
+    open: scopeDrawerEnabled && activeWorld === 'chat' && !worldPresence.hideChat
+  };
 
   return {
     ...props,
@@ -314,6 +318,8 @@ export function useAppShellViewController(props: AppShellViewControllerInput) {
     retryWorldFrame,
     toggleDesktopSidebarCollapsed,
     collectionScopeDrawerOpen,
+    scopeDrawerActive: collectionScopeDrawerOpen || chatScopeDrawer.open,
+    chatScopeDrawer,
     collectionFrameInteractive: isWorldFrameInteractive(activeWorld, shellWorld, 'collection'),
     chatFrameInteractive: isWorldFrameInteractive(activeWorld, shellWorld, 'chat'),
     groupFrameInteractive: isWorldFrameInteractive(activeWorld, shellWorld, 'group')

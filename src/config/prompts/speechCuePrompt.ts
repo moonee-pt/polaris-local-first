@@ -19,7 +19,7 @@ export const SPEECH_CUE_INSTRUCTION = [
   '',
   '身体音标记写进（）的动作里，只出声、不念字。按声音分成五种，想要哪种就写哪种：',
   '[wetplap] 湿拍  [dryplap] 干拍  [wet] 水声  [stroke] 撸动  [cum] 高潮音  [pullout] 退出音',
-  '后面可以加 :soft / :hard / :extreme 调轻重，比如 [wetplap:extreme]。',
+  '轻重一共四档，写在标记后面：不写就是中档（正常节奏），轻一点写 :soft，重一点写 :hard，最重最快写 :extreme，比如 [wetplap] 中、[wetplap:soft] 轻、[wetplap:extreme] 最重。',
   '标记写在哪句话旁边，声音就从那句话开始放；中途想变轻重，就在新的句子里再写一次标记。',
   '',
   '规矩：',

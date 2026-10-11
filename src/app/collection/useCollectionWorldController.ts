@@ -12,7 +12,6 @@ import { useThemeSessionActions } from '../theme/useThemeSessionActions';
 import { buildCollaboratorInfoOverview } from './buildCollaboratorInfoOverview';
 import {
   conversationMatchesCollaboratorScope,
-  resolveConversationCollaboratorId,
   resolveConversationCollaboratorName
 } from '../../engines/conversationOwnership';
 import {
@@ -21,6 +20,7 @@ import {
   normalizeConversationSearchQuery
 } from './conversationMessageSearch';
 import { exportConversationArchive } from './conversationArchiveExport';
+import { buildCollaboratorConversationCounts } from './collaboratorConversationCounts';
 import { createStoredAttachment } from '../../infrastructure/assetStore';
 import { readConversationMessages } from '../../stores/chat';
 import { useChatStore } from '../../stores/chatStore';
@@ -49,6 +49,7 @@ export function useCollectionWorldController(ui: CollectionWorldUiPorts) {
   const chatHydrated = useChatStore((state) => state.hydrated);
   const activeConversationId = useChatStore((state) => state.activeConversationId);
   const setActiveConversation = useChatStore((state) => state.setActiveConversation);
+  const clearActiveConversation = useChatStore((state) => state.clearActiveConversation);
   const createConversation = useChatStore((state) => state.createConversation);
   const renameConversation = useChatStore((state) => state.renameConversation);
   const toggleConversationPinned = useChatStore((state) => state.toggleConversationPinned);
@@ -139,20 +140,10 @@ export function useCollectionWorldController(ui: CollectionWorldUiPorts) {
     }),
     [collaborators, conversations, loadedConversationIdSet, cards, imageCards]
   );
-  const collaboratorConversationCounts = useMemo(() => {
-    const byCollaboratorId: Record<string, number> = {};
-    let total = 0;
-
-    conversations.forEach((conversation) => {
-      if (!hasArchivedConversationContent(conversation, { loadedMessageConversationIds: loadedConversationIdSet })) return;
-      total += 1;
-      const collaboratorId = resolveConversationCollaboratorId(conversation);
-      if (!collaboratorId) return;
-      byCollaboratorId[collaboratorId] = (byCollaboratorId[collaboratorId] ?? 0) + 1;
-    });
-
-    return { byCollaboratorId, total };
-  }, [conversations, loadedConversationIdSet]);
+  const collaboratorConversationCounts = useMemo(
+    () => buildCollaboratorConversationCounts({ conversations, loadedMessageConversationIds: loadedConversationIdSet }),
+    [conversations, loadedConversationIdSet]
+  );
   const hasScopedImageCards = useMemo(
     () =>
       imageCards.some((card) => {
@@ -357,12 +348,9 @@ export function useCollectionWorldController(ui: CollectionWorldUiPorts) {
       enterGroupWorld(frontstage);
     },
     onCreateConversation: () => {
-      const conversationId = createConversation(collaboratorScopeId ?? undefined, {
-        activeProjectId: frontstage.collectionProjectId
-      });
+      clearActiveConversation();
       frontstage.clearPendingAttachments();
       frontstage.clearPendingCardReference();
-      setActiveConversation(conversationId);
       enterChatWorld(frontstage);
     },
     isAggregateScope: collaboratorScopeId === null,

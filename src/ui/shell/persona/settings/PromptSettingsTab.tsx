@@ -16,14 +16,14 @@ const PROMPT_PAGE_META: Record<PromptSettingsPage, {
   label: string;
   icon: IconName;
 }> = {
-  prompt: { label: '提示词', icon: 'promptScript' },
+  prompt: { label: '角色', icon: 'promptScript' },
   message: { label: '消息', icon: 'promptMessage' },
-  tone: { label: '调性', icon: 'promptTone' },
+  tone: { label: '语气', icon: 'promptTone' },
   rules: { label: '世界书', icon: 'promptRules' },
   style: { label: '语言风格', icon: 'feather' }
 };
 
-const PROMPT_PAGES: PromptSettingsPage[] = ['prompt', 'message', 'tone', 'rules', 'style'];
+const PROMPT_PAGES: PromptSettingsPage[] = ['prompt', 'style', 'message', 'tone', 'rules'];
 
 export function PromptSettingsTab({
   activeCollaboratorId,
@@ -110,6 +110,7 @@ export function PromptSettingsTab({
           activeCollaboratorId={activeCollaboratorId}
           activePersona={activePersona}
           onUpdatePersona={onUpdatePersona}
+          expandedUsesPageScroll={expandedUsesPageScroll}
         />
       ) : null}
     </div>

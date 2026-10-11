@@ -57,6 +57,8 @@ export function AppShellView({
   retryWorldFrame,
   toggleDesktopSidebarCollapsed,
   collectionScopeDrawerOpen,
+  scopeDrawerActive,
+  chatScopeDrawer,
   collectionFrameInteractive,
   chatFrameInteractive,
   groupFrameInteractive
@@ -99,7 +101,7 @@ export function AppShellView({
             onRetry={() => retryWorldFrame('chat')}
           >
             <Suspense fallback={<WorldFrameFallback world="chat" />}>
-              <ChatWorld {...chatWorldProps} />
+              <ChatWorld {...chatWorldProps} scopeDrawer={chatScopeDrawer} />
             </Suspense>
           </WorldFrameBoundary>
         </div>
@@ -122,7 +124,7 @@ export function AppShellView({
 
   return (
     <main
-      className={`app-shell app-layout-${appLayoutSurface} ${hasWideLayout ? 'app-layout-wide' : 'app-layout-compact'} ${showDesktopSidebar ? 'has-desktop-sidebar' : ''} ${showDesktopSidebar && effectiveDesktopSidebarCollapsed ? 'desktop-sidebar-collapsed' : ''} ${activeWorld} world-chroma-${shellWorld} chat-render-${activeChatDensity} ${isWorldSwitching ? 'world-switching' : ''} ${isCollaboratorTransitionActive ? 'collaborator-transition-active' : ''} ${collectionScopeDrawerOpen ? 'collaborator-scope-drawer-active' : ''} ${themeTransitionPhase ? `theme-transition-${themeTransitionPhase}` : ''}`}
+      className={`app-shell app-layout-${appLayoutSurface} ${hasWideLayout ? 'app-layout-wide' : 'app-layout-compact'} ${showDesktopSidebar ? 'has-desktop-sidebar' : ''} ${showDesktopSidebar && effectiveDesktopSidebarCollapsed ? 'desktop-sidebar-collapsed' : ''} ${activeWorld} world-chroma-${shellWorld} chat-render-${activeChatDensity} ${isWorldSwitching ? 'world-switching' : ''} ${isCollaboratorTransitionActive ? 'collaborator-transition-active' : ''} ${scopeDrawerActive ? 'collaborator-scope-drawer-active' : ''} ${themeTransitionPhase ? `theme-transition-${themeTransitionPhase}` : ''}`}
       style={starStyle}
     >
       {backgroundUrl ? (

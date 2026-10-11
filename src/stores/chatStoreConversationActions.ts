@@ -30,6 +30,7 @@ type ChatConversationActions = Pick<
   | 'setInputDraft'
   | 'setConversationDraft'
   | 'setActiveConversation'
+  | 'clearActiveConversation'
   | 'createConversation'
   | 'createGroupConversation'
   | 'updateGroupConversation'
@@ -75,6 +76,17 @@ export function createChatConversationActions(
         };
       });
       void get().ensureConversationMessagesLoaded(id);
+    },
+
+    clearActiveConversation: () => {
+      set((state) => {
+        if (state.activeConversationId === null) return state;
+        return {
+          activeConversationId: null,
+          inputDraft: '',
+          ...markChatIndexDirty(state)
+        };
+      });
     },
 
     createConversation: (collaboratorId = null, options) => {

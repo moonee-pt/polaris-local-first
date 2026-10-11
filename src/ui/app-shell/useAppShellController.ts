@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { buildConversationCardSummary } from '../../app/collection/conversationCardSummary';
+import { buildCollaboratorConversationCounts } from '../../app/collection/collaboratorConversationCounts';
 import { resolveCollectionRenderItemCount } from '../../app/shell/collectionRenderLoad';
 import { deriveAppShellState } from '../../app/shell/deriveAppShellState';
 import { useAppShellStoreBindings } from '../../app/shell/useAppShellStoreBindings';
@@ -299,6 +300,50 @@ export function useAppShellController() {
     },
     onOpenSettings: overlays.collectionOpenSettings
   };
+  const loadedConversationIdSet = useMemo(
+    () => new Set(loadedMessageConversationIds),
+    [loadedMessageConversationIds]
+  );
+  const collaboratorConversationCounts = useMemo(
+    () => buildCollaboratorConversationCounts({
+      conversations,
+      loadedMessageConversationIds: loadedConversationIdSet
+    }),
+    [conversations, loadedConversationIdSet]
+  );
+  const chatScopeDrawerData = {
+    personas: collaborators,
+    conversationCounts: collaboratorConversationCounts,
+    collaboratorScopeId: activeConversationCollaboratorId ?? frontstageCollaboratorId,
+    onSelectCollaboratorScope: (collaboratorId: string | null) => {
+      if (collaboratorId === null) {
+        enterCollaboratorCollectionScope({
+          activeWorld,
+          setFrontstageCollaboratorId,
+          setCollectionShelf,
+          setWorld
+        }, null);
+        return;
+      }
+      overlays.collaboratorActions.talkToCollaborator(collaboratorId);
+    },
+    onOpenGroupWorld: () => {
+      clearPendingAttachments();
+      clearPendingCardReference();
+      setWorld('group');
+    },
+    onToggleCollaboratorPinned: (collaboratorId: string) => {
+      if (isCompanionCollaboratorId(collaboratorId)) return;
+      if (!personas.some((persona) => persona.id === collaboratorId)) return;
+      stores.collaborator.toggleCollaboratorPinned(collaboratorId);
+    },
+    onClose: () => collection.setCollaboratorSwitchOpen(false),
+    onCreateFromBuilder: overlays.collectionOpenCollaboratorBuilderForCreate,
+    onCreateCustomCollaborator: overlays.collectionCreateCustomCollaborator,
+    onOpenSettings: overlays.collectionOpenSettings,
+    onDeleteCollaborator: overlays.collaboratorActions.deleteCollaboratorFromPanel,
+    onOpenCollaboratorInfo: overlays.collaboratorActions.openCollaboratorInfo
+  };
   const openReplyNotification = (notification: typeof replyNotifications[number]) => {
     if (notification.conversationId !== activeConversationId) {
       clearPendingAttachments();
@@ -342,6 +387,7 @@ export function useAppShellController() {
       }
     },
     chatRuntimePort,
+    chatScopeDrawerData,
     collectionOwnershipBackfillPort: {
       collectionHydrated,
       conversations,

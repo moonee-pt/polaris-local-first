@@ -29,6 +29,7 @@ export function useAppShellStoreBindings() {
   const setActiveCollaborator = usePersonaStore((state) => state.setActiveCollaborator);
   const deleteCollaborator = usePersonaStore((state) => state.deleteCollaborator);
   const updateCollaborator = usePersonaStore((state) => state.updateCollaborator);
+  const toggleCollaboratorPinned = usePersonaStore((state) => state.toggleCollaboratorPinned);
   const activeCollaborator = personas.find((persona) => persona.id === activeCollaboratorId) ?? null;
 
   const conversations = useChatStore((state) => state.conversations);
@@ -88,7 +89,8 @@ export function useAppShellStoreBindings() {
       createPersona,
       setActiveCollaborator,
       deleteCollaborator,
-      updateCollaborator
+      updateCollaborator,
+      toggleCollaboratorPinned
     },
     chat: {
       conversations,

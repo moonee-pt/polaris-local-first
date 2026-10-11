@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useI18n } from '../../../../i18n/useI18n';
 import { type PersonaTabProps } from '../personaUiShared';
 import { displayTitleClassName } from '../../../titleTypography';
+import { Icon } from '../../../Icon';
 
 export function BasicSettingsTab({
   activePersona,
@@ -82,9 +83,10 @@ export function BasicSettingsTab({
             className="collaborator-identity-delete-button"
             onClick={onDeletePersona}
           >
-            {resolvedDeleteLabel}
+            <Icon name="trash" size={14} />
+            <span>{resolvedDeleteLabel}</span>
           </button>
-          <span>{resolvedDeleteHint}</span>
+          <span className="collaborator-identity-danger-hint">{resolvedDeleteHint}</span>
         </div>
       ) : null}
     </>
