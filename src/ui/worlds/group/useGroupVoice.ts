@@ -104,7 +104,7 @@ export function useGroupVoice({ onSpeechCacheReady, onError }: UseGroupVoiceArgs
     runningRef.current = null;
     setSpeakingId(null);
     ambience.setDucked(false);
-    ambience.stop();
+    if (!enabledRef.current) ambience.stop();
     pumpRef.current();
   };
 
