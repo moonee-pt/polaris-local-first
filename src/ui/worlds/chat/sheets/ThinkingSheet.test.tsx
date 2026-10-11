@@ -38,6 +38,7 @@ describe('thinking sheet voice section', () => {
     const markup = sheetMarkup(assistantMessage({ content: '"好。"', thinkingText: '她在想要不要答应' }));
     expect(markup).toContain('thinking-summary-step');
     expect(markup).toContain('thinking-summary-voice-tts');
+    expect(markup.indexOf('thinking-summary-voice')).toBeLessThan(markup.indexOf('thinking-summary-list'));
   });
 
   it('renders nothing when there is neither reasoning nor voice content', () => {

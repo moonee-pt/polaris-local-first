@@ -98,6 +98,23 @@ export function ThinkingSheet({
           </div>
           <div className="thinking-summary-spacer" aria-hidden="true" />
         </div>
+        {voice ? (
+          <section className="thinking-summary-voice">
+            {voice.ttsText ? (
+              <pre className="thinking-summary-voice-tts">{voice.ttsText}</pre>
+            ) : null}
+            {voice.cues.length ? (
+              <div className="thinking-summary-voice-track">
+                {voice.cues.map((cue, index) => (
+                  <span key={`voice-cue-${index}`} className="thinking-summary-voice-track-item">
+                    {describeFleshCue(cue, t)}
+                  </span>
+                ))}
+              </div>
+            ) : null}
+          </section>
+        ) : null}
+
         <div className="thinking-summary-list">
           {(session?.steps ?? []).map((step) => (
             <article key={step.id} className={`thinking-summary-step ${step.kind}`}>
@@ -146,23 +163,6 @@ export function ThinkingSheet({
             </article>
           ))}
         </div>
-
-        {voice ? (
-          <section className="thinking-summary-voice">
-            {voice.ttsText ? (
-              <pre className="thinking-summary-voice-tts">{voice.ttsText}</pre>
-            ) : null}
-            {voice.cues.length ? (
-              <div className="thinking-summary-voice-track">
-                {voice.cues.map((cue, index) => (
-                  <span key={`voice-cue-${index}`} className="thinking-summary-voice-track-item">
-                    {describeFleshCue(cue, t)}
-                  </span>
-                ))}
-              </div>
-            ) : null}
-          </section>
-        ) : null}
 
         {session && session.rawSections.length > 0 ? (
           <div className="thinking-summary-raw">
