@@ -1,7 +1,7 @@
 .collection-floating-create-anchor {
   position: absolute;
   right: calc(var(--collection-shell-inline-pad) + 2px);
-  bottom: calc(64px + var(--collection-bottom-nav-safe-area, 0px));
+  bottom: calc(76px + var(--collection-bottom-nav-safe-area, 0px));
   z-index: 24;
   display: grid;
   justify-items: end;
@@ -127,17 +127,10 @@
   min-height: 78px;
 }
 
-@media (min-width: 520px) and (hover: hover) and (pointer: fine) {
-  .collection-floating-create-anchor {
-    bottom: calc(18px + var(--collection-bottom-nav-safe-area, 0px));
-  }
-
-}
-
 @media (max-width: 430px) {
   .collection-floating-create-anchor {
     right: max(14px, var(--collection-shell-inline-pad));
-    bottom: calc(60px + var(--collection-bottom-nav-safe-area, 0px));
+    bottom: calc(72px + var(--collection-bottom-nav-safe-area, 0px));
   }
 
   .collection-floating-create-fab {
