@@ -23,7 +23,7 @@
 @import './chat-world.css';
 @import './chat-messages.css';
 @import './chat-reading.css';
-@import './chat-option-bar.css';
+@import './chat/chat-option-bar.css';
 @import './thinking-summary.css';
 @import './chat-composer.css';
 @import './group-world.css';
