@@ -195,6 +195,7 @@ export const chat = {
   'chat.thinking.voice.preset.soft': '轻',
   'chat.thinking.voice.preset.mid': '中',
   'chat.thinking.voice.preset.hard': '重',
+  'chat.thinking.voice.preset.extreme': '极重',
   'chat.thinking.projectionAria': '思路投影',
   'chat.thinking.previewFallback': '这段思路已经收进独立摘要里。',
   'chat.thinking.stats.thoughtAndTool': '{thoughtCount} 段思路 · {toolCount} 次工具',
@@ -343,4 +344,5 @@ export const chat = {
   'chat.performanceTag.pullout': '退出音',
   'chat.performanceTag.cueSoft': '轻',
   'chat.performanceTag.cueHard': '重',
+  'chat.performanceTag.cueExtreme': '极重',
 } as const;

@@ -197,6 +197,7 @@ export const chat = {
   'chat.thinking.voice.preset.soft': 'soft',
   'chat.thinking.voice.preset.mid': 'mid',
   'chat.thinking.voice.preset.hard': 'hard',
+  'chat.thinking.voice.preset.extreme': 'extreme',
   'chat.thinking.projectionAria': 'Reasoning projection',
   'chat.thinking.previewFallback': 'This reasoning is available in the separate summary.',
   'chat.thinking.stats.thoughtAndTool': 'Thoughts {thoughtCount} · Tools {toolCount}',
@@ -345,4 +346,5 @@ export const chat = {
   'chat.performanceTag.pullout': 'pull out',
   'chat.performanceTag.cueSoft': 'soft',
   'chat.performanceTag.cueHard': 'hard',
+  'chat.performanceTag.cueExtreme': 'extreme',
 } satisfies Record<keyof typeof zhChat, string>;

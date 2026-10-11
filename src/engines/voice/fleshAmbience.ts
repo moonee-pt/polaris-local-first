@@ -11,7 +11,7 @@ export type FleshAmbienceCategory = 'dryplap' | 'wetplap' | 'wet' | 'stroke' | '
 
 export type FleshLoopCategory = 'dryplap' | 'wetplap' | 'wet' | 'stroke';
 
-export type FleshAmbiencePreset = 'soft' | 'mid' | 'hard';
+export type FleshAmbiencePreset = 'soft' | 'mid' | 'hard' | 'extreme';
 
 export type FleshCue =
   | { kind: 'loop'; category: FleshLoopCategory; preset: FleshAmbiencePreset }
@@ -24,7 +24,7 @@ export type FleshAmbienceHit = {
   gain: number;
 };
 
-const CUE_SOURCE = '\\[(flesh|dryplap|wetplap|wet|stroke|cum|pullout)(?::(soft|hard))?\\]';
+const CUE_SOURCE = '\\[(flesh|dryplap|wetplap|wet|stroke|cum|pullout)(?::(soft|mid|hard|extreme))?\\]';
 
 /** Scanner source for the cue brackets, so a timeline can walk a text and find them in order. */
 export const FLESH_CUE_PATTERN = CUE_SOURCE;
@@ -46,7 +46,8 @@ const CATEGORY_PROFILE: Record<FleshLoopCategory, { perSec: number; gain: number
 const PRESET_SCALE: Record<FleshAmbiencePreset, { rate: number; gain: number }> = {
   soft: { rate: 0.6, gain: 1 },
   mid: { rate: 1, gain: 1.3 },
-  hard: { rate: 1.6, gain: 1.6 }
+  hard: { rate: 1.6, gain: 1.6 },
+  extreme: { rate: 2.4, gain: 2.2 }
 };
 
 function pad2(value: number) {
@@ -84,6 +85,7 @@ export function selectAmbienceCues(cues: FleshCue[]): FleshCue[] {
 function presetFromSuffix(suffix: string): FleshAmbiencePreset {
   if (suffix === 'soft') return 'soft';
   if (suffix === 'hard') return 'hard';
+  if (suffix === 'extreme') return 'extreme';
   return 'mid';
 }
 
