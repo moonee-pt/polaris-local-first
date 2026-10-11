@@ -37,10 +37,10 @@ export function isFleshCueTag(inner: string) {
 }
 
 const CATEGORY_PROFILE: Record<FleshLoopCategory, { perSec: number; gain: number }> = {
-  dryplap: { perSec: 2.4, gain: 0.8 },
-  wetplap: { perSec: 2.4, gain: 0.8 },
-  wet: { perSec: 1.2, gain: 0.55 },
-  stroke: { perSec: 1.2, gain: 0.55 }
+  dryplap: { perSec: 2.4, gain: 1.6 },
+  wetplap: { perSec: 2.4, gain: 1.6 },
+  wet: { perSec: 1.2, gain: 1.1 },
+  stroke: { perSec: 1.2, gain: 1.1 }
 };
 
 const PRESET_SCALE: Record<FleshAmbiencePreset, { rate: number; gain: number }> = {
