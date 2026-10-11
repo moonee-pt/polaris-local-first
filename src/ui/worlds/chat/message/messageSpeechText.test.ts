@@ -84,6 +84,13 @@ describe('buildAssistantCaptionParts', () => {
     expect(buildAssistantSpeechText('【等我一下。】[long pause] 【我回来了。】')).toBe('等我一下。[long-break]我回来了。');
   });
 
+  it('keeps two spoken lines written back to back as two lines', () => {
+    expect(buildAssistantSpeechText('【今天好累。】【早点睡吧。】')).toBe('今天好累。\n早点睡吧。');
+    expect(buildAssistantCaptionParts('【今天好累。】【早点睡吧。】')).toEqual([
+      { kind: 'speech', text: '今天好累。\n早点睡吧。' }
+    ]);
+  });
+
   it('wraps bare stage text so it reads as narration', () => {
     expect(buildAssistantCaptionParts('【进来吧。】\n门外雨声很大')).toEqual([
       { kind: 'speech', text: '进来吧。' },
@@ -133,6 +140,7 @@ describe('getAssistantAmbiencePlan', () => {
   it('runs the timeline on spoken lines only', () => {
     const plan = getAssistantAmbiencePlan('前言（不念的旁白 [wetplap]）【进来。】');
     expect(plan.cues).toHaveLength(1);
-    expect(plan.cues[0].atRatio).toBeLessThan(0.2);
+    // A single cue in the leading narration lands at the middle of that segment.
+    expect(plan.cues[0].atRatio).toBeLessThan(0.5);
   });
 });

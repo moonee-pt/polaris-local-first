@@ -341,7 +341,6 @@ export const chat = {
   'chat.performanceTag.stroke': '撸动',
   'chat.performanceTag.cum': '高潮音',
   'chat.performanceTag.pullout': '退出音',
-  'chat.performanceTag.breath': '喘气',
   'chat.performanceTag.cueSoft': '轻',
   'chat.performanceTag.cueHard': '重',
 } as const;

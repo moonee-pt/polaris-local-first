@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildAmbiencePlan } from './ambienceTimeline';
+import { buildAmbiencePlan, scheduleAmbience } from './ambienceTimeline';
 
 const speech = (text: string) => ({ kind: 'speech' as const, text });
 const stage = (text: string) => ({ kind: 'stage' as const, text });
@@ -39,17 +39,15 @@ describe('buildAmbiencePlan', () => {
     expect(plan.cues[0].atRatio).toBeGreaterThan(0);
   });
 
-  it('drops a breath that has no body track beside it', () => {
-    const alone = buildAmbiencePlan([speech('第一句。'), stage('（喘气 [breath]）')]);
-    expect(alone.cues).toEqual([]);
-
-    const together = buildAmbiencePlan([
-      stage('（水声 [wet]）'),
-      speech('第一句。'),
-      stage('（喘气 [breath:hard]）')
+  it('spreads multiple cues in one narration stretch by their order', () => {
+    const plan = buildAmbiencePlan([
+      speech('先说。'),
+      stage('（抽离 [pullout] 到顶 [cum]）')
     ]);
-    expect(together.cues.map((cue) => cue.category)).toEqual(['wet', 'breath']);
-    expect(together.cues[1]).toMatchObject({ preset: 'hard' });
+    expect(plan.cues).toHaveLength(2);
+    expect(plan.cues[0].category).toBe('pullout');
+    expect(plan.cues[1].category).toBe('cum');
+    expect(plan.cues[1].atRatio).toBeGreaterThan(plan.cues[0].atRatio);
   });
 
   it('reports nothing for a reply without cues', () => {
@@ -60,5 +58,38 @@ describe('buildAmbiencePlan', () => {
 
   it('estimates five characters a second', () => {
     expect(buildAmbiencePlan([speech('一二三四五六七八九十'.repeat(3))]).estimatedSec).toBe(6);
+  });
+});
+
+describe('scheduleAmbience', () => {
+  it('spaces two one-shots at the same ratio at least 0.6s apart', () => {
+    const cues = [
+      { kind: 'oneShot' as const, category: 'pullout' as const, atRatio: 0.7 },
+      { kind: 'oneShot' as const, category: 'cum' as const, atRatio: 0.7 }
+    ];
+    const schedule = scheduleAmbience(cues, 12);
+    expect(schedule.shots).toHaveLength(2);
+    const gap = schedule.shots[1].atSec - schedule.shots[0].atSec;
+    expect(gap).toBeGreaterThanOrEqual(0.599);
+  });
+
+  it('groups same-category cues into one bed with steps', () => {
+    const cues = [
+      { kind: 'loop' as const, category: 'wetplap' as const, preset: 'soft' as const, atRatio: 0.1 },
+      { kind: 'loop' as const, category: 'wetplap' as const, preset: 'hard' as const, atRatio: 0.5 }
+    ];
+    const schedule = scheduleAmbience(cues, 12);
+    expect(schedule.beds).toHaveLength(1);
+    expect(schedule.beds[0].steps).toHaveLength(1);
+    expect(schedule.beds[0].steps[0].preset).toBe('hard');
+  });
+
+  it('keeps different categories as parallel beds', () => {
+    const cues = [
+      { kind: 'loop' as const, category: 'wet' as const, preset: 'mid' as const, atRatio: 0.1 },
+      { kind: 'loop' as const, category: 'stroke' as const, preset: 'mid' as const, atRatio: 0.3 }
+    ];
+    const schedule = scheduleAmbience(cues, 12);
+    expect(schedule.beds).toHaveLength(2);
   });
 });

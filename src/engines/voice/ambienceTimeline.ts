@@ -1,4 +1,11 @@
-import { FLESH_CUE_PATTERN, parseFleshCueTag, selectAmbienceCues, type FleshCue } from './fleshAmbience';
+import {
+  FLESH_CUE_PATTERN,
+  parseFleshCueTag,
+  selectAmbienceCues,
+  type FleshCue,
+  type FleshAmbiencePreset,
+  type FleshLoopCategory
+} from './fleshAmbience';
 import { splitVoiceCallCaptions, type VoiceCallCaptionSourcePart } from './voiceCallCaption';
 
 /**
@@ -30,13 +37,17 @@ export function buildAmbiencePlan(parts: VoiceCallCaptionSourcePart[]): Ambience
   let elapsed = 0;
   for (const segment of segments) {
     const span = Math.max(1, segment.text.length);
-    for (const match of segment.text.matchAll(new RegExp(FLESH_CUE_PATTERN, 'gi'))) {
+    const matches = [...segment.text.matchAll(new RegExp(FLESH_CUE_PATTERN, 'gi'))];
+    matches.forEach((match, index) => {
       const cue = parseFleshCueTag(match[1], match[2] ?? '');
-      if (!cue) continue;
-      // Narration is silence, so a cue in it means the track turns on as the voice stops.
-      const position = segment.kind === 'stage' ? 0 : Math.min(match.index, span) / span;
+      if (!cue) return;
+      // Narration is silence: a cue in it turns the track on where the voice stops, and
+      // several of them in one stretch keep the order they were written in.
+      const position = segment.kind === 'stage'
+        ? (index + 1) / (matches.length + 1)
+        : Math.min(match.index, span) / span;
       placed.push({ cue, at: elapsed + position * segment.weight });
-    }
+    });
     elapsed += segment.weight;
   }
 
@@ -46,4 +57,56 @@ export function buildAmbiencePlan(parts: VoiceCallCaptionSourcePart[]): Ambience
     .map((item) => ({ ...item.cue, atRatio: item.at / totalWeight }));
 
   return { cues, estimatedSec };
+}
+
+/** Two one-shots written in the same stretch would otherwise land as a single hit. */
+const SHOT_GAP_SEC = 0.6;
+
+export type AmbienceStep = { atSec: number; preset: FleshAmbiencePreset };
+
+export type AmbienceBed = {
+  category: FleshLoopCategory;
+  atSec: number;
+  preset: FleshAmbiencePreset;
+  /** Density changes for this track later in the same reply. */
+  steps: AmbienceStep[];
+};
+
+export type AmbienceShot = { category: 'cum' | 'pullout'; atSec: number };
+
+export type AmbienceSchedule = { beds: AmbienceBed[]; shots: AmbienceShot[] };
+
+/**
+ * Turns the placed cues into what actually has to run on the audio clock: one track per
+ * sound, opened at its second, with later mentions of the same sound becoming density
+ * changes. All tracks run in parallel.
+ */
+export function scheduleAmbience(cues: TimedAmbienceCue[], horizonSec: number): AmbienceSchedule {
+  const horizon = Math.max(1, horizonSec);
+  const beds: AmbienceBed[] = [];
+  const shots: AmbienceShot[] = [];
+  let lastShotSec = -SHOT_GAP_SEC;
+
+  for (const cue of cues) {
+    const atSec = Math.min(Math.max(cue.atRatio, 0), 1) * horizon;
+    if (cue.kind === 'oneShot') {
+      const at = Math.max(atSec, lastShotSec + SHOT_GAP_SEC);
+      shots.push({ category: cue.category, atSec: at });
+      lastShotSec = at;
+      continue;
+    }
+    const bed = beds.find((item) => item.category === cue.category);
+    if (bed) {
+      bed.steps.push({ atSec, preset: cue.preset });
+      continue;
+    }
+    beds.push({
+      category: cue.category,
+      atSec,
+      preset: cue.preset,
+      steps: []
+    });
+  }
+
+  return { beds, shots };
 }

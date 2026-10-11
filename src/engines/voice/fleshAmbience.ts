@@ -7,9 +7,9 @@
  * the sound it wants: two plap types, wet, strokes, and the two one-shots.
  */
 
-export type FleshAmbienceCategory = 'dryplap' | 'wetplap' | 'wet' | 'stroke' | 'cum' | 'pullout' | 'breath';
+export type FleshAmbienceCategory = 'dryplap' | 'wetplap' | 'wet' | 'stroke' | 'cum' | 'pullout';
 
-export type FleshLoopCategory = 'dryplap' | 'wetplap' | 'wet' | 'stroke' | 'breath';
+export type FleshLoopCategory = 'dryplap' | 'wetplap' | 'wet' | 'stroke';
 
 export type FleshAmbiencePreset = 'soft' | 'mid' | 'hard';
 
@@ -24,12 +24,12 @@ export type FleshAmbienceHit = {
   gain: number;
 };
 
-const CUE_SOURCE = '\\[(flesh|dryplap|wetplap|wet|stroke|cum|pullout|breath)(?::(soft|hard))?\\]';
+const CUE_SOURCE = '\\[(flesh|dryplap|wetplap|wet|stroke|cum|pullout)(?::(soft|hard))?\\]';
 
 /** Scanner source for the cue brackets, so a timeline can walk a text and find them in order. */
 export const FLESH_CUE_PATTERN = CUE_SOURCE;
 
-const FLESH_CUE_SLUGS = new Set(['flesh', 'dryplap', 'wetplap', 'wet', 'stroke', 'cum', 'pullout', 'breath']);
+const FLESH_CUE_SLUGS = new Set(['flesh', 'dryplap', 'wetplap', 'wet', 'stroke', 'cum', 'pullout']);
 
 /** True when a bracket's inner text (already lowercased/trimmed) is a body-sound cue. */
 export function isFleshCueTag(inner: string) {
@@ -40,8 +40,7 @@ const CATEGORY_PROFILE: Record<FleshLoopCategory, { perSec: number; gain: number
   dryplap: { perSec: 2.4, gain: 0.8 },
   wetplap: { perSec: 2.4, gain: 0.8 },
   wet: { perSec: 1.2, gain: 0.55 },
-  stroke: { perSec: 1.2, gain: 0.55 },
-  breath: { perSec: 0.3, gain: 0.5 }
+  stroke: { perSec: 1.2, gain: 0.55 }
 };
 
 const PRESET_SCALE: Record<FleshAmbiencePreset, { rate: number; gain: number }> = {
@@ -67,28 +66,19 @@ export const FLESH_CLIP_NAMES: Record<FleshAmbienceCategory, string[]> = {
   wet: range('wet', 1, 12),
   stroke: range('stroke', 1, 10),
   cum: [...range('cum_in', 1, 3), ...range('cum_out', 1, 6)],
-  pullout: range('pullout', 1, 3),
-  breath: range('breath', 1, 8)
+  pullout: range('pullout', 1, 3)
 };
 
-/** Body beds a scene swaps between. Breath is a companion layer, so it is not listed. */
+/** Body beds a scene swaps between. */
 export const FLESH_LOOP_CATEGORIES: FleshLoopCategory[] = ['dryplap', 'wetplap', 'wet', 'stroke'];
-
-/** The shipped body pack is ogg; the generated breath clips are wav. */
-const CLIP_EXTENSION: Partial<Record<FleshAmbienceCategory, string>> = { breath: 'wav' };
 
 /** File name of one clip inside public/sfx/flesh. */
 export function fleshClipFile(category: FleshAmbienceCategory, clip: string) {
-  return `${category}/${clip}.${CLIP_EXTENSION[category] ?? 'ogg'}`;
+  return `${category}/${clip}.ogg`;
 }
 
-/**
- * A breath only reads as real when something else in the scene is already intimate,
- * so the model asking for one on its own is ignored.
- */
 export function selectAmbienceCues(cues: FleshCue[]): FleshCue[] {
-  const bodyLoop = cues.some((cue) => cue.kind === 'loop' && cue.category !== 'breath');
-  return bodyLoop ? cues : cues.filter((cue) => cue.kind !== 'loop' || cue.category !== 'breath');
+  return cues;
 }
 
 function presetFromSuffix(suffix: string): FleshAmbiencePreset {

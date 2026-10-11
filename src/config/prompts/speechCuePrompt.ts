@@ -17,8 +17,8 @@ export const SPEECH_CUE_INSTRUCTION = [
   '音效：[laughing] [chuckling] [moaning] [clear throat] [sobbing] [crying loudly] [sighing] [panting] [groaning]',
   '停顿：[break] 短停 [long-break] 长停',
   '',
-  '身体音标记写进（）的动作里，只出声、不念字。按声音分成六种，想要哪种就写哪种：',
-  '[wetplap] 湿拍  [dryplap] 干拍  [wet] 水声  [stroke] 撸动  [cum] 高潮音  [pullout] 退出音  [breath] 喘气',
+  '身体音标记写进（）的动作里，只出声、不念字。按声音分成五种，想要哪种就写哪种：',
+  '[wetplap] 湿拍  [dryplap] 干拍  [wet] 水声  [stroke] 撸动  [cum] 高潮音  [pullout] 退出音',
   '后面可以加 :soft 或 :hard 调轻重，比如 [wetplap:hard]。',
   '标记写在哪句话旁边，声音就从那句话开始放；中途想变轻重，就在新的句子里再写一次标记。',
   '',
@@ -26,6 +26,5 @@ export const SPEECH_CUE_INSTRUCTION = [
   '- 一轮里两三个就够，不要每句都挂，也不要连着用同一个。',
   '- 停顿用 [break] 或 [long-break]，不要靠堆省略号来停顿：省略号会被念成一口喘气，不是安静。',
   '- 身体音表示场景进入身体接触：一个场景挑一种主要的写，后面的句子沿用，场景停下就不用再写。[cum] 和 [pullout] 各只写一次。',
-  '- [breath] 是垫在话缝里的一口气，只在已经有别的身体音的场景里写；想重一点写 [breath:hard]。',
   '- 标记显示时会变成浅色小字，不会被念出来，你照常用。'
 ].join('\n');

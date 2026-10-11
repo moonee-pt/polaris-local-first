@@ -39,31 +39,6 @@ describe('flesh ambience cues', () => {
     expect(stripFleshCues('别躲  [wetplap:soft]  过来')).toBe('别躲 过来');
     expect(stripFleshCues('[cum]')).toBe('');
   });
-
-  it('reads a breath cue as its own bed', () => {
-    expect(readFleshCues('（他把她按下去[breath:hard]）')).toEqual([
-      { kind: 'loop', category: 'breath', preset: 'hard' }
-    ]);
-    expect(stripFleshCues('喘不过来了[breath]')).toBe('喘不过来了');
-  });
-});
-
-describe('ambience cue gating', () => {
-  const breath: FleshCue = { kind: 'loop', category: 'breath', preset: 'mid' };
-  const water: FleshCue = { kind: 'loop', category: 'wet', preset: 'mid' };
-
-  it('drops a breath asked for outside an intimate scene', () => {
-    expect(selectAmbienceCues([breath])).toEqual([]);
-  });
-
-  it('keeps the breath alongside the body track', () => {
-    expect(selectAmbienceCues([water, breath])).toEqual([water, breath]);
-  });
-
-  it('leaves one-shots alone', () => {
-    const cum: FleshCue = { kind: 'oneShot', category: 'cum' };
-    expect(selectAmbienceCues([cum])).toEqual([cum]);
-  });
 });
 
 describe('body sound clip pack', () => {
@@ -122,13 +97,6 @@ describe('flesh ambience loop', () => {
     expect(plaps.every((hit) => hit.gain > 0.4 && hit.gain < 0.9)).toBe(true);
     const bed = collect(13, 'wet', 'soft', 40);
     expect(bed.every((hit) => hit.gain > 0.25 && hit.gain < 0.6)).toBe(true);
-  });
-
-  it('paces the breath bed like breathing rather than like a plap', () => {
-    const hits = collect(17, 'breath', 'mid', 60);
-    expect(hits.length).toBeGreaterThan(10);
-    expect(hits.length).toBeLessThan(30);
-    expect(hits.every((hit) => hit.gain > 0.4 && hit.gain < 0.62)).toBe(true);
   });
 
   it('switches density when the preset is changed mid-scene', () => {

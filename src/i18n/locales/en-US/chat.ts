@@ -343,7 +343,6 @@ export const chat = {
   'chat.performanceTag.stroke': 'stroke',
   'chat.performanceTag.cum': 'climax',
   'chat.performanceTag.pullout': 'pull out',
-  'chat.performanceTag.breath': 'breath',
   'chat.performanceTag.cueSoft': 'soft',
   'chat.performanceTag.cueHard': 'hard',
 } satisfies Record<keyof typeof zhChat, string>;

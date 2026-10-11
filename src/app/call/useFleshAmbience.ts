@@ -48,7 +48,7 @@ export type FleshAmbienceController = {
  * Streams the short SFX pack into one or more continuous beds under the call.
  * Nothing is pre-rendered: hits are planned on a rolling window and scheduled
  * straight onto the audio clock. Each category keeps its own bed, so a water
- * track and a breath track run at the same time, and one reply can open a track
+ * track and a stroke track run at the same time, and one reply can open a track
  * or change its density partway through the voice it sits under.
  */
 export function useFleshAmbience(): FleshAmbienceController {
