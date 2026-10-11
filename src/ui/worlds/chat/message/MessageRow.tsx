@@ -174,6 +174,7 @@ function MessageRowComponent({
     [isAssistantReply, message.content]
   );
   const speechContent = voiceContent?.ttsText ?? '';
+  const canOpenThinkingSummary = showThinking && (Boolean(message.thinkingText) || Boolean(voiceContent));
   const [speechCacheMatches, setSpeechCacheMatches] = useState(false);
   useEffect(() => {
     const cache = message.voiceCache;
@@ -249,7 +250,6 @@ function MessageRowComponent({
   const messageActions = isAssistantReply && !state.editing ? (
     <MessageActions
       canCopyAssistant={message.role === 'assistant' && !message.toolInvocation && !isStreamingLike && isTerminalAssistantInUserTurn && Boolean(message.content.trim())}
-      canOpenThinkingSummary={showThinking && (Boolean(message.thinkingText) || Boolean(voiceContent))}
       memoryEvidence={message.memoryEvidence ?? null}
       canRetryAssistant={state.canRetry}
       canEditAssistant={state.canEditAssistant}
@@ -258,14 +258,12 @@ function MessageRowComponent({
       codeCardActionLabel={codeCardActionLabel}
       codeCardActionMode={state.codeCardActionMode}
       codeCardProgressLabel={codeCardProgressLabel}
-      isThinkingActive={isStreamingLike}
       messageContent={message.content}
       speechContent={speechContent}
       speechCache={speechCacheMatches ? message.voiceCache ?? null : null}
       role={message.role === 'assistant' ? 'assistant' : 'user'}
       onSetCommandStatus={actions.setCommandStatus}
       onCodeCardAction={() => actions.codeCardAction(message)}
-      onOpenThinkingSummary={() => actions.openThinkingSummary(message)}
       onRetryLatestAssistant={() => void actions.retry(message)}
       onEditAssistant={(content) => actions.editAssistantMessage(message, content)}
       onSpeechCacheReady={(voiceCache) => actions.cacheAssistantSpeech(message, voiceCache)}
@@ -489,6 +487,7 @@ function MessageRowComponent({
                   fallbackAssistantName={fallbackAssistantName}
                   isThinkingActive={isStreamingLike}
                   onOpenThinkingSummary={actions.openThinkingSummary}
+                  canOpenThinkingSummary={canOpenThinkingSummary}
                   showDetails={false}
                   showThinking={showThinking}
                 />
@@ -499,6 +498,7 @@ function MessageRowComponent({
                   fallbackAssistantName={fallbackAssistantName}
                   isThinkingActive={isStreamingLike}
                   onOpenThinkingSummary={actions.openThinkingSummary}
+                  canOpenThinkingSummary={canOpenThinkingSummary}
                   showIdentity={!isAssistantContinuation}
                   showThinking={showThinking}
                 />

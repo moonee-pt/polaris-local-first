@@ -8,6 +8,7 @@ type MessageMetaProps = {
   fallbackAssistantName: string;
   isThinkingActive: boolean;
   onOpenThinkingSummary: (message: ChatMessage) => void;
+  canOpenThinkingSummary?: boolean;
   showIdentity?: boolean;
   showName?: boolean;
   showDetails?: boolean;
@@ -20,6 +21,7 @@ export function MessageMeta({
   fallbackAssistantName,
   isThinkingActive,
   onOpenThinkingSummary,
+  canOpenThinkingSummary = false,
   showIdentity = true,
   showName = true,
   showDetails = true,
@@ -62,7 +64,7 @@ export function MessageMeta({
             )}
           </div>
         ) : null}
-        {showThinking && message.thinkingText ? (
+        {showThinking && canOpenThinkingSummary ? (
           <button
             type="button"
             className={`thinking-inline-trigger ${isThinkingActive ? 'active' : ''}`}

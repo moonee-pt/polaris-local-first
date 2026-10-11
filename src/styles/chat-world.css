@@ -43,5 +43,7 @@ html[data-native-keyboard-overlay='true'][data-keyboard-open='true'] .chat-dock 
 .micro-action-btn.active { border-color: color-mix(in srgb, var(--border-hover) 92%, transparent); background: color-mix(in srgb, var(--accent-soft) 88%, transparent); color: var(--accent); }
 .micro-action-btn.danger:hover, .micro-action-btn.danger:focus-visible { border-color: rgba(194, 92, 92, 0.28); background: rgba(194, 92, 92, 0.08); color: #b45f5f; }
 .micro-action-btn svg { display: block; }
+.micro-action-btn.generating svg { animation: micro-action-spin 1.1s linear infinite; }
+@keyframes micro-action-spin { to { transform: rotate(360deg); } }
 
 .chat .panel { background: var(--surface); border: 1px solid var(--border); }

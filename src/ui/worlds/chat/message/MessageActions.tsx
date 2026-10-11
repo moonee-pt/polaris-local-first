@@ -52,13 +52,11 @@ type MessageActionsProps = {
   canForkAssistant: boolean;
   canRetryAssistant: boolean;
   retryAssistantLabel?: string;
-  canOpenThinkingSummary: boolean;
   memoryEvidence?: ChatMemoryEvidence | null;
   taskReceiptAction?: MessageTaskReceiptAction | null;
   codeCardActionLabel: string;
   codeCardActionMode: CodeCardActionMode;
   codeCardProgressLabel: string | null;
-  isThinkingActive: boolean;
   messageContent: string;
   speechContent: string;
   speechCache?: ChatMessageVoiceCache | null;
@@ -68,7 +66,6 @@ type MessageActionsProps = {
   onEditAssistant: (content: string) => void;
   onSpeechCacheReady: (voiceCache: ChatMessageVoiceCache) => void;
   onForkAssistant: () => void;
-  onOpenThinkingSummary: () => void;
   onRetryLatestAssistant: () => void;
 };
 
@@ -78,13 +75,11 @@ export function MessageActions({
   canForkAssistant,
   canRetryAssistant,
   retryAssistantLabel,
-  canOpenThinkingSummary,
   memoryEvidence = null,
   taskReceiptAction = null,
   codeCardActionLabel,
   codeCardActionMode,
   codeCardProgressLabel,
-  isThinkingActive,
   messageContent,
   speechContent,
   speechCache = null,
@@ -94,7 +89,6 @@ export function MessageActions({
   onEditAssistant,
   onSpeechCacheReady,
   onForkAssistant,
-  onOpenThinkingSummary,
   onRetryLatestAssistant
 }: MessageActionsProps) {
   const { t } = useI18n();
@@ -154,7 +148,7 @@ export function MessageActions({
     stopSpeechPlayback();
   }, []);
 
-  if (!canCopyAssistant && !canSpeakAssistant && !hasAssistantMore && !showCodeCardAction && !canOpenThinkingSummary && !taskReceiptAction) {
+  if (!canCopyAssistant && !canSpeakAssistant && !hasAssistantMore && !showCodeCardAction && !taskReceiptAction) {
     return null;
   }
 
@@ -444,7 +438,7 @@ export function MessageActions({
       {canSpeakAssistant ? (
         <button
           type="button"
-          className={`micro-action-btn ${speaking ? 'active' : ''}`}
+          className={`micro-action-btn ${speaking ? 'active' : ''} ${speechLoading ? 'generating' : ''}`}
           onClick={(event) => {
             runSelectionAction(toggleSpeech, { element: event.currentTarget });
           }}
@@ -452,22 +446,9 @@ export function MessageActions({
           title={speechLoading ? t('chat.messageActions.generatingSpeech') : speaking ? t('chat.messageActions.stopReading') : t('chat.messageActions.read')}
           aria-pressed={speaking || speechLoading}
         >
-          <Icon name={speaking || speechLoading ? 'pause' : 'voice'} size={14} />
+          <Icon name={speechLoading ? 'refresh' : speaking ? 'pause' : 'voice'} size={14} />
         </button>
       ) : null}
-      {canOpenThinkingSummary && (
-        <button
-          type="button"
-          className={`micro-action-btn ${isThinkingActive ? 'active' : ''}`}
-          onClick={(event) => {
-            runSelectionAction(onOpenThinkingSummary, { element: event.currentTarget });
-          }}
-          aria-label={isThinkingActive ? t('chat.messageActions.openThinkingActive') : t('chat.messageActions.openThinking')}
-          title={isThinkingActive ? t('chat.messageActions.thinkingTitleActive') : t('chat.messageActions.thinkingTitle')}
-        >
-          <Icon name="polarisStar" size={14} color="polarisDeepSpace" />
-        </button>
-      )}
       {showCodeCardAction && (
         <>
           <button

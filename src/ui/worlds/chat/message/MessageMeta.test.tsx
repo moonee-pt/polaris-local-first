@@ -24,6 +24,7 @@ describe('MessageMeta', () => {
         fallbackAssistantName="小助手"
         isThinkingActive={false}
         onOpenThinkingSummary={vi.fn()}
+        canOpenThinkingSummary
         showThinking={false}
       />
     );
@@ -32,6 +33,20 @@ describe('MessageMeta', () => {
     expect(html).toContain('Polaris');
     expect(html).not.toContain('thinking-inline-trigger');
     expect(html).not.toContain('思路摘要');
+  });
+
+  it('is the only entry point, so a reply without reasoning still gets the trigger', () => {
+    const html = renderToStaticMarkup(
+      <MessageMeta
+        message={createAssistantMessage({ thinkingText: undefined })}
+        fallbackAssistantName="小助手"
+        isThinkingActive={false}
+        onOpenThinkingSummary={vi.fn()}
+        canOpenThinkingSummary
+      />
+    );
+
+    expect(html).toContain('thinking-inline-trigger');
   });
 
   it('hides model details when details are disabled', () => {
