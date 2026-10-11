@@ -139,9 +139,14 @@
 }
 
 .chat-reading-notice {
-  margin: 0 0 16px;
+  flex: 0 0 auto;
+  margin: 10px 20px 0;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--reading-accent, #111111) 10%, transparent);
   font-size: 12px;
-  color: var(--warm-text-muted);
+  line-height: 1.5;
+  color: var(--warm-text-soft);
 }
 
 .chat-reading-empty {

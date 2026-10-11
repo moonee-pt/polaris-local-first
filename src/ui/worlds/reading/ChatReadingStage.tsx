@@ -2,6 +2,13 @@ import type { CSSProperties } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { readMessageSpeechCacheBlob } from '../../../app/chat/messageSpeechCache';
+import {
+  getCallAudio,
+  markCallAudioBlocked,
+  markCallAudioUnlocked,
+  primeCallAudio,
+  setCallAudioInUse
+} from '../../../app/call/callAudio';
 import { useI18n } from '../../../i18n';
 import { Icon } from '../../Icon';
 import { runSelectionAction } from '../../haptics';
@@ -33,13 +40,14 @@ export function ChatReadingStage({ onClose }: ChatReadingStageProps) {
 
   useEffect(() => () => {
     runIdRef.current += 1;
+    setCallAudioInUse(false);
     if (frameRef.current !== null) window.cancelAnimationFrame(frameRef.current);
     const audio = audioRef.current;
     if (audio) {
       audio.onended = null;
       audio.onerror = null;
       audio.pause();
-      audio.src = '';
+      audio.removeAttribute('src');
       audioRef.current = null;
     }
   }, []);
@@ -54,12 +62,13 @@ export function ChatReadingStage({ onClose }: ChatReadingStageProps) {
       window.cancelAnimationFrame(frameRef.current);
       frameRef.current = null;
     }
+    setCallAudioInUse(false);
     const audio = audioRef.current;
     if (!audio) return;
     audio.onended = null;
     audio.onerror = null;
     audio.pause();
-    audio.src = '';
+    audio.removeAttribute('src');
     audioRef.current = null;
   };
 
@@ -86,51 +95,69 @@ export function ChatReadingStage({ onClose }: ChatReadingStageProps) {
     setSpokenIndex(index);
     setActiveMessageId(block.messageId);
 
+    const interrupt = (message: string) => {
+      if (runIdRef.current !== runId) return;
+      releaseAudio();
+      setPlaying(false);
+      setProgress(0);
+      setNotice(message);
+    };
+
     void (async () => {
-      let url = '';
+      let blob: Blob;
       try {
-        const blob = await readMessageSpeechCacheBlob(cache);
-        if (runIdRef.current !== runId) return;
-        url = URL.createObjectURL(blob);
-        const audio = new Audio(url);
-        audio.preload = 'auto';
-        audioRef.current = audio;
-
-        const tick = () => {
-          if (runIdRef.current !== runId) return;
-          const duration = audio.duration;
-          setProgress(Number.isFinite(duration) && duration > 0 ? Math.min(1, audio.currentTime / duration) : 0);
-          frameRef.current = window.requestAnimationFrame(tick);
-        };
-        const advance = () => {
-          if (index + 1 < spokenBlocks.length) playAt(index + 1);
-          else stopPlayback();
-        };
-
-        audio.onended = () => {
-          if (runIdRef.current !== runId) return;
-          URL.revokeObjectURL(url);
-          audioRef.current = null;
-          advance();
-        };
-        audio.onerror = () => {
-          if (runIdRef.current !== runId) return;
-          URL.revokeObjectURL(url);
-          audioRef.current = null;
-          setNotice(t('chat.reading.speechFailed'));
-          advance();
-        };
-
-        await audio.play();
-        setPlaying(true);
-        frameRef.current = window.requestAnimationFrame(tick);
+        blob = await readMessageSpeechCacheBlob(cache);
       } catch {
+        interrupt(t('chat.reading.speechMissing'));
+        return;
+      }
+      if (runIdRef.current !== runId) return;
+
+      // Every clip rides the one element a real tap already unlocked: a phone browser
+      // will not start sound on an element it has never heard inside a gesture.
+      const url = URL.createObjectURL(blob);
+      const audio = getCallAudio();
+      setCallAudioInUse(true);
+      audioRef.current = audio;
+      audio.preload = 'auto';
+      audio.onended = null;
+      audio.onerror = null;
+      audio.src = url;
+
+      const tick = () => {
         if (runIdRef.current !== runId) return;
-        if (url) URL.revokeObjectURL(url);
-        setNotice(t('chat.reading.speechFailed'));
+        const duration = audio.duration;
+        setProgress(Number.isFinite(duration) && duration > 0 ? Math.min(1, audio.currentTime / duration) : 0);
+        frameRef.current = window.requestAnimationFrame(tick);
+      };
+
+      audio.onended = () => {
+        if (runIdRef.current !== runId) return;
+        audio.onended = null;
+        audio.onerror = null;
+        audioRef.current = null;
+        URL.revokeObjectURL(url);
         if (index + 1 < spokenBlocks.length) playAt(index + 1);
         else stopPlayback();
+      };
+      audio.onerror = () => {
+        if (runIdRef.current !== runId) return;
+        URL.revokeObjectURL(url);
+        interrupt(t('chat.reading.speechFailed'));
+      };
+
+      try {
+        await audio.play();
+      } catch {
+        URL.revokeObjectURL(url);
+        markCallAudioBlocked();
+        interrupt(t('chat.reading.tapToPlay'));
+        return;
       }
+      if (runIdRef.current !== runId) return;
+      markCallAudioUnlocked();
+      setPlaying(true);
+      frameRef.current = window.requestAnimationFrame(tick);
     })();
   };
 
@@ -139,11 +166,13 @@ export function ChatReadingStage({ onClose }: ChatReadingStageProps) {
       stopPlayback();
       return;
     }
+    primeCallAudio();
     playAt(spokenIndex >= 0 && spokenIndex < spokenBlocks.length ? spokenIndex : 0);
   };
 
   const step = (delta: number) => {
     if (spokenBlocks.length === 0) return;
+    primeCallAudio();
     const base = spokenIndex >= 0 ? spokenIndex : 0;
     const next = Math.min(spokenBlocks.length - 1, Math.max(0, base + delta));
     playAt(next);
@@ -256,6 +285,8 @@ export function ChatReadingStage({ onClose }: ChatReadingStageProps) {
           </button>
         </div>
 
+        {notice ? <p className="chat-reading-notice">{notice}</p> : null}
+
         <div className="chat-reading-scroll">
           {blocks.length === 0 ? <p className="chat-reading-empty">{t('chat.reading.empty')}</p> : null}
           {blocks.map((block) => (
@@ -273,7 +304,6 @@ export function ChatReadingStage({ onClose }: ChatReadingStageProps) {
               <p className="chat-reading-text">{renderSegments(block)}</p>
             </article>
           ))}
-          {notice ? <p className="chat-reading-notice">{notice}</p> : null}
         </div>
       </div>
     </div>,
