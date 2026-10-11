@@ -110,9 +110,10 @@
 
 .chat-reading-text {
   margin: 0;
-  font-size: 16px;
-  line-height: 1.95;
-  word-break: break-word;
+  font-size: var(--type-body);
+  line-height: 1.85;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
 }
 
 .chat-reading-seg.is-speech + .chat-reading-seg.is-speech {
@@ -121,7 +122,6 @@
 
 .chat-reading-seg.is-stage {
   color: var(--warm-text-muted);
-  font-size: 14px;
 }
 
 .chat-reading-seg.is-read {

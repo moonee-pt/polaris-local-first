@@ -169,7 +169,7 @@ export function ChatReadingStage({ onClose }: ChatReadingStageProps) {
       ? resolveReadingCursor(block.segments, progress)
       : { segmentIndex: -1, readChars: 0 };
     return block.segments.map((segment, index) => {
-      const state = cursor.segmentIndex < 0
+      const state = cursor.segmentIndex < 0 || segment.kind === 'stage'
         ? 'idle'
         : index < cursor.segmentIndex
           ? 'read'
