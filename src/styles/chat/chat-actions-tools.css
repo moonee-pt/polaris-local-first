@@ -381,13 +381,14 @@ html[data-native-keyboard-overlay='true'][data-keyboard-open='true'] .task-recei
     0 10px 24px rgba(103, 122, 171, 0.12),
     0 0 0 1px color-mix(in srgb, rgba(255,255,255,0.2) 52%, transparent) inset;
 }
+/* Running keeps the shelf tab's pink so the floating task button matches the bottom bar. */
 .task-runtime-fab.running {
-  border-color: color-mix(in srgb, var(--task-blue, #2f7de0) 34%, transparent);
-  background: color-mix(in srgb, #2f7de0 12%, var(--surface-solid));
-  color: #2f7de0;
+  border-color: color-mix(in srgb, #f6b9c9 74%, transparent);
+  background: linear-gradient(145deg, #fff2f6, #f6b9c9);
+  color: #c46f8d;
   box-shadow:
-    0 10px 24px rgba(103, 122, 171, 0.14),
-    0 0 0 1px color-mix(in srgb, #2f7de0 16%, transparent) inset;
+    0 10px 24px rgba(213, 136, 161, 0.22),
+    0 0 0 1px color-mix(in srgb, #ffffff 46%, transparent) inset;
 }
 .task-runtime-fab.armed {
   border-color: color-mix(in srgb, var(--accent) 30%, transparent);
@@ -456,7 +457,12 @@ html[data-native-keyboard-overlay='true'][data-keyboard-open='true'] .task-recei
   box-shadow: 0 14px 26px rgba(103, 122, 171, 0.14);
 }
 .task-runtime-fab.running:hover,
-.task-runtime-fab.running:focus-visible,
+.task-runtime-fab.running:focus-visible {
+  border-color: color-mix(in srgb, #d588a1 58%, transparent);
+  box-shadow:
+    0 14px 28px rgba(213, 136, 161, 0.24),
+    0 0 0 1px color-mix(in srgb, #ffffff 54%, transparent) inset;
+}
 .task-runtime-fab.armed:hover,
 .task-runtime-fab.armed:focus-visible {
   border-color: color-mix(in srgb, var(--accent) 40%, transparent);
