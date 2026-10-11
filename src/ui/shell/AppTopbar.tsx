@@ -177,7 +177,7 @@ export function AppTopbar({
                 title={t('chat.composer.startCall')}
                 aria-label={t('chat.composer.startCall')}
               >
-                <Icon name="phone" size={18} />
+                <Icon name="phone" size={17} />
               </button>
             )}
 
@@ -189,7 +189,7 @@ export function AppTopbar({
                 title={t('chat.reading.open')}
                 aria-label={t('chat.reading.open')}
               >
-                <Icon name="openBook" size={18} />
+                <Icon name="openBook" size={19} />
               </button>
             )}
 
@@ -201,7 +201,7 @@ export function AppTopbar({
                 title={t('topbar.openCollaboratorSettings')}
                 aria-label={t('topbar.openCollaboratorSettings')}
               >
-                <Icon name="persona" size={18} />
+                <Icon name="persona" size={19} />
               </button>
             )}
 

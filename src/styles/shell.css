@@ -515,6 +515,12 @@ body[data-polaris-preset='polaris-night'] .collection .pulse-dot {
 .action-btn svg { display: block; }
 .icon-btn { width: 36px; padding: 0; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; }
 .topbar-actions .icon-btn { width: 44px; min-width: 44px; height: 44px; min-height: 44px; }
+
+/* 聊天右上角三个入口：图标等大、同一水平线、更紧凑 */
+.chat .topbar-actions:not(.topbar-actions--leading) { gap: 2px; }
+.chat .topbar-actions:not(.topbar-actions--leading) .icon-btn { width: 38px; min-width: 38px; }
+.chat .topbar-actions .topbar-call-btn svg { transform: translateY(0.5px); }
+.chat .topbar-actions .topbar-reading-btn svg { transform: translateY(-0.5px); }
 .theme-menu-btn { width: 40px; height: 40px; }
 .theme-menu-btn svg { transform: translateY(-0.5px); }
 .topbar-new-chat-btn {
