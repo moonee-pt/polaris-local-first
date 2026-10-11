@@ -70,12 +70,18 @@ describe('buildAssistantCaptionParts', () => {
       '【再说一遍试试。】'
     ].join('\n');
 
-    expect(buildAssistantSpeechText(content)).toContain('……');
+    expect(buildAssistantSpeechText(content)).toContain('[long-break]');
+    expect(buildAssistantSpeechText(content)).not.toContain('……');
     expect(buildAssistantCaptionParts(content)).toEqual([
       { kind: 'speech', text: '先说这一句。' },
       { kind: 'stage', text: '（他停了很久，才把视线挪开）' },
       { kind: 'speech', text: '再说一遍试试。' }
     ]);
+  });
+
+  it('sends the engine spelling of the pause cues the reply writes', () => {
+    expect(buildAssistantSpeechText('【等我一下。】[pause] 【我回来了。】')).toBe('等我一下。[break]我回来了。');
+    expect(buildAssistantSpeechText('【等我一下。】[long pause] 【我回来了。】')).toBe('等我一下。[long-break]我回来了。');
   });
 
   it('wraps bare stage text so it reads as narration', () => {

@@ -25,7 +25,9 @@ export const PERFORMANCE_TAG_SLUGS: Record<string, string> = {
   'background laughter': 'background_laughter',
   'audience laughing': 'audience_laughing',
   pause: 'pause',
-  'long pause': 'long_pause'
+  'long pause': 'long_pause',
+  break: 'pause',
+  'long-break': 'long_pause'
 };
 
 export const PERFORMANCE_INTENSITY_SLUGS: Record<string, string> = { soft: 'cueSoft', hard: 'cueHard' };
@@ -41,7 +43,10 @@ export const CROWD_LAUGHTER_TAG_SLUGS: Record<string, string> = {
   'audience laughing': 'audience_laughing'
 };
 
-export const PERFORMANCE_TAG_PATTERN = /\[([a-z][a-z: ]{0,24})\]/gi;
+export const PERFORMANCE_TAG_PATTERN = /\[([a-z][a-z: -]{0,24})\]/gi;
+
+const TAG_BRACKET = '\\[([a-z][a-z: -]{0,24})\\]';
+const TAG_WITH_TRAIL = `${TAG_BRACKET}[ \\t]?`;
 
 export function normalizePerformanceTag(inner: string) {
   return inner.trim().toLowerCase().replace(/\s+/g, ' ');
@@ -61,7 +66,7 @@ export function resolvePerformanceTag(inner: string): { slug: string; intensity:
 export function stripPerformanceTags(text: string): string {
   if (!text) return text;
   return text
-    .replace(/\[([a-z][a-z: ]{0,24})\][ \t]?/gi, (match, inner: string) => (resolvePerformanceTag(inner) ? '' : match))
+    .replace(new RegExp(TAG_WITH_TRAIL, 'gi'), (match, inner: string) => (resolvePerformanceTag(inner) ? '' : match))
     .replace(/[ \t]{2,}/g, ' ')
     .replace(/[ \t]+\n/g, '\n')
     .replace(/\n{3,}/g, '\n\n');
@@ -75,10 +80,28 @@ export function stripPerformanceTags(text: string): string {
 export function stripCrowdLaughterTags(text: string): string {
   if (!text) return text;
   return text
-    .replace(/\[([a-z][a-z: ]{0,24})\][ \t]?/gi, (match, inner: string) => (
+    .replace(new RegExp(TAG_WITH_TRAIL, 'gi'), (match, inner: string) => (
       CROWD_LAUGHTER_TAG_SLUGS[normalizePerformanceTag(inner).split(':')[0]] ? '' : match
     ))
     .replace(/[ \t]{2,}/g, ' ')
     .replace(/[ \t]+\n/g, '\n')
     .replace(/\n{3,}/g, '\n\n');
+}
+
+const ENGINE_TAG_BY_SLUG: Record<string, string> = {
+  pause: 'break',
+  long_pause: 'long-break'
+};
+
+/**
+ * The voice engine spells its pauses [break] / [long-break]; the labels we show and the
+ * older replies use [pause] / [long pause], which the engine would read out as the word.
+ */
+export function normalizePauseTagsForEngine(text: string): string {
+  if (!text) return text;
+  return text.replace(new RegExp(TAG_BRACKET, 'gi'), (match, inner: string) => {
+    const resolved = resolvePerformanceTag(inner);
+    const engineTag = resolved ? ENGINE_TAG_BY_SLUG[resolved.slug] : undefined;
+    return engineTag ? `[${engineTag}]` : match;
+  });
 }

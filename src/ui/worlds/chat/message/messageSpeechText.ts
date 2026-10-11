@@ -1,7 +1,7 @@
 import { TOOL_DRAFT_BLOCK_PATTERN } from '../../../../app/chat/chatMarkdownPatterns';
 import { stripCodeBlocksFromMessage } from '../../../../engines/codeCardEngine';
 import { readFleshCues, stripFleshCues, type FleshCue } from '../../../../engines/voice/fleshAmbience';
-import { stripCrowdLaughterTags, stripPerformanceTags } from '../../../../engines/voice/performanceTags';
+import { normalizePauseTagsForEngine, stripCrowdLaughterTags, stripPerformanceTags } from '../../../../engines/voice/performanceTags';
 import type { VoiceCallCaptionSourcePart } from '../../../../engines/voice/voiceCallCaption';
 
 type SpeechSegment = { kind: 'speech' | 'stage'; text: string };
@@ -74,11 +74,12 @@ function splitSpeechSegments(content: string, pairs: Array<[string, string]>): S
   return segments;
 }
 
+/** Silence between two spoken lines. Ellipsis would be voiced as a breath, so ask for a pause. */
 function pauseForGap(gap: string) {
   const length = gap.replace(/\s+/g, '').length;
-  if (length >= 30) return '……\n……';
-  if (length >= 10) return '…… ……';
-  return '……';
+  if (length >= 30) return '[long-break] [long-break]';
+  if (length >= 10) return '[long-break]';
+  return '[break]';
 }
 
 function joinSpokenSegments(segments: SpeechSegment[]) {
@@ -113,7 +114,7 @@ export function buildAssistantSpeechText(content: string) {
   const segments = splitSpeechSegments(cleaned, pairs);
   const hasSpokenLines = segments.some((segment) => segment.kind === 'speech' && segment.text.trim());
   const spoken = hasSpokenLines ? joinSpokenSegments(segments) : stripStageDirections(cleaned);
-  return stripCrowdLaughterTags(stripFleshCues(normalizeSpeechWhitespace(spoken)));
+  return normalizePauseTagsForEngine(stripCrowdLaughterTags(stripFleshCues(normalizeSpeechWhitespace(spoken))));
 }
 
 export type AssistantVoiceContent = {

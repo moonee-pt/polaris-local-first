@@ -15,7 +15,7 @@ export const SPEECH_CUE_INSTRUCTION = [
   '可以用方括号标记指导念法，写在【】里、要生效的那句前面，只认下面这些，照抄英文原样：',
   '语气：[angry] [sad] [embarrassed] [emphasis] [whispering] [soft] [breathy] [excited]',
   '音效：[laughing] [chuckling] [moaning] [clear throat] [sobbing] [crying loudly] [sighing] [panting] [groaning]',
-  '停顿：[pause] [long pause]',
+  '停顿：[break] 短停 [long-break] 长停',
   '',
   '身体音标记写进（）的动作里，只出声、不念字。按声音分成六种，想要哪种就写哪种：',
   '[wetplap] 湿拍  [dryplap] 干拍  [wet] 水声  [stroke] 撸动  [cum] 高潮音  [pullout] 退出音',
@@ -23,7 +23,7 @@ export const SPEECH_CUE_INSTRUCTION = [
   '',
   '规矩：',
   '- 一轮里两三个就够，不要每句都挂，也不要连着用同一个。',
-  '- 停顿优先用省略号断句，标记只是补充。',
+  '- 停顿用 [break] 或 [long-break]，不要靠堆省略号来停顿：省略号会被念成一口喘气，不是安静。',
   '- 身体音表示场景进入身体接触：一个场景挑一种主要的写，后面的句子沿用，场景停下就不用再写。[cum] 和 [pullout] 各只写一次。',
   '- 标记显示时会变成浅色小字，不会被念出来，你照常用。'
 ].join('\n');
