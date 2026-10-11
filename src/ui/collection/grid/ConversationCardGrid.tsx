@@ -1,8 +1,11 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { buildConversationCardSummary } from '../../../app/collection/conversationCardSummary';
 import type { ConversationMessageSearchIndex } from '../../../app/collection/conversationMessageSearch';
 import { useI18n } from '../../../i18n';
 import type { Conversation, Persona } from '../../../types/domain';
+import { runSelectionAction } from '../../haptics';
+import { Icon } from '../../Icon';
+import { CreateActionSheet } from '../../create/CreateActionSheet';
 import { ConversationCardProvider } from './ConversationCardContext';
 import { ConversationCardItem } from './ConversationCardItem';
 import { useVirtualCardWindow } from './useVirtualCardWindow';
@@ -12,7 +15,6 @@ type ConversationCardGridProps = {
   conversations: Conversation[];
   conversationMessageSearchIndex?: ConversationMessageSearchIndex;
   personas: Persona[];
-  projectTitleById: Record<string, string>;
   activeConversationId: string | null;
   editingConversationId: string | null;
   conversationTitleDraft: string;
@@ -31,7 +33,6 @@ export function ConversationCardGrid({
   conversations,
   conversationMessageSearchIndex,
   personas,
-  projectTitleById,
   activeConversationId,
   editingConversationId,
   conversationTitleDraft,
@@ -45,11 +46,15 @@ export function ConversationCardGrid({
   onOpenConversationMessage
 }: ConversationCardGridProps) {
   const { t, language } = useI18n();
+  const [menuConversationId, setMenuConversationId] = useState<string | null>(null);
+  const openConversationMenu = useCallback((conversationId: string) => {
+    setMenuConversationId(conversationId);
+  }, []);
   const listDensity = conversations.length > 8 ? 'cards-heavy' : 'cards-normal';
   const hasMessageSearchMatches = Object.keys(conversationMessageSearchIndex ?? {}).length > 0;
   const virtualWindow = useVirtualCardWindow({
     itemCount: conversations.length,
-    estimateRowHeight: cardsExpanded ? (hasMessageSearchMatches ? 226 : 154) : 54,
+    estimateRowHeight: cardsExpanded ? (hasMessageSearchMatches ? 226 : 154) : 68,
     overscanRows: cardsExpanded ? 5 : 10
   });
   const visibleConversations = useMemo(
@@ -75,17 +80,15 @@ export function ConversationCardGrid({
   const contextValue = useMemo(
     () => ({
       collaboratorNameById,
-      projectTitleById,
       activeConversationId,
       editingConversationId,
       conversationTitleDraft,
       onConversationTitleDraftChange,
-      onStartConversationRename,
       onCommitConversationRename,
       onCancelConversationRename,
-      onConversationPinToggle,
       onConversationDelete,
       onOpenConversation,
+      onOpenConversationMenu: openConversationMenu,
       onOpenConversationMessage
     }),
     [
@@ -96,14 +99,15 @@ export function ConversationCardGrid({
       onCancelConversationRename,
       onCommitConversationRename,
       onConversationDelete,
-      onConversationPinToggle,
-      onConversationTitleDraftChange,
       onOpenConversationMessage,
       onOpenConversation,
-      onStartConversationRename,
-      projectTitleById
+      openConversationMenu,
+      onConversationTitleDraftChange
     ]
   );
+  const menuConversation = menuConversationId
+    ? visibleConversationSummaries.find((summary) => summary.id === menuConversationId) ?? null
+    : null;
 
   return (
     <ConversationCardProvider value={contextValue}>
@@ -141,6 +145,61 @@ export function ConversationCardGrid({
           </div>
         )}
       </div>
+
+      <CreateActionSheet
+        open={menuConversation !== null}
+        ariaLabel={menuConversation?.displayTitle ?? ''}
+        className="conversation-card-menu-sheet"
+        onClose={() => setMenuConversationId(null)}
+      >
+        {menuConversation ? (
+          <div className="conversation-card-menu">
+            <p className="conversation-card-menu-title">{menuConversation.displayTitle}</p>
+            <button
+              type="button"
+              className="conversation-card-menu-item"
+              onClick={(event) => {
+                const conversationId = menuConversation.id;
+                runSelectionAction(() => {
+                  setMenuConversationId(null);
+                  onStartConversationRename(conversationId, menuConversation.title);
+                }, { element: event.currentTarget });
+              }}
+            >
+              <Icon name="edit" size={15} />
+              <span>{t('collection.dialogue.rename')}</span>
+            </button>
+            <button
+              type="button"
+              className="conversation-card-menu-item"
+              onClick={(event) => {
+                const conversationId = menuConversation.id;
+                runSelectionAction(() => {
+                  setMenuConversationId(null);
+                  onConversationPinToggle(conversationId);
+                }, { element: event.currentTarget });
+              }}
+            >
+              <Icon name="pin" size={15} />
+              <span>{menuConversation.pinnedAt ? t('collection.dialogue.unpin') : t('collection.dialogue.pin')}</span>
+            </button>
+            <button
+              type="button"
+              className="conversation-card-menu-item conversation-card-menu-item--danger"
+              onClick={(event) => {
+                const conversationId = menuConversation.id;
+                runSelectionAction(() => {
+                  setMenuConversationId(null);
+                  onConversationDelete(conversationId, menuConversation.title);
+                }, { element: event.currentTarget });
+              }}
+            >
+              <Icon name="trash" size={15} />
+              <span>{t('collection.dialogue.delete')}</span>
+            </button>
+          </div>
+        ) : null}
+      </CreateActionSheet>
     </ConversationCardProvider>
   );
 }

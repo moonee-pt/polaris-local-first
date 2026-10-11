@@ -30,9 +30,7 @@
 .app-shell.collection .world-collection .conversation-card-list.cards-heavy .conversation-card-swipe-surface,
 .app-shell.collection .world-collection .conversation-card-list.cards-heavy .conversation-card-swipe-delete,
 .app-shell.collection .world-collection .conversation-card-list.cards-heavy .conversation-card-main,
-.app-shell.collection .world-collection .conversation-card-list.cards-heavy .conversation-card-detail,
-.app-shell.collection .world-collection .conversation-card-list.cards-heavy .conversation-card-actions,
-.app-shell.collection .world-collection .conversation-card-list.cards-heavy .micro-action-btn {
+.app-shell.collection .world-collection .conversation-card-list.cards-heavy .conversation-card-detail {
   transition-duration: 0ms;
 }
 
@@ -88,7 +86,6 @@
 
 .conversation-card:not(.active):hover,
 .conversation-card:not(.active):has(.conversation-card-main:focus-visible),
-.conversation-card:not(.active):has(.conversation-card-actions :focus-visible),
 .conversation-card:not(.active).editing:focus-within {
   background: color-mix(in srgb, var(--collection-card-surface-solid) 28%, transparent);
 }
@@ -164,7 +161,6 @@
 .conversation-card .conversation-card-edit { padding-left: var(--collection-dialogue-card-copy-padding-left); }
 
 .conversation-card .card-meta-row {
-  padding-right: 104px;
   margin-bottom: 0;
   align-items: flex-start;
   gap: 8px;
@@ -182,45 +178,14 @@
   color: var(--collection-dialogue-card-meta-color);
 }
 
-.conversation-card-workspace-badge {
-  display: inline-flex;
-  align-items: center;
-  width: fit-content;
-  max-width: 100%;
-  min-height: 18px;
-  padding: 0 8px;
-  border-radius: 999px;
-  background: rgba(120, 151, 177, 0.12);
-  color: rgba(82, 103, 122, 0.88);
-  font-size: 10px;
-  line-height: 1;
-  letter-spacing: 0.04em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .conversation-card-updated {
   text-transform: none;
   letter-spacing: 0;
   color: var(--collection-dialogue-card-updated-color);
 }
 
-.conversation-card-actions {
-  position: absolute;
-  top: -1px;
-  right: 0;
-  display: flex;
-  gap: 16px;
-  justify-content: flex-end;
-  opacity: 0.42;
-  transform: translateY(1px);
-  transition: opacity 0.22s ease, transform 0.22s ease;
-}
-
 .conversation-card:hover,
 .conversation-card:has(.conversation-card-main:focus-visible),
-.conversation-card:has(.conversation-card-actions :focus-visible),
 .conversation-card.editing:focus-within {
   transform: var(--collection-dialogue-card-hover-transform);
   box-shadow: var(--collection-dialogue-card-hover-shadow);
@@ -228,59 +193,7 @@
 
 .conversation-card:hover .conversation-card-thread-mark,
 .conversation-card:has(.conversation-card-main:focus-visible) .conversation-card-thread-mark,
-.conversation-card:has(.conversation-card-actions :focus-visible) .conversation-card-thread-mark,
 .conversation-card.editing:focus-within .conversation-card-thread-mark { opacity: 0.2; }
-
-.conversation-card:hover .conversation-card-actions,
-.conversation-card:has(.conversation-card-main:focus-visible) .conversation-card-actions,
-.conversation-card:has(.conversation-card-actions :focus-visible) .conversation-card-actions,
-.conversation-card.editing:focus-within .conversation-card-actions,
-.conversation-card.active .conversation-card-actions,
-.conversation-card.pinned .conversation-card-actions,
-.conversation-card.editing .conversation-card-actions {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.conversation-card .micro-action-btn {
-  width: 24px;
-  height: 24px;
-  opacity: 0.58;
-  border-color: var(--collection-dialogue-card-micro-border);
-  background: var(--collection-dialogue-card-micro-fill);
-  color: var(--collection-dialogue-card-micro-color);
-  box-shadow: var(--collection-dialogue-card-micro-shadow);
-}
-
-.conversation-card.active .micro-action-btn,
-.conversation-card:hover .micro-action-btn,
-.conversation-card:has(.conversation-card-main:focus-visible) .micro-action-btn,
-.conversation-card:has(.conversation-card-actions :focus-visible) .micro-action-btn,
-.conversation-card.editing:focus-within .micro-action-btn,
-.conversation-card.pinned .micro-action-btn,
-.conversation-card.editing .micro-action-btn {
-  opacity: 1;
-}
-
-.conversation-card .micro-action-btn:hover,
-.conversation-card .micro-action-btn:focus-visible {
-  border-color: var(--collection-dialogue-card-micro-hover-border);
-  background: var(--collection-dialogue-card-micro-hover-fill);
-  color: var(--collection-dialogue-card-micro-hover-color);
-}
-
-.conversation-card .micro-action-btn.active {
-  border-color: var(--collection-dialogue-card-micro-active-border);
-  background: var(--collection-dialogue-card-micro-active-fill);
-  color: var(--collection-dialogue-card-micro-active-color);
-}
-
-.conversation-card .micro-action-btn.danger:hover,
-.conversation-card .micro-action-btn.danger:focus-visible {
-  border-color: rgba(194, 92, 92, 0.28);
-  background: rgba(194, 92, 92, 0.08);
-  color: #b45f5f;
-}
 
 .conversation-card-list > .conversation-card:last-of-type::after {
   display: none;

@@ -93,9 +93,9 @@
 
 .create-action-sheet .persona-create-picker-actions {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   margin-top: 4px;
-  gap: 10px;
+  gap: 2px;
 }
 
 .create-action-sheet .persona-create-picker-close {
@@ -113,51 +113,57 @@
 .create-action-sheet .persona-create-choice {
   display: flex;
   min-width: 0;
-  min-height: 82px;
+  min-height: 46px;
   align-items: center;
-  gap: 14px;
-  padding: 14px 16px;
-  border: 1px solid color-mix(in srgb, #16325a 18%, var(--border) 82%);
-  border-radius: 20px;
-  background:
-    linear-gradient(135deg, rgba(255,255,255,0.58), rgba(255,255,255,0.2)),
-    color-mix(in srgb, var(--surface-solid) 76%, transparent);
-  color: var(--text);
+  gap: 10px;
+  padding: 11px 12px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: color-mix(in srgb, var(--text) 92%, var(--text-soft) 8%);
   font: inherit;
+  font-size: 13.5px;
+  line-height: 1.3;
   text-align: left;
-  box-shadow: 0 10px 24px rgba(22, 50, 90, 0.055);
+  box-shadow: none;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.16s ease, color 0.16s ease;
+}
+
+.create-action-sheet .persona-create-choice:hover,
+.create-action-sheet .persona-create-choice:focus-visible {
+  background: color-mix(in srgb, var(--text) 4%, transparent);
+  outline: none;
 }
 
 .create-action-sheet .persona-create-choice--primary {
-  border-color: color-mix(in srgb, #16325a 34%, var(--border) 66%);
-  background:
-    linear-gradient(135deg, rgba(20, 35, 61, 0.075), rgba(199, 164, 90, 0.052)),
-    color-mix(in srgb, var(--surface-solid) 78%, transparent);
+  border-color: transparent;
+  background: transparent;
 }
 
 .create-action-sheet .persona-create-choice-icon {
   flex: 0 0 auto;
-  width: 32px;
-  height: 32px;
+  width: 22px;
+  height: 22px;
   display: inline-grid;
   place-items: center;
-  border-radius: 12px;
-  color: color-mix(in srgb, #16325a 76%, var(--text-soft) 24%);
+  border-radius: 0;
+  color: var(--text-soft);
 }
 
 .create-action-sheet .persona-create-choice-copy {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
 }
 
 .create-action-sheet .persona-create-choice-copy strong {
-  color: var(--text);
-  font-size: 15px;
-  font-weight: 650;
-  line-height: 1.22;
+  color: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.3;
 }
 
 .collaborator-create-action-sheet {
@@ -170,25 +176,25 @@
 }
 
 .collaborator-create-action-sheet .persona-create-picker-actions {
-  gap: 12px;
+  gap: 2px;
 }
 
 .collaborator-create-action-sheet .persona-create-choice {
-  min-height: 82px;
+  min-height: 46px;
   align-items: center;
-  gap: 16px;
-  padding: 16px 20px;
-  border-radius: 20px;
+  gap: 10px;
+  padding: 11px 12px;
+  border-radius: 0;
 }
 
 .collaborator-create-action-sheet .persona-create-choice-icon,
 .collaborator-create-action-sheet .persona-create-choice--primary .persona-create-choice-icon {
-  width: 32px;
-  height: 32px;
+  width: 22px;
+  height: 22px;
   border: 0;
   border-radius: 0;
   background: transparent;
-  color: color-mix(in srgb, #16325a 76%, var(--text-soft) 24%);
+  color: var(--text-soft);
   box-shadow: none;
 }
 
@@ -197,14 +203,17 @@
 }
 
 .collaborator-create-action-sheet .persona-create-choice-copy strong {
-  font-size: 17px;
-  line-height: 1.22;
-  font-weight: 720;
+  font-size: 13.5px;
+  line-height: 1.3;
+  font-weight: 600;
 }
 
 .create-action-sheet .code-collection-create-menu,
 .create-action-sheet .room-project-file-quick-menu {
   position: static;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   width: 100%;
   min-width: 0;
   padding: 0;
@@ -217,13 +226,51 @@
 
 .create-action-sheet .code-collection-create-menu-item,
 .create-action-sheet .room-project-file-quick-menu-item {
-  min-height: 68px;
-  border: 1px solid color-mix(in srgb, var(--border) 72%, transparent);
-  border-radius: 18px;
-  background:
-    linear-gradient(135deg, rgba(255,255,255,0.58), rgba(255,255,255,0.2)),
-    color-mix(in srgb, var(--surface-solid) 76%, transparent);
-  box-shadow: 0 10px 24px rgba(22, 50, 90, 0.055);
+  min-height: 46px;
+  padding: 11px 12px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  transition: background 0.16s ease, color 0.16s ease;
+}
+
+.create-action-sheet .code-collection-create-menu-item:hover,
+.create-action-sheet .code-collection-create-menu-item:focus-visible,
+.create-action-sheet .room-project-file-quick-menu-item:hover,
+.create-action-sheet .room-project-file-quick-menu-item:focus-visible {
+  background: color-mix(in srgb, var(--text) 4%, transparent);
+  outline: none;
+}
+
+.create-action-sheet .code-collection-create-menu-item-icon,
+.create-action-sheet .room-project-file-quick-menu-item-icon {
+  width: 22px;
+  height: 22px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text-soft);
+  box-shadow: none;
+}
+
+.create-action-sheet .code-collection-create-menu-item-icon svg,
+.create-action-sheet .room-project-file-quick-menu-item-icon svg,
+.create-action-sheet .image-asset-create-menu-item-icon svg,
+.create-action-sheet .persona-create-choice-icon svg {
+  width: 15px;
+  height: 15px;
+}
+
+.create-action-sheet .room-project-file-quick-menu-item strong {
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.create-action-sheet .room-project-file-quick-menu-item small {
+  font-size: 11.5px;
+  color: var(--text-muted);
 }
 
 @keyframes create-action-sheet-rise {

@@ -16,9 +16,8 @@ export function ApiProviderSummarySection({
   const { t } = useI18n();
 
   return (
-    <section className="api-provider-section api-provider-section-secondary api-provider-section-test">
+    <section className="api-provider-section">
       <div className="api-provider-section-head">
-        <span className="api-provider-section-kicker">{t('apiProvider.summary.kicker')}</span>
         <h3>{t('apiProvider.summary.title')}</h3>
         <p>{t('apiProvider.summary.detail')}</p>
       </div>
@@ -47,9 +46,8 @@ export function ApiProviderDiagnosticsSection() {
   const { t } = useI18n();
 
   return (
-    <section className="api-provider-section api-provider-section-secondary api-provider-section-diagnostics">
+    <section className="api-provider-section">
       <div className="api-provider-section-head">
-        <span className="api-provider-section-kicker">{t('apiProvider.diagnostics.kicker')}</span>
         <h3>{t('apiProvider.diagnostics.title')}</h3>
         <p>{t('apiProvider.diagnostics.detail')}</p>
       </div>

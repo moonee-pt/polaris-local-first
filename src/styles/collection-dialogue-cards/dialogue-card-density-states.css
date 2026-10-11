@@ -17,24 +17,17 @@
   display: grid;
   grid-template-columns: minmax(5.4ch, max-content) minmax(0, 1fr);
   column-gap: var(--collection-dialogue-card-collapsed-title-gap);
-  align-items: center;
+  align-items: baseline;
   min-width: 0;
-}
-
-.conversation-card.collapsed .conversation-card-title-row.has-inline-states {
-  grid-template-columns: minmax(5.4ch, max-content) minmax(0, 1fr) minmax(48px, max-content);
 }
 
 .conversation-card.collapsed h3 {
   width: 100%;
   margin-bottom: 0;
   font-size: var(--collection-dialogue-card-collapsed-title-size);
-  line-height: 1.26;
+  line-height: 1.3;
   font-weight: 400;
   min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .conversation-card.collapsed .conversation-card-archive-date {
@@ -53,54 +46,18 @@
   opacity: 0.84;
 }
 
-.conversation-card.collapsed .conversation-card-inline-states {
-  display: inline-flex;
-  justify-self: end;
-  min-width: 48px;
-  justify-content: flex-end;
-}
-
 .conversation-card.collapsed .conversation-stats {
   display: none;
 }
 
-/* A compact row has no head line to spend on the persona, so only the actions stay,
-   floated over the row's right end while the title gives that strip up. Delete is left
-   on the swipe gesture, so the strip only has to hold rename and pin. */
+/* A compact row spends all of its width on the two title lines, so the persona line stays
+   hidden and the rename / pin / delete actions live in the sheet the long press opens. */
 .conversation-card.collapsed .conversation-card-head {
-  position: absolute;
-  top: -3px;
-  right: 0;
   margin-bottom: 0;
-  z-index: 2;
-  pointer-events: none;
 }
 
 .conversation-card.collapsed .conversation-card-head .card-meta-row {
   display: none;
-}
-
-/* Only the two buttons claim the tap; the gap and the strip around them still open the
-   conversation. */
-.conversation-card.collapsed .conversation-card-actions {
-  position: static;
-  gap: 10px;
-  opacity: 0.9;
-  transform: none;
-  pointer-events: none;
-}
-
-.conversation-card.collapsed .conversation-card-actions .micro-action-btn {
-  opacity: 0.72;
-  pointer-events: auto;
-}
-
-.conversation-card.collapsed .conversation-card-actions .danger {
-  display: none;
-}
-
-.conversation-card.collapsed .conversation-card-copy {
-  padding-right: 60px;
 }
 
 .conversation-card.collapsed .conversation-card-detail {
@@ -120,7 +77,6 @@
 
 .conversation-card-list.search-open { --collection-dialogue-card-current-margin: var(--collection-dialogue-card-margin); --collection-dialogue-card-current-padding: var(--collection-dialogue-card-padding-search-open); --collection-dialogue-card-current-radius: var(--collection-dialogue-card-radius-search-open); }
 .conversation-card-list.search-open .conversation-card h3 { margin-bottom: 6px; font-size: 15px; }
-.conversation-card-list.search-open .conversation-card-actions { opacity: 0.9; transform: translateY(0); }
 .conversation-card-list.search-open .conversation-card-detail.expanded { max-height: 244px; }
 .conversation-card-list.search-open .conversation-excerpt { -webkit-line-clamp: 3; font-size: 11.5px; line-height: 1.56; }
 .conversation-card-list.search-open .conversation-card-footer { margin-top: 9px; }
@@ -128,7 +84,6 @@
 
 .conversation-card-list.search-closed { --collection-dialogue-card-current-margin: var(--collection-dialogue-card-margin-search-closed); --collection-dialogue-card-current-padding: var(--collection-dialogue-card-padding-search-closed); --collection-dialogue-card-current-radius: var(--collection-dialogue-card-radius-search-closed); }
 .conversation-card-list.search-closed .conversation-card h3 { font-size: 13px; }
-.conversation-card-list.search-closed .conversation-card-actions { top: -2px; }
 
 @supports selector(.conversation-card:has(.conversation-card-main:active)) {
   .conversation-card:has(.conversation-card-main:active) {

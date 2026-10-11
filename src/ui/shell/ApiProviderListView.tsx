@@ -80,10 +80,11 @@ function resolveBatchTestStatusLabel(state: ProviderBatchConnectionTestState, t:
   return t('apiProvider.list.batchIdle');
 }
 
-function resolveBatchTestIconName(state: ProviderBatchConnectionTestState): IconName {
+function resolveBatchTestIconName(state: ProviderBatchConnectionTestState): IconName | null {
   if (state.status === 'success') return 'check';
   if (state.status === 'error') return 'x';
-  return 'sparkle';
+  if (state.status === 'running') return 'sparkle';
+  return null;
 }
 
 export function ApiProviderListView({
@@ -99,6 +100,7 @@ export function ApiProviderListView({
   const [copyCopied, setCopyCopied] = useState(false);
   const batchTestRunning = batchTestState.status === 'running';
   const batchTestFailed = batchTestState.status === 'error';
+  const batchTestIcon = resolveBatchTestIconName(batchTestState);
   const batchTestCopy = createBatchTestCopy(t);
   const batchTestReport = formatProviderBatchConnectionErrorReport(batchTestState, batchTestCopy);
 
@@ -130,9 +132,11 @@ export function ApiProviderListView({
             }}
             disabled={!batchTestFailed}
           >
-            <span className={`api-provider-batch-test-orbit ${batchTestRunning ? 'spinning' : ''}`} aria-hidden="true">
-              <Icon name={resolveBatchTestIconName(batchTestState)} size={14} />
-            </span>
+            {batchTestIcon ? (
+              <span className={`api-provider-batch-test-orbit ${batchTestRunning ? 'spinning' : ''}`} aria-hidden="true">
+                <Icon name={batchTestIcon} size={14} />
+              </span>
+            ) : null}
             <span>{resolveBatchTestStatusLabel(batchTestState, t)}</span>
           </button>
         </div>

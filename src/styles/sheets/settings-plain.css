@@ -44,6 +44,27 @@
   color: var(--set-text);
 }
 
+.menu-sheet-page .menu-sheet-header-root {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+}
+
+.menu-sheet-page .menu-sheet-header-root .menu-sheet-back {
+  position: absolute;
+  left: -14px;
+  top: 50%;
+  transform: translateY(-50%);
+  margin: 0;
+}
+
+.menu-sheet-page .menu-sheet-header-root .menu-sheet-title {
+  width: 100%;
+  text-align: center;
+}
+
 /* 2. sections - separated by air, not by rules */
 :is(.menu-sheet-page, .api-provider-sheet) .menu-section {
   margin-top: 28px;

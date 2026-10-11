@@ -1,6 +1,7 @@
 import type { ImageUnderstandingSettings, ProviderProfile } from '../../types/domain';
 import { canDiscoverProviderModels, type ProviderModelOption } from '../../engines/providerModelDiscovery';
 import { useI18n } from '../../i18n/useI18n';
+import { Icon } from '../Icon';
 import { getProviderModelDisplayLabel, isBuiltInProviderDisplay } from './apiProviderDisplay';
 
 type ApiProviderModelSectionProps = {
@@ -45,7 +46,7 @@ export function ApiProviderModelSection({
         : t('apiProvider.model.expandList');
 
   return (
-    <section className="api-provider-section api-provider-section-config">
+    <section className="api-provider-section">
       <div className="api-provider-section-head">
         <h3>{t('apiProvider.model.title')}</h3>
       </div>
@@ -70,7 +71,7 @@ export function ApiProviderModelSection({
             title={modelPickerActionLabel}
             disabled={modelPickerActionDisabled}
           >
-            {modelPickerOpen ? '▴' : '▾'}
+            {modelPickerOpen ? <Icon name="chevronUp" size={16} /> : <Icon name="chevronDown" size={16} />}
           </button>
         </div>
         {!builtInProvider && modelPickerOpen && canPickModels ? (
@@ -116,9 +117,8 @@ export function ApiProviderCapabilitiesSection({
 }: ApiProviderCapabilitiesSectionProps) {
   const { t } = useI18n();
   return (
-    <section className="api-provider-section api-provider-section-secondary">
+    <section className="api-provider-section">
       <div className="api-provider-section-head">
-        <span className="api-provider-section-kicker">{t('apiProvider.capabilities.kicker')}</span>
         <h3>{t('apiProvider.capabilities.title')}</h3>
       </div>
       <div className="capability-group">
@@ -184,9 +184,8 @@ export function ApiProviderImageUnderstandingSection({
   };
 
   return (
-    <section className="api-provider-section api-provider-section-secondary">
+    <section className="api-provider-section">
       <div className="api-provider-section-head">
-        <span className="api-provider-section-kicker">{t('apiProvider.imageUnderstanding.kicker')}</span>
         <h3>{t('apiProvider.imageUnderstanding.title')}</h3>
         <p>{t('apiProvider.imageUnderstanding.detail')}</p>
       </div>

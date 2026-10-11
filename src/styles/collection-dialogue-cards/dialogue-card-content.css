@@ -47,56 +47,32 @@
 
 .conversation-card-title-line {
   min-width: 0;
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
+  display: block;
   max-width: 100%;
 }
 
 .conversation-card h3 {
   min-width: 0;
-  flex: 0 1 auto;
   margin: 0 0 4px;
   font-family: var(--font-ui);
   font-size: 14px;
-  line-height: 1.24;
+  line-height: 1.3;
   font-weight: var(--collection-dialogue-card-title-weight);
   color: var(--collection-dialogue-card-title-color);
-  -webkit-line-clamp: 1;
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
 }
 
+/* Both titles are the row's content, so neither one gets cut: the name the user chose
+   keeps its own line and the assistant's rolling progress line sits under it. */
 .conversation-card .conversation-card-title-mine,
 .conversation-card .conversation-card-title-progress {
+  display: block;
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
-.conversation-card .conversation-card-title-mine {
-  flex: 0 1 auto;
-}
-
-/* The assistant's rolling progress line gives its width up before the name the user chose. */
 .conversation-card .conversation-card-title-progress {
-  flex: 0 100 auto;
   color: var(--collection-dialogue-card-archive-color);
-}
-
-.conversation-card .conversation-card-title-progress::before {
-  content: "|";
-  margin-right: 6px;
-  opacity: 0.45;
-}
-
-.conversation-card-inline-states {
-  display: none;
-  align-items: center;
-  gap: 5px;
-  flex: 0 0 auto;
 }
 
 .conversation-card-archive-date {
@@ -278,31 +254,6 @@
   align-items: center;
   gap: 8px;
   margin-top: 7px;
-}
-
-.conversation-card-state {
-  display: inline-flex;
-  align-items: center;
-  min-height: 18px;
-  padding: 0 7px;
-  border-radius: 999px;
-  border: var(--collection-dialogue-card-state-border);
-  background: var(--collection-dialogue-card-state-fill);
-  color: var(--collection-dialogue-card-state-color);
-  font-size: var(--type-tag);
-  letter-spacing: 0.04em;
-}
-
-.conversation-card-state.active {
-  border: var(--collection-dialogue-card-state-active-border);
-  background: var(--collection-dialogue-card-state-active-fill);
-  color: var(--collection-dialogue-card-state-active-color);
-}
-
-.conversation-card-state.workspace {
-  border: var(--collection-dialogue-card-state-active-border);
-  background: var(--collection-dialogue-card-state-active-fill);
-  color: var(--collection-dialogue-card-state-active-color);
 }
 
 .conversation-card-edit { display: flex; flex-direction: column; gap: 10px; }

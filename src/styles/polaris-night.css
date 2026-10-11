@@ -53,8 +53,7 @@ body[data-polaris-preset='polaris-night'] .app-shell.collection .conversation-ca
 
 body[data-polaris-preset='polaris-night'] .app-shell.collection .card h3,
 body[data-polaris-preset='polaris-night'] .app-shell.collection .conversation-card h3,
-body[data-polaris-preset='polaris-night'] .app-shell.collection .conversation-card-persona,
-body[data-polaris-preset='polaris-night'] .app-shell.collection .conversation-card-state.active {
+body[data-polaris-preset='polaris-night'] .app-shell.collection .conversation-card-persona {
   color: var(--polaris-gold-bright) !important;
 }
 

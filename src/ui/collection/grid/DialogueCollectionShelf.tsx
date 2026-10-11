@@ -1,6 +1,5 @@
-import { useMemo } from 'react';
 import { useI18n } from '../../../i18n';
-import type { Conversation, Persona, RoomProject } from '../../../types/domain';
+import type { Conversation, Persona } from '../../../types/domain';
 import type { ConversationMessageSearchIndex } from '../../../app/collection/conversationMessageSearch';
 import { Icon } from '../../Icon';
 import { CollectionShelfLead } from './CollectionShelfLead';
@@ -11,7 +10,6 @@ type DialogueCollectionShelfProps = {
   conversations: Conversation[];
   conversationMessageSearchIndex?: ConversationMessageSearchIndex;
   personas: Persona[];
-  roomProjects: RoomProject[];
   activeConversationId: string | null;
   editingConversationId: string | null;
   conversationTitleDraft: string;
@@ -32,7 +30,6 @@ export function DialogueCollectionShelf({
   conversations,
   conversationMessageSearchIndex,
   personas,
-  roomProjects,
   activeConversationId,
   editingConversationId,
   conversationTitleDraft,
@@ -48,10 +45,6 @@ export function DialogueCollectionShelf({
   onExportConversationArchive
 }: DialogueCollectionShelfProps) {
   const { t, formatNumber } = useI18n();
-  const projectTitleById = useMemo(
-    () => Object.fromEntries(roomProjects.map((project) => [project.id, project.title] as const)),
-    [roomProjects]
-  );
   const densityClass = conversations.length > 8 ? 'cards-heavy' : 'cards-normal';
   const sectionMeta = t('collection.dialogue.shelfCount', { count: formatNumber(conversations.length) });
 
@@ -83,7 +76,6 @@ export function DialogueCollectionShelf({
         conversations={conversations}
         conversationMessageSearchIndex={conversationMessageSearchIndex}
         personas={personas}
-        projectTitleById={projectTitleById}
         activeConversationId={activeConversationId}
         editingConversationId={editingConversationId}
         conversationTitleDraft={conversationTitleDraft}

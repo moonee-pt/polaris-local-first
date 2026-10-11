@@ -1,12 +1,14 @@
-import { memo } from 'react';
+import { memo, useEffect, useRef, type PointerEvent as ReactPointerEvent } from 'react';
 import type { ConversationCardSummary } from '../../../app/collection/conversationCardSummary';
 import { useI18n } from '../../../i18n';
 import { Icon } from '../../Icon';
-import { runImpactAction, runSelectionAction } from '../../haptics';
+import { runImpactAction, runSelectionAction, selectionHaptic } from '../../haptics';
 import { useConversationCardContext } from './ConversationCardContext';
 import { useSwipeDelete } from './useSwipeDelete';
 import { useTapIntentGuard } from '../useTapIntentGuard';
 import { collectionRelativeDateLabel, collectionArchiveDateTimeLabel } from '../collectionUtils';
+
+const LONG_PRESS_MS = 520;
 
 type ConversationCardItemProps = {
   conversation: ConversationCardSummary;
@@ -20,34 +22,48 @@ export const ConversationCardItem = memo(function ConversationCardItem({
   const { t, language, formatNumber } = useI18n();
   const {
     collaboratorNameById,
-    projectTitleById,
     activeConversationId,
     editingConversationId,
     conversationTitleDraft,
     onConversationTitleDraftChange,
-    onStartConversationRename,
     onCommitConversationRename,
     onCancelConversationRename,
-    onConversationPinToggle,
     onConversationDelete,
     onOpenConversation,
+    onOpenConversationMenu,
     onOpenConversationMessage
   } = useConversationCardContext();
   const collaboratorName = conversation.collaboratorId
     ? collaboratorNameById[conversation.collaboratorId] ?? '?'
     : t('collection.dialogue.unassignedHistory');
-  const workspaceTitle = conversation.activeProjectId
-    ? projectTitleById[conversation.activeProjectId] ?? t('common.untitledWorkspace')
-    : null;
   const isEditing = editingConversationId === conversation.id;
   const isActive = conversation.id === activeConversationId;
-  const inlineStateLabels = [
-    workspaceTitle ? { label: t('common.workspace'), kind: 'workspace' } : null
-  ].filter((entry): entry is { label: string; kind: string } => Boolean(entry));
-  const hasInlineStateLabels = inlineStateLabels.length > 0;
   const conversationTitle = conversation.displayTitle;
   const swipeDelete = useSwipeDelete(isEditing);
   const tapIntent = useTapIntentGuard();
+  const longPressTimerRef = useRef<number | null>(null);
+  const longPressFiredRef = useRef(false);
+  const clearLongPress = () => {
+    if (longPressTimerRef.current === null) return;
+    window.clearTimeout(longPressTimerRef.current);
+    longPressTimerRef.current = null;
+  };
+  const handleLongPressStart = (event: ReactPointerEvent<HTMLDivElement>) => {
+    tapIntent.handlePointerDown(event);
+    clearLongPress();
+    longPressFiredRef.current = false;
+    longPressTimerRef.current = window.setTimeout(() => {
+      longPressTimerRef.current = null;
+      longPressFiredRef.current = true;
+      void selectionHaptic();
+      onOpenConversationMenu(conversation.id);
+    }, LONG_PRESS_MS);
+  };
+  const handleLongPressEnd = (event: ReactPointerEvent<HTMLDivElement>) => {
+    clearLongPress();
+    tapIntent.handlePointerEnd(event);
+  };
+  useEffect(() => clearLongPress, []);
   const handleDelete = (element?: HTMLElement | null) => {
     runImpactAction(() => {
       swipeDelete.close();
@@ -109,42 +125,8 @@ export const ConversationCardItem = memo(function ConversationCardItem({
           <div className="card-meta-row">
             <div className="conversation-card-meta-copy">
               <small className="conversation-card-persona">{collaboratorName}</small>
-              {workspaceTitle && (
-                <small className="conversation-card-workspace-badge">{t('collection.dialogue.workspaceBadge', { title: workspaceTitle })}</small>
-              )}
             </div>
             <small className="conversation-card-updated">{conversation.pinnedAt ? t('common.pinned') : collectionRelativeDateLabel(conversation.updatedAt, language)}</small>
-          </div>
-          <div className="conversation-card-actions" data-swipe-delete-ignore="true">
-            <button
-              type="button"
-              className="micro-action-btn"
-              onClick={(event) => {
-                runSelectionAction(() => onStartConversationRename(conversation.id, conversation.title), { element: event.currentTarget });
-              }}
-              title={t('collection.dialogue.rename')}
-              aria-label={t('collection.dialogue.renameAria', { title: conversationTitle })}
-            >
-              <Icon name="edit" size={13} />
-            </button>
-            <button
-              type="button"
-              className={`micro-action-btn ${conversation.pinnedAt ? 'active' : ''}`}
-              onClick={(event) => {
-                runSelectionAction(() => onConversationPinToggle(conversation.id), { element: event.currentTarget });
-              }}
-              title={conversation.pinnedAt ? t('collection.dialogue.unpin') : t('collection.dialogue.pin')}
-            >
-              <Icon name="pin" size={14} />
-            </button>
-            <button
-              type="button"
-              className="micro-action-btn danger"
-              onClick={(event) => handleDelete(event.currentTarget)}
-              title={t('collection.dialogue.delete')}
-            >
-              <Icon name="x" size={13} />
-            </button>
           </div>
         </div>
 
@@ -180,11 +162,20 @@ export const ConversationCardItem = memo(function ConversationCardItem({
             className="conversation-card-main"
             role="button"
             tabIndex={0}
-            onPointerDown={tapIntent.handlePointerDown}
+            onPointerDown={handleLongPressStart}
             onPointerMove={tapIntent.handlePointerMove}
-            onPointerUp={tapIntent.handlePointerEnd}
-            onPointerCancel={tapIntent.handlePointerEnd}
+            onPointerUp={handleLongPressEnd}
+            onPointerCancel={handleLongPressEnd}
+            onPointerLeave={clearLongPress}
+            onContextMenu={(event) => {
+              event.preventDefault();
+              onOpenConversationMenu(conversation.id);
+            }}
             onClick={(event) => {
+              if (longPressFiredRef.current) {
+                longPressFiredRef.current = false;
+                return;
+              }
               if (!tapIntent.shouldAllowTap()) return;
               handleOpenConversation(event.currentTarget);
             }}
@@ -196,7 +187,7 @@ export const ConversationCardItem = memo(function ConversationCardItem({
             }}
           >
             <div className="conversation-card-copy">
-              <div className={`conversation-card-title-row ${hasInlineStateLabels ? 'has-inline-states' : ''}`}>
+              <div className="conversation-card-title-row">
                 <small className={`conversation-card-archive-date ${conversation.pinnedAt ? 'pinned' : ''}`}>
                   {conversation.pinnedAt ? <Icon name="polarisStar" size={10} /> : null}
                   <span>{collectionArchiveDateTimeLabel(conversation.updatedAt)}</span>
@@ -209,15 +200,6 @@ export const ConversationCardItem = memo(function ConversationCardItem({
                     ) : null}
                   </h3>
                 </div>
-                {hasInlineStateLabels && (
-                  <span className="conversation-card-inline-states">
-                    {inlineStateLabels.map(({ label, kind }) => (
-                      <span key={`${kind}-${label}`} className={`conversation-card-state ${kind}`}>
-                        {label}
-                      </span>
-                    ))}
-                  </span>
-                )}
               </div>
               <div className={`conversation-card-detail ${detailExpanded ? 'expanded' : 'collapsed'}`}>
                 <p className="conversation-excerpt">{conversation.latestExcerpt}</p>

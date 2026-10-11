@@ -27,7 +27,7 @@
 .image-asset-create-menu {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 2px;
   width: 100%;
 }
 
@@ -36,24 +36,26 @@
   align-items: center;
   gap: 10px;
   width: 100%;
-  min-height: 58px;
-  padding: 0 12px;
-  border: 1px solid color-mix(in srgb, var(--border) 72%, transparent);
-  border-radius: 18px;
-  background:
-    linear-gradient(135deg, rgba(255,255,255,0.58), rgba(255,255,255,0.2)),
-    color-mix(in srgb, var(--surface-solid) 76%, transparent);
-  color: var(--text);
+  min-height: 46px;
+  padding: 11px 12px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: color-mix(in srgb, var(--text) 92%, var(--text-soft) 8%);
   font: inherit;
+  font-size: 13.5px;
+  line-height: 1.3;
   text-align: left;
-  box-shadow: 0 10px 24px rgba(22, 50, 90, 0.055);
+  box-shadow: none;
   cursor: pointer;
-  transition: transform var(--duration-fast) ease, opacity var(--duration-fast) ease;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.16s ease, color 0.16s ease;
 }
 
 .image-asset-create-menu-item:hover,
 .image-asset-create-menu-item:focus-visible {
-  transform: translateX(2px);
+  background: color-mix(in srgb, var(--text) 4%, transparent);
+  outline: none;
 }
 
 .image-asset-create-menu-item:disabled {
@@ -83,35 +85,38 @@
 .image-asset-create-menu-item-icon {
   display: inline-grid;
   place-items: center;
-  width: 28px;
-  height: 28px;
+  width: 22px;
+  height: 22px;
   flex: 0 0 auto;
-  border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--border-hover) 42%, transparent);
-  background: color-mix(in srgb, var(--surface-solid) 46%, transparent);
-  color: color-mix(in srgb, var(--text) 72%, var(--accent) 28%);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text-soft);
 }
 
 .image-asset-create-menu-item-icon svg {
   display: block;
+  width: 15px;
+  height: 15px;
 }
 
 .image-asset-create-menu-item-copy {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
   min-width: 0;
 }
 
 .image-asset-create-menu-item-copy strong {
-  color: var(--text);
-  font-size: 13px;
-  line-height: 1.2;
+  color: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.3;
 }
 
 .image-asset-create-menu-item-copy small {
-  color: var(--text-soft);
-  font-size: 11px;
+  color: var(--text-muted);
+  font-size: 11.5px;
   line-height: 1.35;
 }
 

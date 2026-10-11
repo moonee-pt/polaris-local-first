@@ -212,7 +212,6 @@ export function CollectionWorld({
                   conversations={controller.filteredConversations}
                   conversationMessageSearchIndex={controller.conversationMessageSearchIndex}
                   personas={controller.personas}
-                  roomProjects={controller.roomProjects}
                   activeConversationId={controller.activeConversationId}
                   editingConversationId={controller.editingConversationId}
                   conversationTitleDraft={controller.conversationTitleDraft}
@@ -262,14 +261,10 @@ export function CollectionWorld({
         <div ref={setFloatingActionHost} className="collection-floating-action-host" />
         {controller.ready && activeShelf === 'dialogue' ? (
           <CollectionFloatingCreateAction
-            label={t('collection.world.collaboratorMoreActions')}
-            icon="more"
+            label={t('collection.world.newConversation')}
+            icon="plus"
             disabled={!controller.currentCollaboratorId}
-            onPress={() => {
-              const collaboratorId = controller.currentCollaboratorId;
-              if (!collaboratorId) return;
-              controller.onOpenCollaboratorInfo(collaboratorId);
-            }}
+            onPress={() => controller.onCreateConversation()}
           />
         ) : null}
         <CollectionShelfTabs

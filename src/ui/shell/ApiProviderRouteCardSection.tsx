@@ -91,9 +91,8 @@ export function ApiProviderRouteCardSection({
   };
 
   return (
-    <section className="api-provider-section api-provider-section-secondary">
+    <section className="api-provider-section">
       <div className="api-provider-section-head">
-        <span className="api-provider-section-kicker">{t('apiProvider.routeCard.kicker')}</span>
         <h3>
           {t('apiProvider.routeCard.title')}
           <HelpHint

@@ -121,7 +121,7 @@ export function ImageCollectionShelf({
             disabled={controller.imageIngestBusy}
           >
             <span className="image-asset-create-menu-item-icon" aria-hidden="true">
-              <Icon name="image" size={12} />
+              <Icon name="image" size={16} />
             </span>
             <span className="image-asset-create-menu-item-copy">
               <strong>{t('collection.image.album')}</strong>

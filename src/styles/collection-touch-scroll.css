@@ -31,9 +31,7 @@
     transition: none;
   }
 
-  .conversation-card-detail,
-  .conversation-card-actions,
-  .conversation-card .micro-action-btn {
+  .conversation-card-detail {
     transition-duration: 0ms;
   }
 
@@ -49,11 +47,6 @@
 
   .collection .conversation-card:not(.active):not(.pinned):not(.editing):hover .conversation-card-thread-mark {
     opacity: var(--collection-card-thread-opacity);
-  }
-
-  .collection .conversation-card:not(.active):not(.pinned):not(.editing):hover .conversation-card-actions {
-    opacity: 0.42;
-    transform: translateY(1px);
   }
 
   .collection .conversation-card:not(.active):not(.pinned):not(.editing):hover .micro-action-btn {

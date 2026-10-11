@@ -2,17 +2,15 @@ import { createContext, useContext } from 'react';
 
 type ConversationCardContextValue = {
   collaboratorNameById: Record<string, string>;
-  projectTitleById: Record<string, string>;
   activeConversationId: string | null;
   editingConversationId: string | null;
   conversationTitleDraft: string;
   onConversationTitleDraftChange: (value: string) => void;
-  onStartConversationRename: (conversationId: string, currentTitle: string) => void;
   onCommitConversationRename: (conversationId: string) => void;
   onCancelConversationRename: () => void;
-  onConversationPinToggle: (conversationId: string) => void;
   onConversationDelete: (conversationId: string, title: string) => void;
   onOpenConversation: (conversationId: string) => void;
+  onOpenConversationMenu: (conversationId: string) => void;
   onOpenConversationMessage?: (conversationId: string, messageId: string) => void;
 };
 

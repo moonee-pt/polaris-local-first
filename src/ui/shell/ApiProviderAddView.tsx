@@ -19,9 +19,8 @@ export function ApiProviderAddView({
   const { t } = useI18n();
   return (
     <div className="api-provider-add-view">
-      <section className="api-provider-section api-provider-section-config api-provider-add-section">
+      <section className="api-provider-section api-provider-add-section">
         <div className="api-provider-section-head">
-          <span className="api-provider-section-kicker">{t('apiProvider.add.kicker')}</span>
           <h3>{t('apiProvider.add.emptyTitle')}</h3>
         </div>
         <button type="button" className="btn-secondary api-provider-add-primary" onClick={onCreateProvider}>

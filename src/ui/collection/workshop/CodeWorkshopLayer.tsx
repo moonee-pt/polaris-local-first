@@ -165,6 +165,7 @@ export function CodeWorkshopLayer({
               onUpdateCard={onUpdateCard}
               onPromoteCardToProject={onPromoteCardToProject}
               onPromptChatCard={onPromptChatCard}
+              onDeleteCard={onDeleteCard}
             />
           )}
         />

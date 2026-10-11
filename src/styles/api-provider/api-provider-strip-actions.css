@@ -22,32 +22,15 @@
 .api-provider-sheet .provider-chip {
   min-width: 148px;
   padding: 11px 12px;
-  border-radius: 16px;
-  border: 1px solid color-mix(in srgb, var(--border) 82%, rgba(255,255,255,0.18));
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, rgba(255,255,255,0.3) 24%, var(--surface) 76%),
-      color-mix(in srgb, var(--surface) 88%, transparent)
-    );
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.44),
-    0 8px 18px rgba(76, 88, 120, 0.06);
-  backdrop-filter: blur(14px) saturate(1.08);
+  border-radius: var(--radius-control);
+  border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  background: transparent;
 }
 
 .api-provider-sheet .provider-chip.active {
-  border-color: color-mix(in srgb, var(--accent) 34%, var(--border) 66%);
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--accent-soft) 66%, rgba(255,255,255,0.22)),
-      color-mix(in srgb, var(--accent-soft) 46%, var(--surface) 54%)
-    );
-  box-shadow:
-    inset 3px 0 0 color-mix(in srgb, var(--accent) 76%, var(--sheet-readable-text) 24%),
-    inset 0 1px 0 rgba(255,255,255,0.5),
-    0 10px 22px rgba(76, 88, 120, 0.08);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+  background: color-mix(in srgb, var(--accent-soft) 40%, transparent);
+  box-shadow: inset 3px 0 0 color-mix(in srgb, var(--accent) 76%, var(--sheet-readable-text) 24%);
 }
 
 .api-provider-sheet .provider-chip.add {
@@ -55,16 +38,7 @@
 }
 
 .api-provider-sheet .btn-secondary {
-  border-radius: 14px;
-  border-color: color-mix(in srgb, var(--border) 82%, rgba(255,255,255,0.18));
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, rgba(255,255,255,0.28) 24%, var(--surface) 76%),
-      color-mix(in srgb, var(--surface) 88%, transparent)
-    );
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.42),
-    0 8px 18px rgba(76, 88, 120, 0.06);
-  backdrop-filter: blur(12px) saturate(1.06);
+  border-radius: var(--radius-control);
+  border-color: color-mix(in srgb, var(--border) 50%, transparent);
+  background: transparent;
 }

@@ -37,7 +37,7 @@ export function ApiProviderConnectionSection({
   const [showApiKey, setShowApiKey] = useState(false);
 
   return (
-    <section className="api-provider-section api-provider-section-config">
+    <section className="api-provider-section">
       <div className="api-provider-section-head">
         <h3>{t('apiProvider.connection.title')}</h3>
       </div>

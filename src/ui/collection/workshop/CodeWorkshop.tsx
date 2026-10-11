@@ -18,6 +18,7 @@ type CodeWorkshopProps = {
   onUpdateCard: (cardId: string, patch: Partial<CodeCard>) => void;
   onPromoteCardToProject: (cardId: string) => string | null;
   onPromptChatCard: (card?: CodeChatPromptSeed | null) => void;
+  onDeleteCard: (cardId: string) => void;
 };
 
 export function CodeWorkshop({
@@ -25,7 +26,8 @@ export function CodeWorkshop({
   roomTags,
   onUpdateCard,
   onPromoteCardToProject,
-  onPromptChatCard
+  onPromptChatCard,
+  onDeleteCard
 }: CodeWorkshopProps) {
   const { t } = useI18n();
   const [titleDraft, setTitleDraft] = useState('');
@@ -135,6 +137,16 @@ export function CodeWorkshop({
       }
     );
 
+    items.push({
+      key: 'delete',
+      label: t('collection.workshop.delete'),
+      tone: 'danger',
+      onSelect: () => {
+        if (!window.confirm(t('collection.workshop.deleteCardConfirm', { title: draftTitle }))) return;
+        onDeleteCard(activeCard.id);
+      }
+    });
+
     return items;
   }, [
     activeCard.id,
@@ -144,6 +156,7 @@ export function CodeWorkshop({
     codeDraft,
     draftCard,
     draftTitle,
+    onDeleteCard,
     onPromptChatCard,
     onPromoteCardToProject,
     resolvedLanguage,

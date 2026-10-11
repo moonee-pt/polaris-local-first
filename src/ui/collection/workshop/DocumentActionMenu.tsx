@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { createPortal } from 'react-dom';
+import { CreateActionSheet } from '../../create/CreateActionSheet';
 import { useI18n } from '../../../i18n';
 
 export type DocumentActionItem = {
@@ -29,7 +29,7 @@ export function DocumentActionMenu({
     item.onSelect();
   };
 
-  const menu = (
+  return (
     <div className="document-action-menu">
       <button
         type="button"
@@ -45,34 +45,27 @@ export function DocumentActionMenu({
           <span className="document-action-trigger-dot" />
         </span>
       </button>
-      {open ? (
-        <>
-          <button
-            type="button"
-            className="document-action-menu-scrim"
-            aria-label={t('collection.workshop.closeActions')}
-            onClick={() => setOpen(false)}
-          />
-          <div className="document-action-sheet" role="menu" aria-label={actionLabel}>
-            {items.map((item) => (
-              <button
-                key={item.key}
-                type="button"
-                role="menuitem"
-                className={`document-action-sheet-item document-action-sheet-item--${item.tone ?? 'normal'}`}
-                disabled={item.disabled}
-                onClick={() => handleSelect(item)}
-              >
-                {item.label}
-              </button>
-            ))}
-          </div>
-        </>
-      ) : null}
+      <CreateActionSheet
+        open={open}
+        ariaLabel={actionLabel}
+        className="document-action-sheet"
+        onClose={() => setOpen(false)}
+      >
+        <div className="document-action-sheet-list" role="menu" aria-label={actionLabel}>
+          {items.map((item) => (
+            <button
+              key={item.key}
+              type="button"
+              role="menuitem"
+              className={`document-action-sheet-item document-action-sheet-item--${item.tone ?? 'normal'}`}
+              disabled={item.disabled}
+              onClick={() => handleSelect(item)}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+      </CreateActionSheet>
     </div>
   );
-
-  if (typeof document === 'undefined') return menu;
-
-  return createPortal(menu, document.body);
 }

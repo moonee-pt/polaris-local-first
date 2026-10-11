@@ -6,7 +6,6 @@ import { playChatSpeechBlob, primeChatSpeechAudio, stopChatSpeechAudio } from '.
 import { requestGeneratedSpeech } from '../../../../engines/voiceGenerationClient';
 import { useFleshAmbience } from '../../../../app/call/useFleshAmbience';
 import { writeTextToClipboard } from '../../../../infrastructure/clipboard';
-import { canUseNativeSystemBackupFiles, exportFileViaSystemFiles } from '../../../../native/systemBackupFiles';
 import { useRuntimeStore } from '../../../../stores/runtimeStore';
 import type { ChatMemoryEvidence, ChatMessageVoiceCache, ConversationTaskStatus } from '../../../../types/domain';
 import { Icon } from '../../../Icon';
@@ -14,31 +13,6 @@ import { runSelectionAction, runSuccessAction } from '../../../haptics';
 import { useI18n } from '../../../../i18n';
 import { MessageMemoryEvidence } from './MessageMemoryEvidence';
 import { getAssistantAmbiencePlan } from './messageSpeechText';
-
-async function exportSpeechBlob(blob: Blob, fileName: string) {
-  if (canUseNativeSystemBackupFiles()) {
-    return await exportFileViaSystemFiles(blob, fileName);
-  }
-
-  if (typeof File !== 'undefined' && typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
-    const file = new File([blob], fileName, { type: blob.type || 'application/octet-stream' });
-    const shareData: ShareData = { files: [file], title: fileName };
-    if (typeof navigator.canShare !== 'function' || navigator.canShare(shareData)) {
-      await navigator.share(shareData);
-      return true;
-    }
-  }
-
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement('a');
-  anchor.href = url;
-  anchor.download = fileName;
-  document.body.appendChild(anchor);
-  anchor.click();
-  anchor.remove();
-  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-  return true;
-}
 
 export type MessageTaskReceiptAction = {
   status: ConversationTaskStatus;
@@ -257,17 +231,6 @@ export function MessageActions({
     }
   };
 
-  const downloadCachedSpeech = async (cache: ChatMessageVoiceCache) => {
-    try {
-      const blob = await readMessageSpeechCacheBlob(cache);
-      const exported = await exportSpeechBlob(blob, cache.name || 'Polaris-voice.mp3');
-      if (exported) onSetCommandStatus(t('chat.messageActions.speechCacheExported'));
-    } catch (error) {
-      const message = error instanceof Error ? error.message : t('chat.messageActions.speechCacheMissing');
-      onSetCommandStatus(message, true);
-    }
-  };
-
   const toggleSpeech = () => {
     if (!canSpeakAssistant || speechLoading) return;
     const text = speakableContent;
@@ -323,21 +286,6 @@ export function MessageActions({
               >
                 <Icon name="memoryMap" size={18} />
                 <span>{t('chat.messageActions.memorySources')}</span>
-              </button>
-            ) : null}
-            {speechCache?.assetId ? (
-              <button
-                type="button"
-                className="assistant-message-action-btn"
-                onClick={(event) => {
-                  runSelectionAction(() => {
-                    void downloadCachedSpeech(speechCache);
-                    closeAssistantSheet();
-                  }, { element: event.currentTarget });
-                }}
-              >
-                <Icon name="download" size={18} />
-                <span>{t('chat.messageActions.exportSpeechCache')}</span>
               </button>
             ) : null}
             {canEditAssistant ? (
@@ -521,19 +469,6 @@ export function MessageActions({
           title={t('chat.messageActions.memorySources')}
         >
           <Icon name="memoryMap" size={14} />
-        </button>
-      )}
-      {speechCache?.assetId && (
-        <button
-          type="button"
-          className="micro-action-btn"
-          onClick={(event) => {
-            runSelectionAction(() => { void downloadCachedSpeech(speechCache); }, { element: event.currentTarget });
-          }}
-          aria-label={t('chat.messageActions.exportSpeechCache')}
-          title={t('chat.messageActions.exportSpeechCache')}
-        >
-          <Icon name="download" size={14} />
         </button>
       )}
       {taskReceiptAction ? (
