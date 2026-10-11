@@ -1,13 +1,28 @@
-/* Chat option bar: an interactive choice the assistant offers inside its own message.
-   One structural device: a left rule marks the block as waiting on the reader. */
+/* Chat option bar: the assistant hands back a short list of directions to pick from.
+   While the answer is still open the list sits on a pearl-glass slab; once it is answered,
+   or in a message that is no longer live, the glass drops away and only rows remain. */
 
 .message-option-bar {
-  padding-left: 0.62em;
-  border-left: 2px solid color-mix(in srgb, var(--accent) 44%, transparent);
-}
-
-.message-option-bar.is-static {
-  border-left-color: color-mix(in srgb, var(--border) 82%, transparent);
+  position: relative;
+  padding: 0.24em 0;
+  border-radius: 18px;
+  background:
+    radial-gradient(118% 86% at 3% 0%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 55%),
+    radial-gradient(96% 76% at 100% 104%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 58%),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--accent) 6.5%, transparent) 0%,
+      color-mix(in srgb, var(--accent) 1.5%, transparent) 100%
+    ),
+    color-mix(in srgb, var(--cool-surface) 54%, transparent);
+  -webkit-backdrop-filter: blur(20px) saturate(170%);
+  backdrop-filter: blur(20px) saturate(170%);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 10%, transparent),
+    0 20px 38px -26px color-mix(in srgb, var(--accent) 58%, transparent),
+    0 4px 12px -8px rgba(18, 20, 30, 0.22),
+    inset 0 1px 0 color-mix(in srgb, #ffffff 40%, transparent);
+  overflow: hidden;
 }
 
 .message-option-bar-list {
@@ -16,57 +31,61 @@
 }
 
 .message-option-bar-list > * + * {
-  border-top: 1px solid color-mix(in srgb, var(--border) 46%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--text) 8.5%, transparent);
 }
 
 .message-option-bar-row {
   display: flex;
-  align-items: baseline;
-  gap: 0.62em;
+  align-items: center;
+  gap: 0.64em;
   width: 100%;
-  min-height: max(44px, 3em);
-  padding: 0.5em 0.5em 0.5em 0;
+  min-height: max(44px, 2.75em);
+  padding: 0.6em 0.9em;
   border: 0;
   border-radius: 0;
   background: transparent;
   color: var(--text);
   font: inherit;
-  line-height: 1.45;
+  line-height: 1.42;
   text-align: left;
 }
 
 button.message-option-bar-row {
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: color 140ms ease, background 140ms ease;
+  transition: background 160ms ease, transform 160ms ease;
 }
 
 button.message-option-bar-row:active {
-  background: color-mix(in srgb, var(--accent) 11%, transparent);
+  background: color-mix(in srgb, var(--accent) 13%, transparent);
+  transform: scale(0.995);
 }
 
 @media (hover: hover) {
   button.message-option-bar-row:hover {
-    background: color-mix(in srgb, var(--accent) 6%, transparent);
+    background: color-mix(in srgb, var(--accent) 7%, transparent);
   }
 }
 
 button.message-option-bar-row:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--accent) 40%, transparent);
-  outline-offset: -2px;
+  outline: 2px solid color-mix(in srgb, var(--accent) 42%, transparent);
+  outline-offset: -3px;
 }
 
 .message-option-bar-letter {
   flex: 0 0 auto;
-  min-width: 0.95em;
-  font-size: 0.74em;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  color: var(--text-muted);
-}
-
-button.message-option-bar-row .message-option-bar-letter {
-  color: color-mix(in srgb, var(--accent) 58%, var(--text-muted) 42%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.95em;
+  height: 1.95em;
+  border-radius: 999px;
+  font-size: 0.72em;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: color-mix(in srgb, var(--accent) 78%, var(--text-muted) 22%);
+  background: color-mix(in srgb, var(--accent) 11%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 20%, transparent);
 }
 
 .message-option-bar-text {
@@ -80,45 +99,52 @@ button.message-option-bar-row .message-option-bar-letter {
 }
 
 .message-option-bar-row.is-chosen .message-option-bar-letter {
-  color: var(--accent);
-  font-weight: 700;
+  background: var(--accent);
+  color: var(--cool-surface-deep);
+  box-shadow: none;
+}
+
+.message-option-bar-custom .message-option-bar-letter,
+.message-option-bar.is-static .message-option-bar-row:not(.is-chosen) .message-option-bar-letter {
+  background: color-mix(in srgb, var(--text) 6%, transparent);
+  color: color-mix(in srgb, var(--text-muted) 82%, transparent);
+  box-shadow: none;
 }
 
 .message-option-bar.is-static .message-option-bar-row:not(.is-chosen) {
   color: var(--text-muted);
 }
 
-.message-option-bar.is-static .message-option-bar-row:not(.is-chosen) .message-option-bar-letter {
-  color: color-mix(in srgb, var(--text-muted) 72%, transparent);
-}
-
 .message-option-bar-custom {
   display: flex;
   align-items: center;
   gap: 0.5em;
-  min-height: max(46px, 3.1em);
-  padding: 0.4em 0.4em 0.4em 0;
+  min-height: max(46px, 2.9em);
+  padding: 0.5em 0.62em 0.5em 0.9em;
 }
 
 .message-option-bar-custom input {
   flex: 1 1 auto;
   min-width: 0;
-  padding: 0;
+  padding: 0.5em 0.8em;
   border: 0;
-  border-radius: 0;
-  background: transparent;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
   color: var(--text);
   font: inherit;
-  line-height: 1.45;
+  line-height: 1.35;
+  transition: background 160ms ease, box-shadow 160ms ease;
 }
 
 .message-option-bar-custom input::placeholder {
   color: var(--text-muted);
-  opacity: 0.74;
+  opacity: 0.82;
 }
 
 .message-option-bar-custom input:focus {
   outline: none;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 26%, transparent);
 }
 
 .message-option-bar-send {
@@ -126,33 +152,71 @@ button.message-option-bar-row .message-option-bar-letter {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.7em;
-  height: 1.7em;
+  width: 1.95em;
+  height: 1.95em;
   padding: 0;
   border: 0;
-  border-radius: 50%;
+  border-radius: 999px;
   background: transparent;
-  color: color-mix(in srgb, var(--text-muted) 70%, transparent);
+  color: color-mix(in srgb, var(--text-muted) 74%, transparent);
   cursor: pointer;
-  transition: color 140ms ease;
+  transition: background 160ms ease, color 160ms ease, transform 160ms ease;
 }
 
 .message-option-bar-send[data-ready='true'] {
-  color: var(--accent);
+  background: linear-gradient(135deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 74%, #d8b46f 26%) 100%);
+  color: var(--cool-surface-deep);
+  box-shadow:
+    0 10px 20px -12px color-mix(in srgb, var(--accent) 66%, transparent),
+    inset 0 1px 0 color-mix(in srgb, #ffffff 26%, transparent);
 }
 
 .message-option-bar-send:disabled {
   cursor: default;
 }
 
+.message-option-bar-send:active[data-ready='true'] {
+  transform: scale(0.92);
+}
+
 .message-option-bar-send:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  outline: 2px solid color-mix(in srgb, var(--accent) 42%, transparent);
   outline-offset: 2px;
+}
+
+/* Answered, or shown in a message that is no longer live: drop the glass, keep the rows. */
+.message-option-bar.is-static {
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: none;
+}
+
+@supports not ((backdrop-filter: blur(4px)) or (-webkit-backdrop-filter: blur(4px))) {
+  .message-option-bar {
+    background: color-mix(in srgb, var(--cool-surface-deep) 92%, transparent);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .message-option-bar {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: color-mix(in srgb, var(--cool-surface-deep) 94%, transparent);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .message-option-bar-row,
-  .message-option-bar-send {
+  .message-option-bar-send,
+  .message-option-bar-custom input {
     transition: none;
+  }
+
+  button.message-option-bar-row:active,
+  .message-option-bar-send:active[data-ready='true'] {
+    transform: none;
   }
 }
