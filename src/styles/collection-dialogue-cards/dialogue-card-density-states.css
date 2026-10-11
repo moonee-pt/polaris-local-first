@@ -33,6 +33,8 @@
 .conversation-card.collapsed .conversation-card-archive-date {
   width: auto;
   min-height: 0;
+  font-size: 10.5px;
+  letter-spacing: 0.05em;
   color: var(--collection-dialogue-card-archive-color-collapsed);
 }
 
@@ -48,6 +50,12 @@
 
 .conversation-card.collapsed .conversation-stats {
   display: none;
+}
+
+/* The open conversation reads as the current row through the left marker alone, so its title
+   takes the full text color while the rest of the list stays a step softer. */
+.conversation-card.active .conversation-card-title-mine {
+  color: var(--collection-card-text);
 }
 
 /* A compact row spends all of its width on the two title lines, so the persona line stays

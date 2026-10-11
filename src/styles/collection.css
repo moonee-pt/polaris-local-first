@@ -188,6 +188,8 @@
   --collection-dialogue-card-padding-mobile: 10px 9px 10px 11px;
   --collection-dialogue-card-padding-search-open: 14px 10px 14px 13px;
   --collection-dialogue-card-padding-search-closed: 9px 10px 9px 13px;
+  --collection-dialogue-card-padding-left: 13px;
+  --collection-dialogue-card-padding-left-mobile: 11px;
   --collection-dialogue-card-radius: 0;
   --collection-dialogue-card-radius-search-open: 0;
   --collection-dialogue-card-radius-search-closed: 0;
