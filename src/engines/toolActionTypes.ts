@@ -157,6 +157,12 @@ export type CanonicalToolAction =
       targetLabel?: string;
     }
   | {
+      kind: 'updatePersonaPrompt';
+      prompt: string;
+      reason?: string;
+      targetLabel?: string;
+    }
+  | {
       kind: 'readMemoryDoc';
       docId: string;
       targetLabel?: string;

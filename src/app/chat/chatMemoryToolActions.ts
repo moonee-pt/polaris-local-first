@@ -11,6 +11,7 @@ import type { ToolAction } from '../../engines/toolExecutor';
 import type { WritableConversationBody } from '../../stores/chatStore';
 import type { ChatMessage, PersonaMemoryReferenceDoc } from '../../types/domain';
 import { resolveChatCollaboratorOwnerId } from './chatCollaboratorOwner';
+import { createChatPersonaPromptActions } from './chatPersonaPromptToolActions';
 import type { ActiveConversationCollaborator } from './chatConversationCollaborator';
 import type { AddRuntimeToolMessage, ChatToolStoreBindings, ChatUiToolState, MemoryActions } from './chatPorts';
 
@@ -58,6 +59,14 @@ export function createChatMemoryActions({
 
     return (targetCollaboratorId ? store.persona.findCollaborator(targetCollaboratorId) : null) ?? null;
   };
+
+  // 角色在对话里改写自己的人设：同样走"确认卡片 -> 应用 / 取消"这条链，所以挂在同一组入口上代理出去。
+  const personaPromptActions = createChatPersonaPromptActions({
+    ui,
+    store,
+    resolveTargetCollaborator,
+    addRuntimeToolMessage
+  });
 
   const appendCollaboratorMemories = (items: string[], conversationId?: string | null) => {
     const targetCollaborator = resolveTargetCollaborator(conversationId);
@@ -251,6 +260,9 @@ export function createChatMemoryActions({
     }
   ) => {
     const conversationId = target.conversationId;
+    if (action.kind === 'updatePersonaPrompt') {
+      return personaPromptActions.maybeHandleUpdatePersonaPromptAction(target, action, options);
+    }
     if (action.kind !== 'writeMemory' && action.kind !== 'writeMemoryDoc') return false;
 
     if (action.kind === 'writeMemoryDoc') {
@@ -320,6 +332,7 @@ export function createChatMemoryActions({
 
   const applyMemoryPreview = (target: WritableConversationBody, message: ChatMessage) => {
     const conversationId = target.conversationId;
+    if (personaPromptActions.applyPersonaPromptPreview(target, message)) return true;
     if (message.toolInvocation?.kind === 'writeMemoryDoc') {
       const didWrite = writeCollaboratorMemoryDoc({
         docId: message.toolInvocation.memoryDocId,
@@ -358,6 +371,7 @@ export function createChatMemoryActions({
   };
 
   const rollbackMemoryPreview = (target: WritableConversationBody, message: ChatMessage) => {
+    if (personaPromptActions.rollbackPersonaPromptPreview(target, message)) return true;
     if (message.toolInvocation?.kind === 'writeMemoryDoc') {
       store.chat.updateMessage(target, message.id, {
         content: '这份长期资料没有写入。',

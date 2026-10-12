@@ -40,6 +40,7 @@ import type { RuntimeFeedbackEvent } from '../../engines/runtime-feedback/runtim
 import type { PendingWorkspaceProposalRecord } from '../../engines/workspaceBinding';
 import { resolveConversationTaskMode } from '../../engines/conversationTask';
 import { buildWorkContext } from '../../engines/workContext';
+import { canAssistantRewritePersonaPrompt } from '../../engines/personaBuiltin';
 
 function buildAttachmentSnapshot(messages: ChatMessage[]) {
   const available = messages.flatMap((message) => message.attachments?.filter((attachment) => !attachment.clearedAt) ?? []);
@@ -334,6 +335,7 @@ export function buildReplyToolContext(args: {
       imageAssetSnapshot: buildImageAssetSnapshot(visibleImageCards),
       imageGenerationAvailable,
       memorySearchAvailable,
+      personaPromptAvailable: canAssistantRewritePersonaPrompt(collaboratorForReply),
       personalData: {
         calendarAvailable: personalDataAvailability.calendarAvailable,
         calendarWriteAvailable: personalDataAvailability.calendarWriteAvailable,

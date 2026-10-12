@@ -232,6 +232,16 @@ export function parseContentToolAction(
         targetLabel: normalizeOptionalString(action.targetLabel)
       } };
     }
+    case 'updatePersonaPrompt': {
+      const prompt = normalizeOptionalString(action.prompt) ?? normalizeOptionalString(action.compiledPrompt);
+      if (!prompt?.trim()) return { action: null, issue: '改写人设时缺少新的提示词正文。' };
+      return { action: {
+        kind: 'updatePersonaPrompt',
+        prompt: prompt.trim(),
+        reason: normalizeOptionalString(action.reason),
+        targetLabel: normalizeOptionalString(action.targetLabel)
+      } };
+    }
     case 'readMemoryDoc': {
       const docId = normalizeOptionalString(action.docId) ?? normalizeOptionalString(action.target);
       if (!docId) return { action: null, issue: '缺少要读取的长期资料 docId。' };

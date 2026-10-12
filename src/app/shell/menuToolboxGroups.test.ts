@@ -22,6 +22,7 @@ const allEnabled = {
   memory: true,
   memoryRecall: true,
   memoryWrite: true,
+  personaWrite: true,
   proactive: true
 } satisfies Record<PolarisToolPromptGroup, boolean>;
 

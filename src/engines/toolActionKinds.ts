@@ -27,6 +27,7 @@ export const CANONICAL_TOOL_ACTION_KINDS = [
   'readMemoryDoc',
   'searchMemory',
   'openMemorySource',
+  'updatePersonaPrompt',
   'readPolarisKnowledge',
   'listEnvironmentNodes',
   'inspectEnvironmentNode',

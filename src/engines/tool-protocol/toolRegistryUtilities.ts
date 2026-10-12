@@ -10,7 +10,7 @@ import {
 
 type UtilityToolKind = Extract<
   AssistantToolActionKind,
-  'listEnvironmentNodes' | 'inspectEnvironmentNode' | 'searchEnvironmentNodes' | 'createQrCode' | 'webSearch' | 'readWebPage' | 'listCalendars' | 'readCalendarEvents' | 'createCalendarEvent' | 'updateCalendarEvent' | 'deleteCalendarEvent' | 'runCode' | 'writeMemory' | 'writeMemoryDoc' | 'readMemoryDoc' | 'searchMemory' | 'openMemorySource' | 'readPolarisKnowledge' | 'startTask' | 'completeTask' | 'wait' | 'createProactiveMessageRule' | 'listProactiveMessageRules' | 'updateProactiveMessageRule' | 'deleteProactiveMessageRule'
+  'listEnvironmentNodes' | 'inspectEnvironmentNode' | 'searchEnvironmentNodes' | 'createQrCode' | 'webSearch' | 'readWebPage' | 'listCalendars' | 'readCalendarEvents' | 'createCalendarEvent' | 'updateCalendarEvent' | 'deleteCalendarEvent' | 'runCode' | 'writeMemory' | 'writeMemoryDoc' | 'readMemoryDoc' | 'searchMemory' | 'openMemorySource' | 'updatePersonaPrompt' | 'readPolarisKnowledge' | 'startTask' | 'completeTask' | 'wait' | 'createProactiveMessageRule' | 'listProactiveMessageRules' | 'updateProactiveMessageRule' | 'deleteProactiveMessageRule'
 >;
 
 const PROACTIVE_MESSAGE_RULES = [
@@ -350,6 +350,29 @@ export const UTILITY_TOOL_DEFINITION_MAP = {
       '1. writeMemoryDoc：新建或更新当前角色的长期资料文档。',
       '- 资料适合长背景、设定、关系资料、项目资料或长期日志；短偏好和一句话事实继续用 writeMemory。',
       '- 如果要更新已有资料，使用长期资料目录里的 docId；如果没有明确目标，就新建一份标题清楚的资料。'
+    ]
+  },
+  updatePersonaPrompt: {
+    name: 'updatePersonaPrompt',
+    group: 'personaWrite',
+    brief: '改写自己的角色人设',
+    schema: {
+      name: 'updatePersonaPrompt',
+      description: '改写当前角色自己的提示词（人设）。用完整版替换现在那一版，先在对话里生成一张确认卡片，用户确认后才生效。',
+      parameters: objectParameters({
+        prompt: stringProperty('替换后的完整角色提示词正文，不要只写要新增的片段。'),
+        reason: stringProperty('一句话说明这一版改了什么，显示在确认卡片上。'),
+        targetLabel: stringProperty('可选目标说明。')
+      }, ['prompt'])
+    },
+    rules: [
+      '改写人设动作：',
+      '1. updatePersonaPrompt：改写当前角色自己的提示词。',
+      '- 只在用户明确让 TA 调整、丰富自己的人设、性格或说话方式时使用；普通聊天不要顺手改自己。',
+      '- prompt 写完整的一版：把当前提示词里仍然成立的内容一起带上，这次改写是整版替换，不是追加补丁。',
+      '- 提示词里的变量写法（比如 {assistant_name}、{user_name}）要保留下来，不要替换成具体名字。',
+      '- 调用后不会立刻生效，而是在对话里生成一张确认卡片，由用户点确认；不要自己宣布已经改好。',
+      '- 用户手写过的那版提示词会在第一次被覆盖时自动留档，用户可以在角色设置里查看或还原，你不需要自己备份。'
     ]
   },
   readMemoryDoc: {

@@ -94,6 +94,7 @@ describe('buildCapabilityEntries', () => {
           memory: false,
           memoryRecall: false,
           memoryWrite: false,
+          personaWrite: false,
           proactive: false
         }
       },

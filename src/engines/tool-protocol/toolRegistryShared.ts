@@ -23,6 +23,7 @@ export type PolarisRegistryToolGroup =
   | 'memoryRecall'
   | 'knowledge'
   | 'memoryWrite'
+  | 'personaWrite'
   | 'proactive';
 
 export type PolarisToolResultReplayMode =

@@ -15,6 +15,15 @@ type PromptCoreSettingsPageProps = PersonaTabProps & {
   expandedUsesPageScroll?: boolean;
 };
 
+function formatArchiveDate(savedAt: number) {
+  if (!Number.isFinite(savedAt) || savedAt <= 0) return '';
+  return new Date(savedAt).toLocaleDateString('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+}
+
 export function PromptCoreSettingsPage({
   activePersona,
   onUpdatePersona,
@@ -26,6 +35,8 @@ export function PromptCoreSettingsPage({
   const [pharosDefaultPrompt, setPharosDefaultPrompt] = useState('');
   const [promptExpanded, setPromptExpanded] = useState(false);
   const [promptFocused, setPromptFocused] = useState(false);
+  const [archiveExpanded, setArchiveExpanded] = useState(false);
+  const [restoreArmed, setRestoreArmed] = useState(false);
   const promptFieldRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -66,6 +77,8 @@ export function PromptCoreSettingsPage({
 
   useEffect(() => {
     setPromptFocused(false);
+    setArchiveExpanded(false);
+    setRestoreArmed(false);
   }, [activePersona?.id]);
 
   if (isProductGuidePersona(activePersona)) {
@@ -151,6 +164,9 @@ export function PromptCoreSettingsPage({
   });
   const promptPreview = resolveSystemPromptVars(promptSource, promptPreviewContext);
   const promptDisplayValue = promptFocused ? promptSource : promptPreview;
+  const promptBackup = activePersona?.promptBackup ?? null;
+  const archivedPrompt = promptBackup?.compiledPrompt.trim() ?? '';
+  const canRestoreArchivedPrompt = archivedPrompt.length > 0 && archivedPrompt !== promptSource.trim();
 
   return (
     <div
@@ -187,6 +203,53 @@ export function PromptCoreSettingsPage({
       <p className="ps-footnote">
         支持变量：{'{cur_date}'} {'{cur_time}'} {'{cur_datetime}'} {'{assistant_name}'} {'{user_name}'} {'{nickname}'} {'{model_id}'} {'{model_name}'} {'{locale}'} {'{timezone}'} {'{system_version}'} {'{device_info}'} {'{battery_level}'}，也支持双花括号写法 {'{{char}}'} {'{{char_name}}'} {'{{user}}'}。未编辑时会按当前称呼显示，编辑时保留变量原文。{promptExpanded ? ' 按 Esc 也可以收起。' : ''}
       </p>
+      {promptBackup ? (
+        <>
+          <p className="ps-footnote">
+            TA 第一次改写前的原版已留档（{formatArchiveDate(promptBackup.savedAt)}），随时可以看或换回去。
+          </p>
+          {archiveExpanded ? (
+            <textarea
+              className="ps-textarea ps-textarea--mono ps-textarea--prompt"
+              rows={10}
+              value={promptBackup.compiledPrompt}
+              readOnly
+              aria-label="留档的原版提示词"
+            />
+          ) : null}
+          <div className="ps-rx-paste-actions">
+            <span className="ps-rx-field-label">{canRestoreArchivedPrompt ? '和现在这一版不同' : '现在就是这一版'}</span>
+            <div className="ps-rx-paste-buttons">
+              <button
+                type="button"
+                className="ps-rx-paste-clear"
+                onClick={() => setArchiveExpanded((current) => !current)}
+              >
+                {archiveExpanded ? '收起原版' : '查看原版'}
+              </button>
+              <button
+                type="button"
+                className="ps-rx-paste-confirm"
+                disabled={!canRestoreArchivedPrompt}
+                onClick={() => {
+                  if (!restoreArmed) {
+                    setRestoreArmed(true);
+                    return;
+                  }
+                  setRestoreArmed(false);
+                  onUpdatePersona({
+                    compiledPrompt: promptBackup.compiledPrompt,
+                    builderManaged: false,
+                    generatedPromptMode: 'vnext'
+                  });
+                }}
+              >
+                {restoreArmed ? '确认还原' : '还原原版'}
+              </button>
+            </div>
+          </div>
+        </>
+      ) : null}
     </div>
   );
 }

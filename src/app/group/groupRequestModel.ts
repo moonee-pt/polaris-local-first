@@ -42,7 +42,9 @@ export function buildGroupToolPreferences(
     mcp: toolSettings.mcp === true && source.mcp !== false,
     memory: memoryContextEnabled && source.memory !== false,
     memoryRecall: memoryContextEnabled && source.memoryRecall !== false,
-    memoryWrite: source.memoryWrite === true
+    memoryWrite: source.memoryWrite === true,
+    // 群聊里没有「这个角色自己的提示词」可写：人设改写只在单人对话里开放。
+    personaWrite: false
   };
 }
 

@@ -8,6 +8,7 @@ import type {
 } from '../types/domain';
 import type { ToolAction } from './toolExecutorTypes';
 import { describeMemoryToolAction } from './toolExecutorDescribeMemory';
+import { describePersonaPromptToolAction } from './toolExecutorDescribePersona';
 import { describeProactiveMessageToolAction } from './toolExecutorDescribeProactiveMessage';
 import { describeTaskToolAction } from './toolExecutorDescribeTask';
 import { describeToolInvocationToolAction } from './toolExecutorDescribeToolInvocation';
@@ -118,6 +119,10 @@ export function describeToolAction(action: ToolAction): ToolActionDescription {
     case 'searchMemory':
     case 'openMemorySource':
       return describeMemoryToolAction(action);
+    case 'updatePersonaPrompt':
+      return describePersonaPromptToolAction(action);
+    case 'updatePersonaPrompt':
+      return describePersonaPromptToolAction(action);
     case 'startTask':
     case 'completeTask':
     case 'wait':

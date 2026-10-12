@@ -215,6 +215,17 @@ export interface PersonaMcpSettings {
   serverIds: string[];
 }
 
+/**
+ * 角色提示词的留档版本。
+ *
+ * 只在她手写（或导入）过提示词、而 AI 第一次要覆盖它时写入一次；之后 AI 再怎么改写自己
+ * 的人设都不会再动这一份，保证「她那一版」永远能查看、能还原。
+ */
+export interface PersonaPromptBackup {
+  compiledPrompt: string;
+  savedAt: number;
+}
+
 export interface Persona {
   id: string;
   systemRole: 'default' | null;
@@ -231,6 +242,7 @@ export interface Persona {
   userName: string;
   purpose: string;
   compiledPrompt: string;
+  promptBackup?: PersonaPromptBackup | null;
   builderManaged: boolean;
   generatedPromptMode: PersonaGeneratedPromptMode;
   messageTemplate: string;

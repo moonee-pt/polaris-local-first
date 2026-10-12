@@ -22,6 +22,7 @@ export const POLARIS_TOOL_PROMPT_GROUP_ORDER: PolarisToolPromptGroup[] = [
   'memory',
   'memoryRecall',
   'memoryWrite',
+  'personaWrite',
   'proactive'
 ];
 
@@ -41,6 +42,7 @@ export const POLARIS_TOOLBOX_PROMPT_GROUP_ORDER: PolarisToolPromptGroup[] = [
   'memory',
   'memoryRecall',
   'memoryWrite',
+  'personaWrite',
   'proactive'
 ];
 
@@ -61,6 +63,7 @@ export const DEFAULT_POLARIS_TOOL_PROMPT_PREFERENCES: Record<PolarisToolPromptGr
   memory: true,
   memoryRecall: true,
   memoryWrite: false,
+  personaWrite: true,
   proactive: false
 };
 
@@ -81,6 +84,7 @@ export const POLARIS_TOOL_PROMPT_GROUP_LABELS: Record<PolarisToolPromptGroup, st
   memory: '长期资料',
   memoryRecall: '主动回忆',
   memoryWrite: '写入记忆',
+  personaWrite: '改写人设',
   proactive: '主动消息'
 };
 
@@ -101,6 +105,7 @@ export const POLARIS_TOOL_PROMPT_GROUP_DESCRIPTIONS: Record<PolarisToolPromptGro
   memory: '让角色读取当前角色的长期资料全文。',
   memoryRecall: '让角色在不确定你当前指代、但过往对话可能有帮助时，主动搜索旧摘要和原文锚点。',
   memoryWrite: '让角色把稳定线索写进长期记忆。',
+  personaWrite: '让角色在你明确要求时改写自己的提示词，改动先在对话里出确认卡片，你确认后才会生效；内建人格不开放。',
   proactive: '让角色在对话中为自己创建主动消息规则，之后按时间主动开口。'
 };
 

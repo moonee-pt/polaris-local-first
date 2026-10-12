@@ -27,6 +27,7 @@ type ResolveAssistantToolActionsArgs = {
   desktopLocalHost?: AssistantToolContext['desktopLocalHost'];
   imageGenerationAvailable?: boolean;
   memorySearchAvailable?: boolean;
+  personaPromptAvailable?: boolean;
   attachmentSnapshot?: AssistantToolContext['attachmentSnapshot'];
   imageAssetSnapshot?: AssistantToolContext['imageAssetSnapshot'];
   personalData?: AssistantToolContext['personalData'];
@@ -46,6 +47,7 @@ export function resolveAssistantToolActions({
   desktopLocalHost,
   imageGenerationAvailable,
   memorySearchAvailable,
+  personaPromptAvailable,
   attachmentSnapshot,
   imageAssetSnapshot,
   personalData
@@ -92,6 +94,7 @@ export function resolveAssistantToolActions({
       desktopLocalHost,
       imageGenerationAvailable,
       memorySearchAvailable,
+      personaPromptAvailable,
       attachmentSnapshot,
       imageAssetSnapshot,
       personalData

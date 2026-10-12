@@ -484,6 +484,7 @@ async function requestReplyRound({
             desktopLocalHost: toolContextWithMcp.desktopLocalHost,
             imageGenerationAvailable: toolContextWithMcp.imageGenerationAvailable,
             memorySearchAvailable: toolContextWithMcp.memorySearchAvailable,
+            personaPromptAvailable: toolContextWithMcp.personaPromptAvailable,
             attachmentSnapshot: toolContextWithMcp.attachmentSnapshot,
             imageAssetSnapshot: toolContextWithMcp.imageAssetSnapshot,
             personalData: toolContextWithMcp.personalData

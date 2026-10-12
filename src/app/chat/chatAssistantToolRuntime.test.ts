@@ -105,6 +105,36 @@ describe('chatAssistantToolRuntime', () => {
     }]);
   });
 
+  it('blocks persona rewrites when the current collaborator cannot be edited', () => {
+    const result = resolveAssistantToolActions({
+      actions: [{ kind: 'updatePersonaPrompt', prompt: '想换一版自己。', reason: '更口语' }],
+      cards: [],
+      activeCardId: null,
+      availableToolNames: new Set(['updatePersonaPrompt'])
+    });
+
+    expect(result.resolved).toHaveLength(0);
+    expect(result.errors).toEqual(['当前没有“改写人设”能力。']);
+  });
+
+  it('resolves persona rewrites for a user-created collaborator', () => {
+    const result = resolveAssistantToolActions({
+      actions: [{ kind: 'updatePersonaPrompt', prompt: '想换一版自己。', reason: '更口语' }],
+      cards: [],
+      activeCardId: null,
+      availableToolNames: new Set(['updatePersonaPrompt']),
+      personaPromptAvailable: true
+    });
+
+    expect(result.errors).toHaveLength(0);
+    expect(result.resolved).toEqual([{
+      kind: 'updatePersonaPrompt',
+      prompt: '想换一版自己。',
+      reason: '更口语',
+      targetLabel: undefined
+    }]);
+  });
+
   it('blocks active recall fallback actions when old-memory search is unavailable', () => {
     const result = resolveAssistantToolActions({
       actions: [{ kind: 'searchMemory', query: '恐龙' }],

@@ -127,6 +127,7 @@ describe('assistantToolProtocolPrompt', () => {
         memory: false,
         memoryRecall: false,
         memoryWrite: false,
+        personaWrite: false,
         proactive: false
       },
       mcpCatalogErrors: ['Example MCP failed'],
@@ -699,6 +700,50 @@ describe('assistantToolProtocolPrompt', () => {
     expect(prompt).toContain('`createQrCode`');
     expect(prompt).toContain('`generateImage`');
     expect(prompt).toContain('生成图片动作：');
+  });
+
+  it('adds persona rewrite prompt rules only when this collaborator can be edited', () => {
+    const locked = buildAssistantToolPrompt({
+      themeToolMode: 'stable',
+      themeContextMode: 'none',
+      toolEnforcementMode: 'normal',
+      modelTier: 'medium',
+      themePreviewActive: false,
+      enabledToolGroups: {
+        room: false,
+        theme: false,
+        attachment: false,
+        generation: false,
+        archive: false,
+        web: false,
+        memory: false
+      },
+      activeCard: null,
+      visibleCards: []
+    });
+    const unlocked = buildAssistantToolPrompt({
+      themeToolMode: 'stable',
+      themeContextMode: 'none',
+      toolEnforcementMode: 'normal',
+      modelTier: 'medium',
+      themePreviewActive: false,
+      personaPromptAvailable: true,
+      enabledToolGroups: {
+        room: false,
+        theme: false,
+        attachment: false,
+        generation: false,
+        archive: false,
+        web: false,
+        memory: false
+      },
+      activeCard: null,
+      visibleCards: []
+    });
+
+    expect(locked).not.toContain('`updatePersonaPrompt`');
+    expect(unlocked).toContain('`updatePersonaPrompt`');
+    expect(unlocked).toContain('改写人设动作：');
   });
 
   it('teaches the expanded runCode sandbox when the experimental profile is unlocked', () => {

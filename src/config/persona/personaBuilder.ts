@@ -155,6 +155,7 @@ export function createPersonaTemplate(
     userName: overrides.userName ?? '',
     purpose: overrides.purpose ?? '',
     compiledPrompt: overrides.compiledPrompt ?? '',
+    promptBackup: overrides.promptBackup ?? null,
     builderManaged: overrides.builderManaged ?? false,
     generatedPromptMode: overrides.generatedPromptMode ?? 'vnext',
     messageTemplate: overrides.messageTemplate ?? '{{ message }}',

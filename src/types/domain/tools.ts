@@ -72,6 +72,9 @@ export type ToolInvocation = {
   memoryDocTitle?: string;
   memoryDocSummary?: string;
   memoryDocContent?: string;
+  /** 角色自己提出的一版新人设提示词正文；只在确认卡片里暂存，确认后才写进角色。 */
+  personaPromptDraft?: string;
+  personaPromptReason?: string;
   codeSaveCount?: number;
   codeSaveTotal?: number;
   webSearch?: WebSearchEvidence;

@@ -172,6 +172,8 @@ export const settings = {
   'settings.toolbox.group.memoryRecall.detail': '让角色在不确定你当前指代、但过往对话可能有帮助时，主动搜索旧摘要和原文锚点。',
   'settings.toolbox.group.memoryWrite.label': '写入记忆',
   'settings.toolbox.group.memoryWrite.detail': '让角色把稳定线索写进长期记忆。',
+  'settings.toolbox.group.personaWrite.label': '改写人设',
+  'settings.toolbox.group.personaWrite.detail': '让角色在你明确要求时改写自己的提示词，改动先在对话里出确认卡片，你确认后才会生效；内建人格不开放。',
   'settings.toolbox.group.proactive.label': '主动消息',
   'settings.toolbox.group.proactive.detail': '让角色在对话中为自己创建主动消息规则，之后按时间主动开口。',
   'settings.toolbox.searchSection': '搜索服务',

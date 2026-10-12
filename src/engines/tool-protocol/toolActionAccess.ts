@@ -17,6 +17,7 @@ type ToolActionAccessContext = Pick<
   | 'desktopLocalHost'
   | 'imageGenerationAvailable'
   | 'memorySearchAvailable'
+  | 'personaPromptAvailable'
   | 'attachmentSnapshot'
   | 'imageAssetSnapshot'
   | 'personalData'

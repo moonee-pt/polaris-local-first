@@ -67,6 +67,7 @@ export type PolarisToolPromptGroup =
   | 'memory'
   | 'memoryRecall'
   | 'memoryWrite'
+  | 'personaWrite'
   | 'proactive';
 export type PolarisToolPromptPreferences = Partial<Record<PolarisToolPromptGroup, boolean>>;
 export type RunCodeSandboxProfile = 'safe' | 'experimental';
@@ -167,6 +168,8 @@ export type AssistantToolContext = {
   runCodeSandboxProfile?: RunCodeSandboxProfile;
   imageGenerationAvailable?: boolean;
   memorySearchAvailable?: boolean;
+  // 当前对话角色的人设是否允许被改写（内建人格链锁住的角色为 false，工具目录里就不会出现）。
+  personaPromptAvailable?: boolean;
   enabledToolGroups?: PolarisToolPromptPreferences;
   themeToolMode?: ThemeToolMode;
   stableSurfaceSnapshots?: StableSurfaceSnapshot[];

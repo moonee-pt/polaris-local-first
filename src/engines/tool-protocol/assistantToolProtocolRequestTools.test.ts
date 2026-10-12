@@ -203,6 +203,7 @@ describe('assistantToolProtocolRequestTools', () => {
         memory: false,
         memoryRecall: false,
         memoryWrite: false,
+        personaWrite: false,
         proactive: false
       },
       activeCard: null,

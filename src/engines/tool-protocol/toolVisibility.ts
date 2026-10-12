@@ -36,6 +36,7 @@ export type PolarisToolVisibilityContext = Partial<Pick<
   | 'taskMode'
   | 'imageGenerationAvailable'
   | 'memorySearchAvailable'
+  | 'personaPromptAvailable'
   | 'attachmentSnapshot'
   | 'imageAssetSnapshot'
   | 'desktopLocalHost'
@@ -122,6 +123,11 @@ function hasAvailableImageGeneration(context?: PolarisToolVisibilityContext) {
 
 function hasAvailableMemorySearch(context?: PolarisToolVisibilityContext) {
   return context?.memorySearchAvailable === true;
+}
+
+// 人设改写只对"允许编辑提示词"的角色开放：内建人格链（Pharos 之外的小助手等）和群聊里都不出现这个工具。
+function hasAvailablePersonaPrompt(context?: PolarisToolVisibilityContext) {
+  return context?.personaPromptAvailable === true;
 }
 
 function hasAvailablePersonalDataTool(tool: PolarisToolDefinition, context?: PolarisToolVisibilityContext) {
@@ -212,6 +218,9 @@ export function isPolarisNativeToolVisible(
   if (tool.name === 'readWorkspacePreviewState' && !hasWorkspacePreviewStateAccess(context)) {
     return false;
   }
+  if (tool.group === 'personaWrite' && !hasAvailablePersonaPrompt(context)) {
+    return false;
+  }
   if ((tool.group === 'theme-stable' || tool.group === 'theme-creative') && visibilityState.userContext === 'in-workspace') {
     return false;
   }
@@ -225,7 +234,7 @@ export function isParsedAssistantActionVisible(args: {
   context?: Pick<
     PolarisToolVisibilityContext,
     'activeProject' | 'activeProjectId' | 'enabledToolGroups' | 'themeToolMode' | 'toolEnforcementScope'
-    | 'desktopLocalHost' | 'imageGenerationAvailable' | 'memorySearchAvailable' | 'attachmentSnapshot'
+    | 'desktopLocalHost' | 'imageGenerationAvailable' | 'memorySearchAvailable' | 'personaPromptAvailable' | 'attachmentSnapshot'
     | 'imageAssetSnapshot' | 'personalData'
   >;
 }) {
@@ -257,6 +266,9 @@ export function isParsedAssistantActionVisible(args: {
     return false;
   }
   if (tool.name === 'readWorkspacePreviewState' && !hasWorkspacePreviewStateAccess(context)) {
+    return false;
+  }
+  if (tool.group === 'personaWrite' && !hasAvailablePersonaPrompt(context)) {
     return false;
   }
   return matchesThemeMode(tool, visibilityState) && isEnabledByPreferences(tool, visibilityState);

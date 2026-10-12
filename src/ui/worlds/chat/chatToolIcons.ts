@@ -49,6 +49,7 @@ const TOOL_ICON_NAME_BY_KIND = {
   readMemoryDoc: 'fileText',
   searchMemory: 'search',
   openMemorySource: 'fileText',
+  updatePersonaPrompt: 'feather',
   readPolarisKnowledge: 'fileText',
   listEnvironmentNodes: 'folder',
   inspectEnvironmentNode: 'eye',

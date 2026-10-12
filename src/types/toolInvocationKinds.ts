@@ -49,6 +49,7 @@ export const TOOL_INVOCATION_KINDS = [
   'readMemoryDoc',
   'searchMemory',
   'openMemorySource',
+  'updatePersonaPrompt',
   'readPolarisKnowledge',
   'listEnvironmentNodes',
   'inspectEnvironmentNode',

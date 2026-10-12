@@ -127,6 +127,11 @@ const TOOLBOX_TOGGLE_META: Record<PolarisToolPromptGroup, { icon: IconName; labe
     labelKey: 'settings.toolbox.group.memoryWrite.label',
     descriptionKey: 'settings.toolbox.group.memoryWrite.detail'
   },
+  personaWrite: {
+    icon: 'feather',
+    labelKey: 'settings.toolbox.group.personaWrite.label',
+    descriptionKey: 'settings.toolbox.group.personaWrite.detail'
+  },
   proactive: {
     icon: 'sparkle',
     labelKey: 'settings.toolbox.group.proactive.label',

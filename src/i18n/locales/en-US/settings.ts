@@ -174,6 +174,8 @@ export const settings = {
   'settings.toolbox.group.memoryRecall.detail': 'When older chats may help clarify what you mean, let collaborators search saved summaries and source anchors.',
   'settings.toolbox.group.memoryWrite.label': 'Save memory',
   'settings.toolbox.group.memoryWrite.detail': 'Let collaborators save stable details into long-term memory.',
+  'settings.toolbox.group.personaWrite.label': 'Rewrite persona',
+  'settings.toolbox.group.personaWrite.detail': 'Let a collaborator rewrite its own prompt when you ask. The change first appears as a confirmation card in chat and only applies after you confirm. Built-in personalities are excluded.',
   'settings.toolbox.group.proactive.label': 'Proactive messages',
   'settings.toolbox.group.proactive.detail': 'Let collaborators create proactive message rules in chat, then speak on schedule later.',
   'settings.toolbox.searchSection': 'Web search',

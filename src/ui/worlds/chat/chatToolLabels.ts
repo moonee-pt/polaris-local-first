@@ -14,12 +14,25 @@ function localizeToolLabel(
   return t ? t(key, values) : fallback;
 }
 
-export function toolStatusLabel(status: ToolInvocation['status'], t?: ToolLabelTranslator): string {
+// 主题类工具是"试穿"，记忆和人设这类是等她点确认；同一张卡片按动作类型给不同的状态字样。
+const CONFIRMATION_TOOL_KINDS = new Set<ToolInvocation['kind']>([
+  'writeMemory',
+  'writeMemoryDoc',
+  'updatePersonaPrompt'
+]);
+
+export function toolStatusLabel(
+  status: ToolInvocation['status'],
+  t?: ToolLabelTranslator,
+  kind?: ToolInvocation['kind']
+): string {
   switch (status) {
     case 'running':
       return localizeToolLabel(t, 'chat.toolEvent.status.running', '执行中');
     case 'preview':
-      return localizeToolLabel(t, 'chat.toolEvent.status.preview', '试穿中');
+      return kind && CONFIRMATION_TOOL_KINDS.has(kind)
+        ? localizeToolLabel(t, 'chat.toolEvent.status.pendingConfirm', '待确认')
+        : localizeToolLabel(t, 'chat.toolEvent.status.preview', '试穿中');
     case 'applied':
       return localizeToolLabel(t, 'chat.toolEvent.status.applied', '已应用');
     case 'rolled_back':
@@ -64,6 +77,9 @@ export function toolEventCopy(tool: ToolInvocation, t?: ToolLabelTranslator) {
     if (tool.kind === 'writeMemoryDoc') {
       return localizeToolLabel(t, 'chat.toolEvent.previewMemoryDoc', '这份长期资料暂未写入，确认后才会进入当前角色的资料库。');
     }
+    if (tool.kind === 'updatePersonaPrompt') {
+      return localizeToolLabel(t, 'chat.toolEvent.previewPersonaPrompt', '这版人设还没生效，确认后才会替换当前角色的提示词。');
+    }
     if ((tool.themeBatchCount ?? 0) > 1) {
       return localizeToolLabel(
         t,
@@ -85,6 +101,9 @@ export function toolEventCopy(tool: ToolInvocation, t?: ToolLabelTranslator) {
     }
     if (tool.kind === 'writeMemoryDoc') {
       return localizeToolLabel(t, 'chat.toolEvent.appliedMemoryDoc', '已确认写入，后面对话可以按需读取这份长期资料全文。');
+    }
+    if (tool.kind === 'updatePersonaPrompt') {
+      return localizeToolLabel(t, 'chat.toolEvent.appliedPersonaPrompt', '人设已更新，下一段对话起就按这一版来。');
     }
     const appliedScopeCopy = tool.themeScope === 'collection'
       ? localizeToolLabel(t, 'chat.toolEvent.appliedTheme.collection', '房间这版改动已保留。')
@@ -157,6 +176,9 @@ export function toolEventCopy(tool: ToolInvocation, t?: ToolLabelTranslator) {
     return localizeToolLabel(t, 'chat.toolEvent.saved', '已存入卡片，可以直接在这里展开，或打开去房间细改。');
   }
   if (tool.status === 'rolled_back') {
+    if (tool.kind === 'updatePersonaPrompt') {
+      return localizeToolLabel(t, 'chat.toolEvent.rolledBackPersonaPrompt', '这次人设改动已取消，提示词还是原来那一版。');
+    }
     return localizeToolLabel(t, 'chat.toolEvent.rolledBack', '这次试穿已取消，界面已经回到之前的样子。');
   }
   if (tool.status === 'superseded') {

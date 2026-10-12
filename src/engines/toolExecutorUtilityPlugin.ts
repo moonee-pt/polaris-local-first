@@ -44,6 +44,7 @@ export type UtilityToolAction = Extract<
       | 'readMemoryDoc'
       | 'searchMemory'
       | 'openMemorySource'
+      | 'updatePersonaPrompt'
       | 'readPolarisKnowledge'
       | 'listEnvironmentNodes'
       | 'inspectEnvironmentNode'
@@ -198,6 +199,10 @@ async function executeUtilityToolAction(
         memoryDocTitle: result.title,
         memoryDocCreated: result.created
       };
+    }
+    case 'updatePersonaPrompt': {
+      // 改写人设只在对话里以确认卡片的形式落地；执行器被直接调用时不写任何数据。
+      return { ok: false, error: '改写人设需要在对话里点确认后才会生效。' };
     }
     case 'readMemoryDoc': {
       let doc = null;

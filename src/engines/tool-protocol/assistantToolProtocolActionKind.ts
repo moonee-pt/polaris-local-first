@@ -89,6 +89,12 @@ export function inferAssistantToolKind(
     return 'appendCodeCard';
   }
   if (asObject(action.patch)) return 'patchCodeCard';
+  if (
+    action.kind === 'updatePersonaPrompt'
+    && (hasNonEmptyString(action.prompt) || hasNonEmptyString(action.compiledPrompt))
+  ) {
+    return 'updatePersonaPrompt';
+  }
   if (hasNonEmptyString(action.content) && hasNonEmptyString(action.title) && (
     action.kind === 'writeMemoryDoc'
     || action.kind === 'writeReferenceDoc'

@@ -215,6 +215,7 @@ export function normalizePersona(persona: Partial<Persona> & Pick<Persona, 'id' 
     userName: persona.userName,
     purpose: persona.purpose,
     compiledPrompt: persona.compiledPrompt ?? '',
+    promptBackup: persona.promptBackup ?? null,
     builderManaged: persona.builderManaged,
     generatedPromptMode: normalizeGeneratedPromptMode(persona.generatedPromptMode),
     messageTemplate: persona.messageTemplate,

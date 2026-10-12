@@ -190,7 +190,7 @@ export function MessageToolEvent({
             <>
               <div className="tool-event-title-row">
                 <strong>{expandedTitle}</strong>
-                <span className={`tool-event-status ${tool.status}`}>{toolStatusLabel(tool.status, t)}</span>
+                <span className={`tool-event-status ${tool.status}`}>{toolStatusLabel(tool.status, t, tool.kind)}</span>
               </div>
               {shouldShowExpandedSummary ? <div className="tool-event-summary">{expandedSummary}</div> : null}
             </>

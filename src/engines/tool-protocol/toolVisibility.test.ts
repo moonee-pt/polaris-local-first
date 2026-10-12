@@ -108,8 +108,21 @@ describe('toolVisibility', () => {
     })).toBe(true);
   });
 
-  it('shows image sending whenever attachment tools are enabled', () => {
-    expect(isPolarisNativeToolVisible(POLARIS_TOOL_REGISTRY_BY_NAME.sendImageAttachment, {
+  it('only offers persona rewriting for a collaborator whose prompt is open', () => {
+    expect(isPolarisNativeToolVisible(POLARIS_TOOL_REGISTRY_BY_NAME.updatePersonaPrompt, {
+      enabledToolGroups: { personaWrite: true }
+    })).toBe(false);
+    expect(isPolarisNativeToolVisible(POLARIS_TOOL_REGISTRY_BY_NAME.updatePersonaPrompt, {
+      enabledToolGroups: { personaWrite: true },
+      personaPromptAvailable: true
+    })).toBe(true);
+    expect(isPolarisNativeToolVisible(POLARIS_TOOL_REGISTRY_BY_NAME.updatePersonaPrompt, {
+      enabledToolGroups: { personaWrite: false },
+      personaPromptAvailable: true
+    })).toBe(false);
+  });
+
+  it('shows image sending whenever attachment tools are enabled', () => {    expect(isPolarisNativeToolVisible(POLARIS_TOOL_REGISTRY_BY_NAME.sendImageAttachment, {
       enabledToolGroups: { attachment: true }
     })).toBe(true);
     expect(isPolarisNativeToolVisible(POLARIS_TOOL_REGISTRY_BY_NAME.sendImageAttachment, {

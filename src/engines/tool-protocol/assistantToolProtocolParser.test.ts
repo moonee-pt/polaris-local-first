@@ -24,6 +24,21 @@ describe('extractAssistantNativeToolActions', () => {
     }]);
   });
 
+  it('keeps a native persona rewrite as one full-version action', () => {
+    const result = extractAssistantNativeToolActions([{
+      name: 'rewritePersonaPrompt',
+      argumentsText: JSON.stringify({ prompt: '  说话更松一点，允许开玩笑。 ', reason: '想更口语' })
+    }], '', 'stable', [], {});
+
+    expect(result.issues).toEqual([]);
+    expect(result.actions).toEqual([{
+      kind: 'updatePersonaPrompt',
+      prompt: '说话更松一点，允许开玩笑。',
+      reason: '想更口语',
+      targetLabel: undefined
+    }]);
+  });
+
   it('resolves native MCP schema names through the current MCP catalog', () => {
     const result = extractAssistantNativeToolActions([{
       name: 'mcp__github__github_read_file',

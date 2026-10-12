@@ -42,6 +42,7 @@ export type ToolResolutionSource = Partial<Pick<
   | 'taskMode'
   | 'imageGenerationAvailable'
   | 'memorySearchAvailable'
+  | 'personaPromptAvailable'
   | 'visibleCards'
   | 'attachmentSnapshot'
   | 'imageAssetSnapshot'

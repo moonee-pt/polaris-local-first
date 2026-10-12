@@ -40,6 +40,7 @@ export const TOOL_GROUP_ORDER: PolarisRegistryToolGroup[] = [
   'memory',
   'memoryRecall',
   'memoryWrite',
+  'personaWrite',
   'proactive'
 ];
 
@@ -62,6 +63,7 @@ export const TOOL_GROUP_LABELS: Record<PolarisRegistryToolGroup, string> = {
   memory: '长期资料',
   memoryRecall: '主动回忆',
   memoryWrite: '写入记忆',
+  personaWrite: '改写人设',
   proactive: '主动消息'
 };
 
