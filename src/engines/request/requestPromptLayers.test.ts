@@ -240,7 +240,7 @@ describe('buildAssistantPromptParts', () => {
     expect(modelRuntime?.content).toContain('少思考，直接做');
     expect(modelRuntime?.content).toContain('不要把这一轮停在只读取、只检查、只解释');
     expect(modelRuntime?.content).toContain('完整全文或精确锚点不在上下文时，才需要读取对应文件');
-    expect(modelRuntime?.content).toContain('A read-only first turn is unfinished');
+    expect(modelRuntime?.content).toContain('只读、只检查的一轮不算完成');
   });
 
   it('does not add the Mimo direct-execution hint for other models', () => {

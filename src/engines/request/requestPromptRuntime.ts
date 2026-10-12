@@ -54,7 +54,7 @@ export function buildModelRuntimeEntry(args: {
       '当前工作区文件目录和可见文件内容可能已经在上下文里；完整全文或精确锚点不在上下文时，才需要读取对应文件。',
       '当前主题目标已经在上下文里；如果用户要求直接改某个主题表面，就直接调用应用/写入工具，不要先停在 `readThemeCss` 或解释。',
       '不要把这一轮停在只读取、只检查、只解释；只有确实缺少文件内容、唯一锚点或目标身份时，才先调用读取/检查工具。',
-      'For this model: if the target is explicit and the requested change is a whole-file rewrite or direct theme edit, call the write/apply tool now. A read-only first turn is unfinished.'
+      '请求是整体重写或直接换肤这类明确改动时，就在这一轮调用写入工具做完；只读、只检查的一轮不算完成。'
     ].join('\n')
   };
 }

@@ -12,6 +12,7 @@ import {
 import { requestCollaboratorReply } from '../../engines/request/requestPipeline';
 import { VOICE_CALL_MODE_INSTRUCTION } from '../../config/prompts/callModePrompt';
 import { SPEECH_CUE_INSTRUCTION } from '../../config/prompts/speechCuePrompt';
+import { shouldIncludeSpeechCueInstruction } from '../../config/prompts/speechCueScene';
 import { buildProgressTitleInstruction } from '../../config/prompts/progressTitlePrompt';
 import { shouldApplyProgressTitleChange } from '../../engines/conversationProgressTitleParser';
 import { useVoiceCallSession } from '../call/voiceCallSession';
@@ -367,6 +368,13 @@ async function requestReplyRound({
   streaming.start();
   recordChatSendPerformanceMark(conversationId, '聊天发送 · 占位消息已显示');
 
+  const voiceCallActive = useVoiceCallSession.getState().active;
+  const includeSpeechCueInstruction = shouldIncludeSpeechCueInstruction({
+    callActive: voiceCallActive,
+    persona: collaboratorForReply,
+    messages
+  });
+
   try {
     const reply = await requestCollaboratorReply({
       api: activeRequestSnapshot.api,
@@ -385,9 +393,11 @@ async function requestReplyRound({
       toolContext: toolContextWithMcp,
       currentTask: activeRequestSnapshot.currentTask,
       preferredOpenAiToolHistoryMode,
-      modeInstruction: useVoiceCallSession.getState().active
+      modeInstruction: voiceCallActive
         ? `${SPEECH_CUE_INSTRUCTION}\n\n${VOICE_CALL_MODE_INSTRUCTION}`
-        : SPEECH_CUE_INSTRUCTION,
+        : includeSpeechCueInstruction
+          ? SPEECH_CUE_INSTRUCTION
+          : undefined,
       progressInstruction: writableConversation.conversation.kind === 'group'
         ? undefined
         : buildProgressTitleInstruction(writableConversation.conversation.progressTitle),
