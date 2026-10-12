@@ -1,7 +1,7 @@
 /* Polaris app background themes.
-   Wash colors are generated in src/config/theme/appBackgroundThemes.ts and applied as
-   inline CSS variables on .app-shell. This file only neutralizes the legacy glow blobs
-   and the collection stage overlay so the generated wash is what you actually see. */
+   Wash colors are generated in src/config/theme/appBackgroundThemes.ts and published as
+   CSS variables on <html> (see useAppBackgroundThemeDomEffects). This file only removes
+   the older opaque chrome/overlay panels that used to hide the wash. */
 
 html[data-polaris-app-bg] .app-shell .bg-glow,
 html[data-polaris-app-bg] .app-shell .bg-glow-top,
@@ -15,8 +15,8 @@ html[data-polaris-app-bg] .app-shell .app-stage::before {
   opacity: 0 !important;
 }
 
-/* Let the wash run edge to edge: the app chrome (bottom shelf, side drawer,
-   desktop sidebar) stops painting its own opaque panel so there are no white bars. */
+/* App chrome stops painting its own panel so the wash runs edge to edge:
+   bottom shelf, collaborator drawer, desktop sidebar. */
 html[data-polaris-app-bg] .collection-shelf-tabs,
 html[data-polaris-app-bg] .collaborator-scope-drawer-panel,
 html[data-polaris-app-bg] .desktop-app-sidebar {
@@ -24,4 +24,29 @@ html[data-polaris-app-bg] .desktop-app-sidebar {
   box-shadow: none !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
+}
+
+/* Full screen surfaces render through a portal on <body>, outside .app-shell, so they
+   show the wash directly instead of their own grey scrim and opaque sheet. */
+html[data-polaris-app-bg] .menu-overlay,
+html[data-polaris-app-bg] .persona-builder-overlay {
+  background: var(--bg) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+html[data-polaris-app-bg] .menu-overlay > .settings-sheet.menu-sheet,
+html[data-polaris-app-bg] .persona-fullscreen {
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+html[data-polaris-app-bg] .room-project-fullscreen,
+html[data-polaris-app-bg] .room-project-run-fullscreen,
+html[data-polaris-app-bg] .room-project-file-fullscreen,
+html[data-polaris-app-bg] .create-code-fullscreen,
+html[data-polaris-app-bg] .code-run-fullscreen {
+  background: var(--bg) !important;
 }

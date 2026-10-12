@@ -180,7 +180,7 @@ export function useAppShellViewController(props: AppShellViewControllerInput) {
   };
 
   useAppearanceDomEffects(displayPreferences.appearance);
-  useAppBackgroundThemeDomEffects(displayPreferences.backgroundTheme);
+  useAppBackgroundThemeDomEffects(displayPreferences);
   useCustomFontDomEffects(customization, displayPreferences);
   useCloudAutoSync();
 
