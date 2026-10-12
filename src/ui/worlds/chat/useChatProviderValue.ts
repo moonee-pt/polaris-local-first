@@ -60,6 +60,8 @@ const OUTPUT_MODE_LABEL_KEY = {
   voice: 'chat.mode.option.voice'
 } as const;
 
+const OUTPUT_MODE_NOTE_ID_PREFIX = 'mode';
+
 function buildPresentationSection(args: {
   presentation: ChatPresentation;
   derived: ChatDerivedState;
@@ -278,15 +280,20 @@ function buildActionsSection(args: {
       if (resolveChatOutputMode(conversation.outputMode) === mode) return;
       chatState.setConversationOutputMode(conversationId, mode);
       const writable = chatState.getConversationWritable(conversationId);
-      if (writable) {
-        chatState.addMessage(writable, {
-          id: createUid('mode'),
-          role: 'system',
-          content: args.t('chat.mode.switched', { mode: args.t(OUTPUT_MODE_LABEL_KEY[mode]) }),
-          timestamp: Date.now(),
-          origin: 'system-note'
-        });
-      }
+      if (!writable) return;
+      const modeNote: ChatMessage = {
+        id: createUid(OUTPUT_MODE_NOTE_ID_PREFIX),
+        role: 'system',
+        content: args.t('chat.mode.switched', { mode: args.t(OUTPUT_MODE_LABEL_KEY[mode]) }),
+        timestamp: Date.now(),
+        origin: 'system-note'
+      };
+      // 连续切换只留一条：旧的模式提示摘掉，最新的一条挂在时间线末尾。
+      const keptMessages = conversation.messages
+        .filter((message) => !(
+          message.origin === 'system-note' && message.id.startsWith(`${OUTPUT_MODE_NOTE_ID_PREFIX}-`)
+        ));
+      chatState.replaceConversationMessages(writable, [...keptMessages, modeNote]);
     },
 
     setThemeToolMode: (mode) => {
