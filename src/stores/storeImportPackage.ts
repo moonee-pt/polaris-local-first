@@ -43,6 +43,10 @@ const ASSET_READ_CONCURRENCY = 4;
 
 type ImportStructuredExportPackageOptions = {
   onProgress?: StoreImportProgressReporter;
+  // Domains to leave untouched in the local database. Cloud-sync imports pass ['asset']
+  // because cloud rows never carry attachment binaries — importing without them must not
+  // delete the local assets the snapshot simply does not describe.
+  skipDomains?: Array<'space' | 'asset'>;
 };
 
 type PersistedPersonaState = {
@@ -550,13 +554,17 @@ export async function importStructuredExportSnapshot(
     ? null
     : validatePersonaMemoryDocContent(snapshot.personaMemoryDocContent);
   const runtimeState = validateRuntimeState(snapshot.runtimeState);
-  const assetEntries = validateStructuredAssetEntries(snapshot.assetEntries);
+  const skipDomains: Array<'space' | 'asset'> = [...(options.skipDomains ?? [])];
+  // When the asset domain is skipped (cloud-sync restore), the snapshot legitimately has no
+  // attachment manifest — treat it as empty instead of throwing "备份缺少附件清单".
+  const assetEntries = skipDomains.includes('asset') && snapshot.assetEntries === undefined
+    ? []
+    : validateStructuredAssetEntries(snapshot.assetEntries);
 
   options.onProgress?.({ message: '收束未保存数据' });
   await flushPageLifecycleHandlers();
 
   const failures: StoreImportDomainFailure[] = [];
-  const skipDomains: Array<'space' | 'asset'> = [];
   const importCommittedAt = Date.now();
   const assetCommitId = `import-asset-${importCommittedAt}`;
   const previousLocalStorage = readPolarisLocalStorage();
@@ -581,27 +589,30 @@ export async function importStructuredExportSnapshot(
   }
 
   let assetStage: Awaited<ReturnType<typeof stageAssetImportEntries>> | null = null;
-  options.onProgress?.({
-    message: assetEntries.length > 0 ? '写入附件' : '刷新导入结果',
-    current: assetEntries.length > 0 ? 0 : undefined,
-    total: assetEntries.length > 0 ? assetEntries.length : undefined
-  });
-  try {
-    assetStage = await stageAssetImportEntries(assetEntries, {
-      assetCommitId,
-      onProgress: (current, total) => options.onProgress?.({ message: '写入附件', current, total })
-    });
-  } catch (error) {
-    skipDomains.push('asset');
-    failures.push({
-      domain: 'asset',
-      stage: 'asset-staging',
-      reason: restoreFailureReason(error)
+  const skipAssetDomain = skipDomains.includes('asset');
+  if (!skipAssetDomain) {
+    options.onProgress?.({
+      message: assetEntries.length > 0 ? '写入附件' : '刷新导入结果',
+      current: assetEntries.length > 0 ? 0 : undefined,
+      total: assetEntries.length > 0 ? assetEntries.length : undefined
     });
     try {
-      await recoverPendingAssetImportStage();
-    } catch {
-      // The durable manifest remains for startup recovery.
+      assetStage = await stageAssetImportEntries(assetEntries, {
+        assetCommitId,
+        onProgress: (current, total) => options.onProgress?.({ message: '写入附件', current, total })
+      });
+    } catch (error) {
+      skipDomains.push('asset');
+      failures.push({
+        domain: 'asset',
+        stage: 'asset-staging',
+        reason: restoreFailureReason(error)
+      });
+      try {
+        await recoverPendingAssetImportStage();
+      } catch {
+        // The durable manifest remains for startup recovery.
+      }
     }
   }
 

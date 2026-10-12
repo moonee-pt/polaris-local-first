@@ -144,6 +144,47 @@ export function buildOps(rows: Row[], previous: HashCache): { ops: SyncOp[]; nex
   return { ops, next };
 }
 
+// A wiped device (cleared cache / evicted IndexedDB) still has its hash cache in
+// localStorage, so buildOps would happily emit DELETE ops for every conversation and persona
+// the cloud still holds, wiping it. If the local snapshot carries no conversations/personas
+// while the cache remembers them, treat the device as wiped and drop every deletion op — the
+// startup pull/merge path restores the data instead.
+export function filterWipedDeviceOps(ops: SyncOp[], rows: Row[], previous: HashCache): SyncOp[] {
+  const localConversations = new Set<string>();
+  const localPersonas = new Set<string>();
+  for (const row of rows) {
+    // The personas table always carries a 'meta' row; only real persona ids count as data.
+    if (row.table === 'sync_conversations') localConversations.add(row.id);
+    if (row.table === 'sync_personas' && row.id !== 'meta') localPersonas.add(row.id);
+  }
+  const cacheHadConversations = Object.keys(previous.sync_conversations).length > 0;
+  const cacheHadPersonas = Object.keys(previous.sync_personas).some((id) => id !== 'meta');
+  const wipedConversations = localConversations.size === 0 && cacheHadConversations;
+  const wipedPersonas = localPersonas.size === 0 && cacheHadPersonas;
+  if (!wipedConversations && !wipedPersonas) return ops;
+  return ops.filter((op) => {
+    if (!op.delete) return true;
+    if (op.table === 'sync_conversations' && wipedConversations) return false;
+    if (op.table === 'sync_personas' && wipedPersonas) return false;
+    return true;
+  });
+}
+
+// When deletions were suppressed as a wipe-guard, keep the remembered hashes for those still-
+// live cloud rows so the guard keeps firing until the data is pulled back. Without this the
+// next tick would see an empty cache and re-push the wiped-local-empty state as new rows.
+export function retainProtectedRows(next: HashCache, safeOps: SyncOp[], previous: HashCache): HashCache {
+  const deleted = new Set(safeOps.filter((op) => op.delete).map((op) => `${op.table}:${op.id}`));
+  const result = emptyHashCache();
+  for (const table of SYNC_TABLES) {
+    for (const [id, hash] of Object.entries(next[table])) result[table][id] = hash;
+    for (const [id, hash] of Object.entries(previous[table])) {
+      if (!(id in next[table]) && !deleted.has(`${table}:${id}`)) result[table][id] = hash;
+    }
+  }
+  return result;
+}
+
 // ---- merge cloud rows into a local snapshot -----------------------------------
 
 export function mergeCloudIntoLocal(
@@ -242,15 +283,16 @@ export async function syncOnStartup(): Promise<StartupResult> {
     if (pull && pull.latestAt > since) {
       const local = await buildCloudSyncSnapshot();
       const merged = mergeCloudIntoLocal(local, pull);
-      await importStructuredExportSnapshot(merged);
+      await importStructuredExportSnapshot(merged, { skipDomains: ['asset'] });
     }
 
     const snapshot = await buildCloudSyncSnapshot();
     const rows = splitSnapshotToRows(snapshot);
-    const { ops, next } = buildOps(rows, cache);
+    const { ops: rawOps, next } = buildOps(rows, cache);
+    const ops = filterWipedDeviceOps(rawOps, rows, cache);
     if (ops.length > 0) {
       const result = await pushOps(ops);
-      writeHashCache(next);
+      writeHashCache(ops.length === rawOps.length ? next : retainProtectedRows(next, ops, cache));
       setLastSyncAt(Math.max(result.latestAt, pull?.latestAt ?? 0));
       return 'pushed';
     }
@@ -272,9 +314,10 @@ export async function runAutoCloudBackup(): Promise<SyncTickResult> {
     const rows = splitSnapshotToRows(snapshot);
     const cache = readHashCache();
     const { ops, next } = buildOps(rows, cache);
-    if (ops.length === 0) return 'skipped-clean';
-    const result = await pushOps(ops);
-    writeHashCache(next);
+    const safeOps = filterWipedDeviceOps(ops, rows, cache);
+    if (safeOps.length === 0) return 'skipped-clean';
+    const result = await pushOps(safeOps);
+    writeHashCache(safeOps.length === ops.length ? next : retainProtectedRows(next, safeOps, cache));
     setLastSyncAt(result.latestAt);
     return 'ok';
   } catch {
@@ -321,7 +364,10 @@ export async function downloadCloudBackup(
   if (pull.latestAt <= 0) return { restored: false };
   const local = await buildCloudSyncSnapshot();
   const merged = mergeCloudIntoLocal(local, pull);
-  await importStructuredExportSnapshot(merged, options.onProgress ? { onProgress: options.onProgress } : {});
+  await importStructuredExportSnapshot(merged, {
+    ...(options.onProgress ? { onProgress: options.onProgress } : {}),
+    skipDomains: ['asset']
+  });
   commitCacheFor(splitSnapshotToRows(merged), pull.latestAt);
   return { restored: true, updatedAt: new Date(pull.latestAt).toISOString() };
 }

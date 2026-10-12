@@ -65,7 +65,7 @@ The remaining missing handler rows mark routes that need implementation before u
 
 ### Node Selfhost Status
 
-The current `server/` directory contains shared relay-target validators used by API surfaces. It is a responsibility area, not a complete standalone Node selfhost application. The `selfhost:*` scripts are kept for the release-channel server build shape, but public readers should treat the Vercel-style `api/` handlers and the Worker package below as the concrete backend surfaces currently present here.
+`server/selfhost/server.ts` is now a runnable standalone Node server: it serves the built `dist/` frontend and mounts the cloud-sync routes (`/api/sync/push`, `/api/sync/pull`) from the same platform-independent core in `src/engines/server/syncCore.ts` that the Vercel handlers use. Build and start it with `npm run selfhost:prepare` then `npm run selfhost:start` (set `MONGODB_URI`). Because sync runs on shared core code, moving between Vercel and this selfhost server needs no data migration — see `docs/cloud-sync-not-tied-to-vercel.md`. The other `server/*.ts` files remain shared relay-target validators, and the remaining `/api/*` surfaces (provider relays, search, diagnostics) are still Vercel-style handlers only.
 
 ### Cloudflare Worker Example
 

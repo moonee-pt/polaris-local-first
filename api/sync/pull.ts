@@ -1,50 +1,31 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getTableCollection } from '../../src/engines/server/mongo.js';
-import { applySyncCors, getSyncUserId } from '../../src/engines/server/syncHttp.js';
-import { SYNC_TABLES, type PullResponse, type SyncTableName, type SyncDoc } from '../../src/engines/syncProtocol.js';
+import { CORS_METHODS, handleSyncPull, type SyncResponse } from '../../src/engines/server/syncCore.js';
 
-type Row = { _id: string; updatedAt: Date; data: unknown };
-
-async function readTable(userId: string, table: SyncTableName, since: number | null): Promise<SyncDoc[]> {
-  const collection = await getTableCollection(table);
-  const filter: Record<string, unknown> = { userId };
-  if (since !== null) filter.updatedAt = { $gt: new Date(since) };
-  const docs = await collection.find<Row>(filter).toArray();
-  return docs.map((doc) => ({
-    id: String(doc._id),
-    data: doc.data,
-    updatedAt: doc.updatedAt instanceof Date ? doc.updatedAt.getTime() : Number(doc.updatedAt ?? 0)
-  }));
+function writeSyncResponse(res: VercelResponse, result: SyncResponse) {
+  if (result.corsOrigin) {
+    res.setHeader('Access-Control-Allow-Origin', result.corsOrigin);
+    res.setHeader('Vary', 'Origin');
+  }
+  res.setHeader('Access-Control-Allow-Methods', CORS_METHODS.pull);
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Max-Age', '86400');
+  if (result.json === undefined) {
+    res.status(result.status).end();
+    return;
+  }
+  res.status(result.status).json(result.json);
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  applySyncCors(req, res, 'GET, OPTIONS');
-
-  if (req.method === 'OPTIONS') {
-    res.status(204).end();
-    return;
+  const query: Record<string, string> = {};
+  for (const [key, value] of Object.entries(req.query ?? {})) {
+    query[key] = Array.isArray(value) ? (value[0] ?? '') : String(value ?? '');
   }
-
-  if (req.method !== 'GET') {
-    res.status(405).json({ error: { message: 'Method not allowed', type: 'invalid_request' } });
-    return;
-  }
-
-  const sinceRaw = typeof req.query.since === 'string' ? Number(req.query.since) : null;
-  const since = Number.isFinite(sinceRaw as number) ? (sinceRaw as number) : null;
-
-  try {
-    const userId = getSyncUserId(req);
-    const tables = {} as Record<SyncTableName, SyncDoc[]>;
-    let latestAt = 0;
-    for (const table of SYNC_TABLES) {
-      const rows = await readTable(userId, table, since);
-      tables[table] = rows;
-      for (const row of rows) if (row.updatedAt > latestAt) latestAt = row.updatedAt;
-    }
-    const payload: PullResponse = { ok: true, tables, latestAt };
-    res.status(200).json(payload);
-  } catch (error) {
-    res.status(500).json({ error: { message: error instanceof Error ? error.message : 'Pull failed', type: 'server_error' } });
-  }
+  writeSyncResponse(res, await handleSyncPull({
+    method: req.method ?? 'GET',
+    path: req.url ?? '',
+    query,
+    body: null,
+    origin: req.headers.origin || ''
+  }));
 }
