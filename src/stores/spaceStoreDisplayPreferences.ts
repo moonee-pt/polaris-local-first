@@ -1,4 +1,5 @@
 import type { AppAppearancePreference, AppDisplayPreferences } from '../types/domain';
+import { DEFAULT_APP_BACKGROUND_THEME_ID, normalizeAppBackgroundThemeId } from '../config/theme/appBackgroundThemes';
 
 export const FONT_SCALE_MIN = 0.9;
 export const FONT_SCALE_MAX = 1.5;
@@ -10,7 +11,8 @@ function clamp(value: number, min: number, max: number) {
 export const DEFAULT_DISPLAY_PREFERENCES: AppDisplayPreferences = {
   appearance: 'system',
   hapticsEnabled: false,
-  fontScale: 1
+  fontScale: 1,
+  backgroundTheme: DEFAULT_APP_BACKGROUND_THEME_ID
 };
 
 export function normalizeAppearancePreference(value: unknown): AppAppearancePreference {
@@ -35,7 +37,8 @@ export function normalizeDisplayPreferences(
     fontScale:
       typeof source.fontScale === 'number'
         ? clamp(source.fontScale, FONT_SCALE_MIN, FONT_SCALE_MAX)
-        : DEFAULT_DISPLAY_PREFERENCES.fontScale
+        : DEFAULT_DISPLAY_PREFERENCES.fontScale,
+    backgroundTheme: normalizeAppBackgroundThemeId(source.backgroundTheme)
   };
 }
 

@@ -3,8 +3,13 @@ import type { I18nTranslator } from '../../../i18n/translator';
 import { useI18n } from '../../../i18n/useI18n';
 import type {
   AppAppearancePreference,
+  AppBackgroundThemeId,
   AppDisplayPreferences
 } from '../../../types/domain';
+import {
+  APP_BACKGROUND_THEME_OPTIONS,
+  DEFAULT_APP_BACKGROUND_THEME_ID
+} from '../../../config/theme/appBackgroundThemes';
 import { Icon } from '../../Icon';
 
 type MenuDisplayPageProps = {
@@ -12,6 +17,7 @@ type MenuDisplayPageProps = {
   onBack: () => void;
   onSetAppearance: (appearance: AppAppearancePreference) => void;
   onSetHapticsEnabled: (enabled: boolean) => void;
+  onSetBackgroundTheme: (themeId: AppBackgroundThemeId) => void;
 };
 
 function getAppearanceOptions(t: I18nTranslator['t']): Array<{
@@ -42,10 +48,12 @@ export function MenuDisplayPage({
   displayPreferences,
   onBack,
   onSetAppearance,
-  onSetHapticsEnabled
+  onSetHapticsEnabled,
+  onSetBackgroundTheme
 }: MenuDisplayPageProps) {
   const { t } = useI18n();
   const appearanceOptions = useMemo(() => getAppearanceOptions(t), [t]);
+  const activeBackgroundTheme = displayPreferences.backgroundTheme ?? DEFAULT_APP_BACKGROUND_THEME_ID;
 
   return (
     <div className="menu-sheet-page menu-display-page">
@@ -77,6 +85,26 @@ export function MenuDisplayPage({
                 >
                   <span>{option.label}</span>
                   <small>{option.detail}</small>
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="menu-preference-row menu-preference-row--background">
+            <span className="menu-preference-copy">
+              <strong>{t('settings.display.backgroundTitle')}</strong>
+              <small>{t('settings.display.backgroundDetail')}</small>
+            </span>
+            <div className="menu-background-theme-options" role="group" aria-label={t('settings.display.backgroundTitle')}>
+              {APP_BACKGROUND_THEME_OPTIONS.map((option) => (
+                <button
+                  key={option.id}
+                  type="button"
+                  className={`menu-background-theme-option ${activeBackgroundTheme === option.id ? 'active' : ''}`}
+                  aria-pressed={activeBackgroundTheme === option.id}
+                  onClick={() => onSetBackgroundTheme(option.id)}
+                >
+                  <span className="menu-background-theme-swatch" style={{ background: option.swatch }} />
+                  <span className="menu-background-theme-label">{t(option.labelKey)}</span>
                 </button>
               ))}
             </div>

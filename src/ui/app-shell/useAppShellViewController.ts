@@ -15,6 +15,7 @@ import { blurChatWorldFocus } from './chatWorldFocusHandoff';
 import { isWorldFrameInteractive } from './worldFrameInteractivity';
 import type { PersistenceReadFailureNoticeState } from './usePersistenceReadFailureNotice';
 import { useAppearanceDomEffects } from '../useAppearanceDomEffects';
+import { useAppBackgroundThemeDomEffects } from '../useAppBackgroundThemeDomEffects';
 import type { World } from '../../types/domain';
 
 type AppShellViewControllerInput = ReturnType<typeof useAppShellController> & {
@@ -173,6 +174,7 @@ export function useAppShellViewController(props: AppShellViewControllerInput) {
   };
 
   useAppearanceDomEffects(displayPreferences.appearance);
+  useAppBackgroundThemeDomEffects(displayPreferences.backgroundTheme);
   useCustomFontDomEffects(customization, displayPreferences);
   useCloudAutoSync();
 

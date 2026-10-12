@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import type { AppBackgroundThemeId } from '../../types/domain';
 import type { RequestDebugEntry } from '../../engines/request/requestDebugRuntime';
 import type { LocalDataHealthSnapshot } from '../../infrastructure/localDataHealth';
 import type { LocalRuntimeLogEntry } from './localRuntimeLog';
@@ -329,6 +330,7 @@ export function useMenuSheetController({
     onSetAppearance: (appearance: typeof displayPreferences.appearance) => setDisplayPreferences({ appearance }),
     onSetDisplayFontScale: (fontScale: number) => setDisplayPreferences({ fontScale }),
     onSetHapticsEnabled: (enabled: boolean) => setDisplayPreferences({ hapticsEnabled: enabled }),
+    onSetBackgroundTheme: (backgroundTheme: AppBackgroundThemeId) => setDisplayPreferences({ backgroundTheme }),
     onDeleteCustomFont: fontLibrary.onDeleteCustomFont,
     onRefreshStorageHealth: () => refreshStorageHealth({ includeRuntimeLog: true }),
     onClearDiagnostics: clearDiagnostics,

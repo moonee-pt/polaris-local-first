@@ -18,7 +18,8 @@ describe('normalizeDisplayPreferences', () => {
     })).toEqual({
       appearance: 'dark',
       hapticsEnabled: false,
-      fontScale: 1.5
+      fontScale: 1.5,
+      backgroundTheme: 'pink'
     });
   });
 
@@ -30,7 +31,8 @@ describe('normalizeDisplayPreferences', () => {
     })).toEqual({
       appearance: 'system',
       hapticsEnabled: true,
-      fontScale: 1
+      fontScale: 1,
+      backgroundTheme: 'pink'
     });
   });
 });
@@ -43,7 +45,8 @@ describe('mergeDisplayPreferencesPatch', () => {
     })).toEqual({
       appearance: 'light',
       hapticsEnabled: false,
-      fontScale: 0.9
+      fontScale: 0.9,
+      backgroundTheme: 'pink'
     });
   });
 });

@@ -21,11 +21,22 @@ export type ProviderProtocol =
 export type AppBackgroundFit = 'cover' | 'contain';
 export type CustomFontScope = 'global' | 'titles' | 'chat' | 'cards';
 export type AppAppearancePreference = 'system' | 'light' | 'dark';
+export type AppBackgroundThemeId =
+  | 'pink'
+  | 'claude'
+  | 'lotus'
+  | 'sage'
+  | 'mistBlue'
+  | 'mistPurple'
+  | 'apricot'
+  | 'mistTeal'
+  | 'roseBeige';
 
 export interface AppDisplayPreferences {
   appearance: AppAppearancePreference;
   hapticsEnabled: boolean;
   fontScale: number;
+  backgroundTheme?: AppBackgroundThemeId;
 }
 
 export interface AppCustomization {
