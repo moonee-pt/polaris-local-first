@@ -10,6 +10,17 @@ export interface ProviderProfile {
   model: string;
   capabilities: ProviderCapabilities;
   imageUnderstanding?: ImageUnderstandingSettings;
+  pricing?: ProviderPricing;
+}
+
+export type ProviderPricingMode = 'usage' | 'call';
+
+export interface ProviderPricing {
+  mode: ProviderPricingMode;
+  inputPerMillion: number | null;
+  outputPerMillion: number | null;
+  cachePerMillion: number | null;
+  perCall: number | null;
 }
 
 export type ProviderProtocol =

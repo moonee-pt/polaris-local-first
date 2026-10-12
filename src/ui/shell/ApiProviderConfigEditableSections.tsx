@@ -1,5 +1,6 @@
-import type { ImageUnderstandingSettings, ProviderProfile } from '../../types/domain';
+import type { ImageUnderstandingSettings, ProviderPricing, ProviderProfile } from '../../types/domain';
 import { canDiscoverProviderModels, type ProviderModelOption } from '../../engines/providerModelDiscovery';
+import { DEFAULT_PROVIDER_PRICING } from '../../engines/providerPricing';
 import { useI18n } from '../../i18n/useI18n';
 import { Icon } from '../Icon';
 import { getProviderModelDisplayLabel, isBuiltInProviderDisplay } from './apiProviderDisplay';
@@ -233,6 +234,110 @@ export function ApiProviderImageUnderstandingSection({
             </div>
           ) : null}
         </div>
+      </div>
+    </section>
+  );
+}
+
+type ApiProviderPricingSectionProps = {
+  api: ProviderProfile;
+  onSetApiConfig: (patch: Partial<ProviderProfile>) => void;
+};
+
+export function ApiProviderPricingSection({
+  api,
+  onSetApiConfig
+}: ApiProviderPricingSectionProps) {
+  const { t } = useI18n();
+  const pricing = api.pricing ?? DEFAULT_PROVIDER_PRICING;
+  const patchPricing = (patch: Partial<ProviderPricing>) => {
+    onSetApiConfig({ pricing: { ...pricing, ...patch } });
+  };
+  const readPrice = (raw: string) => {
+    const trimmed = raw.trim();
+    if (!trimmed) return null;
+    const value = Number(trimmed);
+    return Number.isFinite(value) && value >= 0 ? value : null;
+  };
+  const priceValue = (value: number | null) => (value === null ? '' : String(value));
+
+  return (
+    <section className="api-provider-section">
+      <div className="api-provider-section-head">
+        <h3>{t('apiProvider.pricing.title')}</h3>
+        <p>{t('apiProvider.pricing.detail')}</p>
+      </div>
+      <div className="settings-form">
+        <div className="provider-pricing-mode" role="group" aria-label={t('apiProvider.pricing.title')}>
+          <button
+            type="button"
+            className={`provider-model-chip ${pricing.mode === 'usage' ? 'active' : ''}`}
+            aria-pressed={pricing.mode === 'usage'}
+            onClick={() => patchPricing({ mode: 'usage' })}
+          >
+            {t('apiProvider.pricing.modeUsage')}
+          </button>
+          <button
+            type="button"
+            className={`provider-model-chip ${pricing.mode === 'call' ? 'active' : ''}`}
+            aria-pressed={pricing.mode === 'call'}
+            onClick={() => patchPricing({ mode: 'call' })}
+          >
+            {t('apiProvider.pricing.modeCall')}
+          </button>
+        </div>
+
+        {pricing.mode === 'usage' ? (
+          <>
+            <label>{t('apiProvider.pricing.inputLabel')}</label>
+            <div className="provider-pricing-row">
+              <input
+                inputMode="decimal"
+                value={priceValue(pricing.inputPerMillion)}
+                onChange={(event) => patchPricing({ inputPerMillion: readPrice(event.target.value) })}
+                placeholder={t('apiProvider.pricing.inputPlaceholder')}
+                autoComplete="off"
+              />
+              <span className="provider-pricing-unit">{t('apiProvider.pricing.perMillionUnit')}</span>
+            </div>
+            <label>{t('apiProvider.pricing.outputLabel')}</label>
+            <div className="provider-pricing-row">
+              <input
+                inputMode="decimal"
+                value={priceValue(pricing.outputPerMillion)}
+                onChange={(event) => patchPricing({ outputPerMillion: readPrice(event.target.value) })}
+                placeholder={t('apiProvider.pricing.outputPlaceholder')}
+                autoComplete="off"
+              />
+              <span className="provider-pricing-unit">{t('apiProvider.pricing.perMillionUnit')}</span>
+            </div>
+            <label>{t('apiProvider.pricing.cacheLabel')}</label>
+            <div className="provider-pricing-row">
+              <input
+                inputMode="decimal"
+                value={priceValue(pricing.cachePerMillion)}
+                onChange={(event) => patchPricing({ cachePerMillion: readPrice(event.target.value) })}
+                placeholder={t('apiProvider.pricing.cachePlaceholder')}
+                autoComplete="off"
+              />
+              <span className="provider-pricing-unit">{t('apiProvider.pricing.perMillionUnit')}</span>
+            </div>
+          </>
+        ) : (
+          <>
+            <label>{t('apiProvider.pricing.perCallLabel')}</label>
+            <div className="provider-pricing-row">
+              <input
+                inputMode="decimal"
+                value={priceValue(pricing.perCall)}
+                onChange={(event) => patchPricing({ perCall: readPrice(event.target.value) })}
+                placeholder={t('apiProvider.pricing.perCallPlaceholder')}
+                autoComplete="off"
+              />
+              <span className="provider-pricing-unit">{t('apiProvider.pricing.perCallUnit')}</span>
+            </div>
+          </>
+        )}
       </div>
     </section>
   );

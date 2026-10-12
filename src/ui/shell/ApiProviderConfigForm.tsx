@@ -9,7 +9,8 @@ import { ApiProviderConnectionSection } from './ApiProviderConnectionSection';
 import {
   ApiProviderCapabilitiesSection,
   ApiProviderImageUnderstandingSection,
-  ApiProviderModelSection
+  ApiProviderModelSection,
+  ApiProviderPricingSection
 } from './ApiProviderConfigEditableSections';
 import {
   ApiProviderConfigFormProps,
@@ -168,6 +169,13 @@ export function ApiProviderConfigForm({
         onSetApiConfig={onSetApiConfig}
         onOpenModelPicker={handleModelPickerAction}
       />
+
+      {!builtInProvider ? (
+        <ApiProviderPricingSection
+          api={api}
+          onSetApiConfig={onSetApiConfig}
+        />
+      ) : null}
 
       <ApiProviderSummarySection
         apiTesting={apiTesting}

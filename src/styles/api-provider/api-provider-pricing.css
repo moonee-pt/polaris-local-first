@@ -1,0 +1,25 @@
+/* Provider billing: mode chips + price rows with a unit suffix. */
+.provider-pricing-mode {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
+.provider-pricing-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.provider-pricing-row input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.provider-pricing-unit {
+  flex: 0 0 auto;
+  font-size: var(--type-caption);
+  color: var(--sheet-readable-muted, var(--text-muted));
+  white-space: nowrap;
+}

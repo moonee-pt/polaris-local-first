@@ -12,6 +12,7 @@ import {
 } from '../engines/providerProtocol';
 import type { ProviderProfile } from '../types/domain';
 import { normalizeImageUnderstandingSettings } from './runtimeStoreImageUnderstanding';
+import { normalizeProviderPricing } from '../engines/providerPricing';
 
 export const DEFAULT_CUSTOM_PROVIDER: Omit<ProviderProfile, 'id'> = {
   name: '新线路',
@@ -104,11 +105,17 @@ function normalizeCustomProvider(provider: Partial<ProviderProfile>, index: numb
       thinking: provider.capabilities?.thinking ?? matchedPreset?.capabilities.thinking ?? DEFAULT_CUSTOM_PROVIDER.capabilities.thinking
     }
   };
-  return provider.imageUnderstanding === undefined
+  const withImageUnderstanding = provider.imageUnderstanding === undefined
     ? normalized
     : {
         ...normalized,
         imageUnderstanding: normalizeImageUnderstandingSettings(provider.imageUnderstanding)
+      };
+  return provider.pricing === undefined
+    ? withImageUnderstanding
+    : {
+        ...withImageUnderstanding,
+        pricing: normalizeProviderPricing(provider.pricing)
       };
 }
 
@@ -217,6 +224,9 @@ export function mergeProviderPatch(provider: ProviderProfile, patch: Partial<Pro
   const nextImageUnderstanding = patch.imageUnderstanding !== undefined
     ? normalizeImageUnderstandingSettings(patch.imageUnderstanding)
     : provider.imageUnderstanding;
+  const nextPricing = patch.pricing !== undefined
+    ? normalizeProviderPricing(patch.pricing)
+    : provider.pricing;
 
   const shouldReassignId = wasBuiltIn && isModifyingBuiltInRoute;
 
@@ -231,7 +241,8 @@ export function mergeProviderPatch(provider: ProviderProfile, patch: Partial<Pro
     apiKey: patch.apiKey !== undefined ? patch.apiKey.trim() : provider.apiKey,
     model: nextModel,
     capabilities: nextCapabilities,
-    ...(nextImageUnderstanding === undefined ? {} : { imageUnderstanding: nextImageUnderstanding })
+    ...(nextImageUnderstanding === undefined ? {} : { imageUnderstanding: nextImageUnderstanding }),
+    ...(nextPricing === undefined ? {} : { pricing: nextPricing })
   };
 }
 
