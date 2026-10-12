@@ -42,6 +42,7 @@ type ChatConversationActions = Pick<
   | 'setConversationProgressTitle'
   | 'setConversationLiveState'
   | 'setConversationOutputMode'
+  | 'setPendingOutputMode'
   | 'toggleConversationPinned'
   | 'orphanConversation'
 >;
@@ -95,13 +96,16 @@ export function createChatConversationActions(
     },
 
     createConversation: (collaboratorId = null, options) => {
-      const next = createDirectConversationRecord({
+      const pendingOutputMode = get().pendingOutputMode;
+      const record = createDirectConversationRecord({
         collaboratorId,
         activeProjectId: options?.activeProjectId ?? null
       });
+      const next = pendingOutputMode ? { ...record, outputMode: pendingOutputMode } : record;
       set((state) => ({
         conversations: sortConversations([next, ...state.conversations]),
         activeConversationId: next.id,
+        pendingOutputMode: null,
         ...withConversationBodyStatus(state, next.id, createBodyStatus('loaded')),
         inputDraft: '',
         ...markConversationDirty(state, next.id)
@@ -111,10 +115,13 @@ export function createChatConversationActions(
     },
 
     createGroupConversation: (options) => {
-      const next = createGroupConversationRecord(options);
+      const pendingOutputMode = get().pendingOutputMode;
+      const record = createGroupConversationRecord(options);
+      const next = pendingOutputMode ? { ...record, outputMode: pendingOutputMode } : record;
       set((state) => ({
         conversations: sortConversations([next, ...state.conversations]),
         activeConversationId: next.id,
+        pendingOutputMode: null,
         ...withConversationBodyStatus(state, next.id, createBodyStatus('loaded')),
         inputDraft: '',
         ...markConversationDirty(state, next.id)
@@ -198,6 +205,10 @@ export function createChatConversationActions(
           ...markConversationDirty(state, conversationId)
         };
       });
+    },
+
+    setPendingOutputMode: (mode) => {
+      set({ pendingOutputMode: mode });
     },
 
     toggleConversationPinned: (conversationId) => {

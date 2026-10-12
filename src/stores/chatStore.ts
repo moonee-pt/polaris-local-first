@@ -20,6 +20,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
   loadedMessageConversationIds: [],
   loadingMessageConversationIds: [],
   inputDraft: '',
+  pendingOutputMode: null,
   pendingWorkspaceProposals: [],
   transientRuntimeFeedbackEventsByConversationId: {},
   workspaceScopeEventsByConversationId: {},

@@ -21,6 +21,7 @@ export type ChatState = {
   loadedMessageConversationIds: string[];
   loadingMessageConversationIds: string[];
   inputDraft: string;
+  pendingOutputMode: ChatOutputMode | null;
   pendingWorkspaceProposals: PendingWorkspaceProposalRecord[];
   transientRuntimeFeedbackEventsByConversationId: Record<string, RuntimeFeedbackEvent[]>;
   workspaceScopeEventsByConversationId: Record<string, WorkspaceScopeChangeEvent[]>;
@@ -71,6 +72,7 @@ export type ChatState = {
   setConversationProgressTitle: (conversationId: string, progressTitle: string, round: number) => void;
   setConversationLiveState: (conversationId: string, liveState: string, round: number) => void;
   setConversationOutputMode: (conversationId: string, outputMode: ChatOutputMode) => void;
+  setPendingOutputMode: (mode: ChatOutputMode | null) => void;
   toggleConversationPinned: (conversationId: string) => void;
   orphanConversation: (conversationId: string) => void;
   clearConversationAttachmentsByAssetIds: (assetIds: string[], clearedAt?: number) => void;

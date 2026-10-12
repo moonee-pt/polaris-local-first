@@ -108,7 +108,9 @@ function buildComposerSection(args: {
     }),
     toolPromptPreferences: args.store.runtime.toolPromptPreferences,
     taskModeEnabled: args.store.runtime.taskModeEnabled,
-    outputMode: resolveChatOutputMode(args.derived.activeConversation?.outputMode),
+    outputMode: resolveChatOutputMode(
+      args.derived.activeConversation?.outputMode ?? args.store.chat.pendingOutputMode
+    ),
     themeToolMode: args.store.space.theme.toolMode,
     canReviveTheme: args.store.space.theme.skinHistory.length > 0
   };
@@ -264,9 +266,15 @@ function buildActionsSection(args: {
     setOutputMode: (mode: ChatOutputMode) => {
       const chatState = useChatStore.getState();
       const conversationId = chatState.activeConversationId;
-      if (!conversationId) return;
+      if (!conversationId) {
+        chatState.setPendingOutputMode(mode);
+        return;
+      }
       const conversation = chatState.conversations.find((entry) => entry.id === conversationId);
-      if (!conversation) return;
+      if (!conversation) {
+        chatState.setPendingOutputMode(mode);
+        return;
+      }
       if (resolveChatOutputMode(conversation.outputMode) === mode) return;
       chatState.setConversationOutputMode(conversationId, mode);
       const writable = chatState.getConversationWritable(conversationId);
