@@ -114,6 +114,8 @@ function createCompanionReplyChatPort(): RequestReplyChatPort {
     setConversationTask: useChatStore.getState().setConversationTask,
     setConversationProgressTitle: (conversationId: string, progressTitle: string, round: number) =>
       useChatStore.getState().setConversationProgressTitle(conversationId, progressTitle, round),
+    setConversationLiveState: (conversationId: string, liveState: string, round: number) =>
+      useChatStore.getState().setConversationLiveState(conversationId, liveState, round),
     updateMessage: (target, messageId, patch) =>
       useChatStore.getState().updateMessage(target, messageId, patch),
     appendRuntimeFeedbackEvent: useChatStore.getState().appendRuntimeFeedbackEvent

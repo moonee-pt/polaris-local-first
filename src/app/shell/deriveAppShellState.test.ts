@@ -11,7 +11,7 @@ const baseArgs = {
   activeThemePreview: null,
   personas: [persona],
   frontstageCollaboratorId: 'aa',
-  activeConversationTitle: 'Chat',
+  activeConversationLiveState: null,
   activeConversationCollaboratorId: 'aa',
   activeConversationMessageCount: 0,
   collectionRenderItemCount: 0,
@@ -77,15 +77,39 @@ describe('deriveAppShellState', () => {
     expect(state.showTopbarTitle).toBe(true);
   });
 
-  it('shows the current collaborator in a fresh chat with no title yet', () => {
+  it('shows the collaborator with no detail in a fresh chat before any state', () => {
     const state = deriveAppShellState({
       ...baseArgs,
       activeWorld: 'chat',
-      activeConversationTitle: null,
+      activeConversationLiveState: null,
       activeConversationCollaboratorId: null
     });
 
     expect(state.topbarTitle).toBe(persona.name);
     expect(state.topbarTitleTone).toBe('collaborator');
+    expect(state.worldLabel).toBe('Chat');
+    expect(state.worldDetail).toBeNull();
+  });
+
+  it('shows only the live state under the collaborator name in chat', () => {
+    const state = deriveAppShellState({
+      ...baseArgs,
+      activeWorld: 'chat',
+      activeConversationLiveState: '在调封面色调'
+    });
+
+    expect(state.worldLabel).toBe('');
+    expect(state.worldDetail).toBe('在调封面色调');
+  });
+
+  it('trims the live state and drops it outside chat', () => {
+    const state = deriveAppShellState({
+      ...baseArgs,
+      activeWorld: 'collection',
+      activeConversationLiveState: '  在调封面色调  '
+    });
+
+    expect(state.worldLabel).toBe('Rooms');
+    expect(state.worldDetail).toBeNull();
   });
 });

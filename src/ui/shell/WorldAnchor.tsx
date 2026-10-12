@@ -89,10 +89,10 @@ export function WorldAnchor({
         {showWorldLabel ? (
           <p className={showTitle ? undefined : 'brand-label-only-copy'}>
             <span className="pulse-dot" />
-            <span className="brand-meta-label">{worldLabel}</span>
+            {worldLabel ? <span className="brand-meta-label">{worldLabel}</span> : null}
             {worldDetail ? (
               <>
-                <span className="brand-meta-sep">·</span>
+                {worldLabel ? <span className="brand-meta-sep">·</span> : null}
                 <span className="brand-meta-detail">{worldDetail}</span>
               </>
             ) : null}

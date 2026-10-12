@@ -281,6 +281,8 @@ function toConversation(catalog: ConversationCatalogRow, record: ConversationRec
     title: normalizeConversationTitle(catalog.title, messages),
     progressTitle: catalog.progressTitle,
     progressTitleRound: catalog.progressTitleRound,
+    liveState: catalog.liveState,
+    liveStateRound: catalog.liveStateRound,
     kind: catalog.kind ?? 'direct',
     collaboratorId: catalog.collaboratorId,
     group: catalog.group,

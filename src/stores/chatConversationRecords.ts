@@ -158,6 +158,31 @@ export function renameConversationInRecords(
   );
 }
 
+export function setConversationLiveStateRecord(
+  conversation: Conversation,
+  liveState: string,
+  round: number
+): Conversation | null {
+  const nextState = liveState.trim();
+  if (!nextState || nextState === conversation.liveState) return null;
+  return { ...conversation, liveState: nextState, liveStateRound: round };
+}
+
+export function setConversationLiveStateInRecords(
+  conversations: Conversation[],
+  conversationId: string,
+  liveState: string,
+  round: number
+): Conversation[] | null {
+  const target = conversations.find((conversation) => conversation.id === conversationId);
+  if (!target) return null;
+  const nextConversation = setConversationLiveStateRecord(target, liveState, round);
+  if (!nextConversation) return null;
+  return conversations.map((conversation) =>
+    conversation.id === conversationId ? nextConversation : conversation
+  );
+}
+
 export function setConversationProgressTitleRecord(
   conversation: Conversation,
   progressTitle: string,

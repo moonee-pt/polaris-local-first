@@ -118,7 +118,8 @@ export function resolveAssistantToolIngress(args: ResolveAssistantToolIngressArg
       sources: authoritativeBatch.sources.length ? authoritativeBatch.sources : ['none' as const],
       sanitizedContent,
       taskUpdate: taskParsed.taskUpdate,
-      progressTitle: progressParsed.progressTitle
+      progressTitle: progressParsed.progressTitle,
+      liveState: progressParsed.liveState
     };
   }
 
@@ -164,7 +165,8 @@ export function resolveAssistantToolIngress(args: ResolveAssistantToolIngressArg
       sources: [recovery.source],
       sanitizedContent,
       taskUpdate: taskParsed.taskUpdate,
-      progressTitle: progressParsed.progressTitle
+      progressTitle: progressParsed.progressTitle,
+      liveState: progressParsed.liveState
     };
   }
 
@@ -177,6 +179,7 @@ export function resolveAssistantToolIngress(args: ResolveAssistantToolIngressArg
     sources: authoritativeBatch.sources.length ? authoritativeBatch.sources : ['none' as const],
     sanitizedContent,
     taskUpdate: taskParsed.taskUpdate,
-    progressTitle: progressParsed.progressTitle
+    progressTitle: progressParsed.progressTitle,
+    liveState: progressParsed.liveState
   };
 }

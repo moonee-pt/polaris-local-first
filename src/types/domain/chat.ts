@@ -159,6 +159,10 @@ export interface Conversation {
   progressTitle?: string;
   // How many of the user's turns it took when that title was written; paces the next change.
   progressTitleRound?: number;
+  // One short line the assistant writes about what it is doing right now; shown under the
+  // collaborator name at the top of the chat.
+  liveState?: string;
+  liveStateRound?: number;
   kind?: 'direct' | 'group';
   collaboratorId: string | null;
   group?: GroupConversationState;

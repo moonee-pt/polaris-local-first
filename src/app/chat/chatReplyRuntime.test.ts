@@ -235,6 +235,7 @@ describe('requestReply task activation', () => {
         replaceConversationMessages: vi.fn(),
         getConversationTask: vi.fn(() => null),
         setConversationProgressTitle: vi.fn(),
+        setConversationLiveState: vi.fn(),
         setConversationTask: vi.fn(),
         updateMessage: vi.fn((_conversationId, messageId, patch) => {
           conversationMessages = conversationMessages.map((message) =>
@@ -338,6 +339,7 @@ describe('requestReply task activation', () => {
         replaceConversationMessages: vi.fn(),
         getConversationTask: vi.fn(() => null),
         setConversationProgressTitle: vi.fn(),
+        setConversationLiveState: vi.fn(),
         setConversationTask: vi.fn(),
         updateMessage: vi.fn((_conversationId, messageId, patch) => {
           conversationMessages = conversationMessages.map((message) =>
@@ -455,6 +457,7 @@ describe('requestReply task activation', () => {
         replaceConversationMessages: vi.fn(),
         getConversationTask: vi.fn(() => null),
         setConversationProgressTitle: vi.fn(),
+        setConversationLiveState: vi.fn(),
         setConversationTask: vi.fn(),
         updateMessage: vi.fn((_conversationId, messageId, patch) => {
           conversationMessages = conversationMessages.map((message) =>
@@ -554,6 +557,7 @@ describe('requestReply task activation', () => {
         }),
         getConversationTask: vi.fn(() => currentTask),
         setConversationProgressTitle: vi.fn(),
+        setConversationLiveState: vi.fn(),
         setConversationTask: vi.fn((_conversationId, nextTask) => {
           currentTask = nextTask;
         }),
@@ -654,6 +658,7 @@ describe('requestReply task activation', () => {
         replaceConversationMessages: vi.fn(),
         getConversationTask: vi.fn(() => currentTask),
         setConversationProgressTitle: vi.fn(),
+        setConversationLiveState: vi.fn(),
         setConversationTask: vi.fn((_conversationId, nextTask) => {
           currentTask = nextTask;
         }),
@@ -750,6 +755,7 @@ describe('requestReply task activation', () => {
         replaceConversationMessages: vi.fn(),
         getConversationTask: vi.fn(() => currentTask),
         setConversationProgressTitle: vi.fn(),
+        setConversationLiveState: vi.fn(),
         setConversationTask: vi.fn((_conversationId, nextTask) => {
           currentTask = nextTask;
         }),
@@ -837,6 +843,7 @@ describe('requestReply task activation', () => {
         replaceConversationMessages: vi.fn(),
         getConversationTask: vi.fn(() => currentTask),
         setConversationProgressTitle: vi.fn(),
+        setConversationLiveState: vi.fn(),
         setConversationTask: vi.fn((_conversationId, nextTask) => {
           currentTask = nextTask;
         }),
@@ -942,6 +949,7 @@ describe('requestReply task activation', () => {
         replaceConversationMessages: vi.fn(),
         getConversationTask: vi.fn(() => currentTask),
         setConversationProgressTitle: vi.fn(),
+        setConversationLiveState: vi.fn(),
         setConversationTask: vi.fn((_conversationId, nextTask) => {
           currentTask = nextTask;
         }),
@@ -1104,6 +1112,7 @@ describe('requestReply task activation', () => {
         replaceConversationMessages: vi.fn(),
         getConversationTask: vi.fn(() => currentTask),
         setConversationProgressTitle: vi.fn(),
+        setConversationLiveState: vi.fn(),
         setConversationTask: vi.fn((_conversationId, nextTask) => {
           currentTask = nextTask;
         }),
@@ -1250,6 +1259,7 @@ describe('requestReply task activation', () => {
         replaceConversationMessages: vi.fn(),
         getConversationTask: vi.fn(() => currentTask),
         setConversationProgressTitle: vi.fn(),
+        setConversationLiveState: vi.fn(),
         setConversationTask: vi.fn((_conversationId, nextTask) => {
           currentTask = nextTask;
         }),
@@ -1379,6 +1389,7 @@ describe('requestReply task activation', () => {
         replaceConversationMessages: vi.fn(),
         getConversationTask: vi.fn(() => null),
         setConversationProgressTitle: vi.fn(),
+        setConversationLiveState: vi.fn(),
         setConversationTask: vi.fn(),
         updateMessage: vi.fn((_conversationId, messageId, patch) => {
           conversationMessages = conversationMessages.map((message) =>

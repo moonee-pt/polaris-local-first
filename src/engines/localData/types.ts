@@ -149,6 +149,10 @@ export type ConversationCatalogRow = {
   // Assistant-written progress title; on the catalog so list rows render it without bodies.
   progressTitle?: string;
   progressTitleRound?: number;
+  // One short line about what the assistant is doing now; on the catalog so the chat
+  // topbar can show it without loading bodies.
+  liveState?: string;
+  liveStateRound?: number;
   kind?: 'direct' | 'group';
   collaboratorId: string | null;
   group?: GroupConversationState;

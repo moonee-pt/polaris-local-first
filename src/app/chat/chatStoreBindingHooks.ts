@@ -40,6 +40,7 @@ export function useChatConversationStoreBindings() {
     appendRuntimeFeedbackEvent: useChatStore((state) => state.appendRuntimeFeedbackEvent),
     renameConversation: useChatStore((state) => state.renameConversation),
     setConversationProgressTitle: useChatStore((state) => state.setConversationProgressTitle),
+    setConversationLiveState: useChatStore((state) => state.setConversationLiveState),
     toggleConversationPinned: useChatStore((state) => state.toggleConversationPinned),
     deleteConversation: useChatStore((state) => state.deleteConversation),
     clearConversationAttachmentsByAssetIds: useChatStore((state) => state.clearConversationAttachmentsByAssetIds),

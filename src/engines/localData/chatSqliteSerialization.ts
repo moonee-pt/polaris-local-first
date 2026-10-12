@@ -123,6 +123,8 @@ function toConversationMetadata(conversation: Conversation): TypedChatSqliteConv
     title: conversation.title,
     progressTitle: conversation.progressTitle,
     progressTitleRound: conversation.progressTitleRound,
+    liveState: conversation.liveState,
+    liveStateRound: conversation.liveStateRound,
     kind: conversation.kind,
     collaboratorId: conversation.collaboratorId,
     group: conversation.group,

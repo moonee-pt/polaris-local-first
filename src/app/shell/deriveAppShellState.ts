@@ -6,7 +6,7 @@ type DeriveAppShellStateArgs = {
   activeThemePreview: ActiveThemePreview;
   personas: Persona[];
   frontstageCollaboratorId: string | null;
-  activeConversationTitle: string | null;
+  activeConversationLiveState: string | null;
   activeConversationCollaboratorId: string | null;
   activeConversationMessageCount: number;
   collectionRenderItemCount: number;
@@ -22,7 +22,7 @@ export function deriveAppShellState({
   activeThemePreview,
   personas,
   frontstageCollaboratorId,
-  activeConversationTitle,
+  activeConversationLiveState,
   activeConversationCollaboratorId,
   activeConversationMessageCount,
   collectionRenderItemCount,
@@ -48,21 +48,17 @@ export function deriveAppShellState({
       : activeRenderLoad >= 22
         ? 'dense'
         : 'light';
+  const chatLiveState = effectiveWorld === 'chat'
+    ? (activeConversationLiveState?.trim() || null)
+    : null;
   const worldLabel = effectiveWorld === 'collection'
     ? labels.collectionWorld
     : effectiveWorld === 'group'
       ? '群聊'
-      : labels.chatWorld;
-  const worldDetail =
-    effectiveWorld === 'chat'
-      ? (
-          activeConversationTitle
-          && activeConversationTitle !== '未命名对话'
-          && activeConversationTitle !== labels.unnamedConversation
-            ? activeConversationTitle
-            : null
-        )
-      : null;
+      : chatLiveState
+        ? ''
+        : labels.chatWorld;
+  const worldDetail = chatLiveState;
   const showWorldLabel = true;
   const isAggregateCollectionScope = effectiveWorld === 'collection' && currentCollaborator === null;
   const showTopbarShell = activeWorld !== 'group';

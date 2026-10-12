@@ -45,6 +45,7 @@ export function useAppShellStoreBindings() {
   const setActiveConversation = useChatStore((state) => state.setActiveConversation);
   const activeConversation = conversations.find((conversation) => conversation.id === activeConversationId) ?? null;
   const activeConversationTitle = activeConversation?.title ?? null;
+  const activeConversationLiveState = activeConversation?.liveState?.trim() || null;
   const activeConversationCollaboratorId = activeConversation
     ? resolveConversationCollaboratorId(activeConversation)
     : null;
@@ -97,6 +98,7 @@ export function useAppShellStoreBindings() {
       loadedMessageConversationIds,
       activeConversationId,
       activeConversationTitle,
+      activeConversationLiveState,
       activeConversationCollaboratorId,
       activeConversationMessageCount,
       createConversation,

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { buildProgressTitleInstruction } from '../config/prompts/progressTitlePrompt';
+import { buildChatStateInstruction } from '../config/prompts/chatStatePrompt';
 import {
   parseAssistantProgressTitle,
   shouldApplyProgressTitleChange
@@ -69,5 +70,63 @@ describe('buildProgressTitleInstruction', () => {
 
   it('says this is the first title when there is none yet', () => {
     expect(buildProgressTitleInstruction(undefined)).toContain('第一次起标题');
+  });
+});
+
+describe('parseAssistantProgressTitle · live state', () => {
+  it('reads the state line out and keeps the spoken text', () => {
+    const parsed = parseAssistantProgressTitle(
+      '好呀。\n<polaris-state>在调封面色调</polaris-state>'
+    );
+
+    expect(parsed.liveState).toBe('在调封面色调');
+    expect(parsed.displayContent).toBe('好呀。');
+  });
+
+  it('drops commas and extra spaces from the state', () => {
+    const parsed = parseAssistantProgressTitle(
+      '<polaris-state>在写菜谱，第二版</polaris-state>'
+    );
+
+    expect(parsed.liveState).toBe('在写菜谱 第二版');
+  });
+
+  it('caps an over-long state at 12 characters', () => {
+    const parsed = parseAssistantProgressTitle(
+      `<polaris-state>${'字'.repeat(20)}</polaris-state>`
+    );
+
+    expect(parsed.liveState).toHaveLength(12);
+  });
+
+  it('hides a state tag that is still streaming without a closing bracket', () => {
+    const parsed = parseAssistantProgressTitle('好，那就这样。\n<polaris-state>在调封面');
+
+    expect(parsed.liveState).toBeNull();
+    expect(parsed.displayContent).toBe('好，那就这样。');
+  });
+
+  it('keeps both the title and the state from one reply', () => {
+    const parsed = parseAssistantProgressTitle(
+      '正文\n<polaris-progress>第三版封面定稿</polaris-progress>\n<polaris-state>在调封面色调</polaris-state>'
+    );
+
+    expect(parsed.progressTitle).toBe('第三版封面定稿');
+    expect(parsed.liveState).toBe('在调封面色调');
+    expect(parsed.displayContent).toBe('正文');
+  });
+});
+
+describe('buildChatStateInstruction', () => {
+  it('tells the model the current state so it can keep or change it', () => {
+    const instruction = buildChatStateInstruction('在调封面色调');
+
+    expect(instruction).toContain('现在的状态是「在调封面色调」');
+    expect(instruction).toContain('一字不差地重复它');
+    expect(instruction).toContain('12 个字');
+  });
+
+  it('says this is the first state when there is none yet', () => {
+    expect(buildChatStateInstruction(undefined)).toContain('第一次写状态');
   });
 });

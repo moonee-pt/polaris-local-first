@@ -14,6 +14,7 @@ import { VOICE_CALL_MODE_INSTRUCTION } from '../../config/prompts/callModePrompt
 import { SPEECH_CUE_INSTRUCTION } from '../../config/prompts/speechCuePrompt';
 import { shouldIncludeSpeechCueInstruction } from '../../config/prompts/speechCueScene';
 import { buildProgressTitleInstruction } from '../../config/prompts/progressTitlePrompt';
+import { buildChatStateInstruction } from '../../config/prompts/chatStatePrompt';
 import { shouldApplyProgressTitleChange } from '../../engines/conversationProgressTitleParser';
 import { useVoiceCallSession } from '../call/voiceCallSession';
 import type { AssistantReply } from '../../engines/chatApi';
@@ -98,6 +99,7 @@ type RequestReplyArgs = {
     | 'replaceConversationMessages'
     | 'setConversationTask'
     | 'setConversationProgressTitle'
+    | 'setConversationLiveState'
     | 'updateMessage'
     | 'persistToDb'
   >;
@@ -400,7 +402,10 @@ async function requestReplyRound({
           : undefined,
       progressInstruction: writableConversation.conversation.kind === 'group'
         ? undefined
-        : buildProgressTitleInstruction(writableConversation.conversation.progressTitle),
+        : [
+            buildProgressTitleInstruction(writableConversation.conversation.progressTitle),
+            buildChatStateInstruction(writableConversation.conversation.liveState)
+          ].join('\n\n'),
       signal: streaming.controller.signal,
       onProgress: streaming.queueProgress,
       onAudit: (audit) => {
@@ -438,7 +443,7 @@ async function requestReplyRound({
 
     const latestPlaceholder = chat.findConversationMessage(conversationId, placeholderId);
     const finalContent = reply.content.trim() ? reply.content : latestPlaceholder?.content ?? reply.content;
-    const { parsed, visibleContent, isToolOnlyTurn, taskUpdate, progressTitle } = parseAssistantReplyContent(
+    const { parsed, visibleContent, isToolOnlyTurn, taskUpdate, progressTitle, liveState } = parseAssistantReplyContent(
       finalContent,
       modelTier,
       toolContextWithMcp.themeToolMode ?? 'stable',
@@ -564,6 +569,13 @@ async function requestReplyRound({
       lastAppliedRound: writableConversation.conversation.progressTitleRound ?? null
     })) {
       chat.setConversationProgressTitle(conversationId, progressTitle, userRoundCount);
+    }
+    // Same pace for the short "what I am doing now" line under the collaborator name.
+    if (liveState && shouldApplyProgressTitleChange({
+      userRoundCount,
+      lastAppliedRound: writableConversation.conversation.liveStateRound ?? null
+    })) {
+      chat.setConversationLiveState(conversationId, liveState, userRoundCount);
     }
     throwIfAborted(streaming.controller.signal);
 

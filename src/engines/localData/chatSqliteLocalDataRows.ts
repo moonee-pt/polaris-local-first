@@ -175,6 +175,8 @@ function toCatalogRow(
     title: summary.title,
     ...(metadata?.progressTitle ? { progressTitle: metadata.progressTitle } : {}),
     ...(metadata?.progressTitleRound != null ? { progressTitleRound: metadata.progressTitleRound } : {}),
+    ...(metadata?.liveState ? { liveState: metadata.liveState } : {}),
+    ...(metadata?.liveStateRound != null ? { liveStateRound: metadata.liveStateRound } : {}),
     kind: summary.kind,
     collaboratorId: summary.collaboratorId,
     group: metadata?.group,

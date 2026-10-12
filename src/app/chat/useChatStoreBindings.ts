@@ -120,6 +120,7 @@ export function createChatReplyStoreBindings(
       ensureConversationTask: store.chat.ensureConversationTask,
       setConversationTask: store.chat.setConversationTask,
       setConversationProgressTitle: store.chat.setConversationProgressTitle,
+      setConversationLiveState: store.chat.setConversationLiveState,
       readLatestState: () => {
         const latest = store.chat.readLatestState();
         return {

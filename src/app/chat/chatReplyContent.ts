@@ -65,7 +65,8 @@ export function parseAssistantReplyContent(
     sources: ingressSources,
     sanitizedContent,
     taskUpdate,
-    progressTitle
+    progressTitle,
+    liveState
   } = resolveAssistantToolIngress({
     content,
     modelTier,
@@ -134,6 +135,7 @@ export function parseAssistantReplyContent(
     visibleContent,
     isToolOnlyTurn,
     taskUpdate,
-    progressTitle
+    progressTitle,
+    liveState
   };
 }
