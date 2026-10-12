@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { deriveMessageTitle, normalizeConversationTitle } from './chatStoreTitles';
+import { deriveMessageTitle, displayConversationTitle, normalizeConversationTitle } from './chatStoreTitles';
 
 describe('chatStoreTitles', () => {
   it('keeps the visible user text instead of cutting automatic titles to a fixed length', () => {
@@ -56,5 +56,36 @@ describe('chatStoreTitles', () => {
     }];
 
     expect(normalizeConversationTitle('做菜计划', messages)).toBe('做菜计划');
+  });
+});
+describe('displayConversationTitle', () => {
+  const messages = [{
+    id: 'user-1',
+    role: 'user' as const,
+    content: '帮我做一个可以持续进化的做菜助手，要能记住口味和忌口',
+    timestamp: 1
+  }];
+
+  it('shows the model summary instead of the long first user sentence', () => {
+    expect(displayConversationTitle({
+      title: '帮我做一个可以持续进化的做菜助手，要能记住口味和忌口',
+      messages,
+      progressTitle: '做菜助手'
+    })).toBe('做菜助手');
+  });
+
+  it('keeps a name the user typed herself', () => {
+    expect(displayConversationTitle({
+      title: '做菜计划',
+      messages,
+      progressTitle: '做菜助手'
+    })).toBe('做菜计划');
+  });
+
+  it('falls back to the first user sentence before the model names it', () => {
+    expect(displayConversationTitle({
+      title: '帮我做一个可以持续进化的做菜助手，要能记住口味和忌口',
+      messages
+    })).toBe('帮我做一个可以持续进化的做菜助手，要能记住口味和忌口');
   });
 });

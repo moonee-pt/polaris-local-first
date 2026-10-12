@@ -195,7 +195,7 @@ export const ConversationCardItem = memo(function ConversationCardItem({
                 <div className="conversation-card-title-line">
                   <h3>
                     <span className="conversation-card-title-mine">{conversationTitle}</span>
-                    {conversation.progressTitle ? (
+                    {conversation.progressTitle && conversation.progressTitle !== conversationTitle ? (
                       <span className="conversation-card-title-progress">{conversation.progressTitle}</span>
                     ) : null}
                   </h3>

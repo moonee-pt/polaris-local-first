@@ -79,8 +79,24 @@ export function normalizeConversationTitle(
   return resolveConversationTitle(title?.trim() ?? '', messages, messages);
 }
 
+export function isConversationTitleCustom(title: string, messages: ChatMessage[]): boolean {
+  const trimmed = title.trim();
+  return Boolean(trimmed) && !isGeneratedConversationTitle(trimmed, messages);
+}
+
+/**
+ * The list shows the short title the model summarized the thread into, so a long
+ * first user sentence never becomes the name. A name the user typed herself wins
+ * and stays put; the raw first sentence is only a placeholder until the model
+ * writes its first title.
+ */
 export function displayConversationTitle(
-  conversation: Pick<Conversation, 'title' | 'messages'>
+  conversation: Pick<Conversation, 'title' | 'messages'> & { progressTitle?: string | null }
 ): string {
+  if (isConversationTitleCustom(conversation.title, conversation.messages)) {
+    return conversation.title.trim();
+  }
+  const progressTitle = conversation.progressTitle?.trim();
+  if (progressTitle) return progressTitle;
   return normalizeConversationTitle(conversation.title, conversation.messages);
 }
