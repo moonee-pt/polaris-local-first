@@ -355,9 +355,9 @@ html[data-keyboard-open='true'] .chat-box-shell { box-shadow: var(--chat-compose
   gap: 4px;
   min-height: 30px;
   padding: 0 10px;
-  border: 1px solid color-mix(in srgb, var(--pink-ink) 30%, transparent);
+  border: 1px solid color-mix(in srgb, var(--pink-ink) 30%, var(--pink-light));
   border-radius: 999px;
-  background: color-mix(in srgb, var(--pink-light) 62%, transparent);
+  background: var(--pink-light);
   color: var(--pink-ink-deep);
   font-family: inherit;
   font-size: 12px;
@@ -368,8 +368,8 @@ html[data-keyboard-open='true'] .chat-box-shell { box-shadow: var(--chat-compose
 }
 .chat-mode-button:hover,
 .chat-mode-button:focus-visible {
-  border-color: color-mix(in srgb, var(--pink-ink) 48%, transparent);
-  background: color-mix(in srgb, var(--pink-light) 82%, transparent);
+  border-color: var(--pink-ink);
+  background: color-mix(in srgb, var(--pink-light) 80%, #ffffff);
 }
 .chat-mode-button svg { display: block; }
 .chat-mode-button-label { white-space: nowrap; }
@@ -384,11 +384,10 @@ html[data-keyboard-open='true'] .chat-box-shell { box-shadow: var(--chat-compose
   gap: 2px;
   width: min(248px, 76vw);
   padding: 5px;
-  border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  border: 1px solid var(--border);
   border-radius: 14px;
-  background: color-mix(in srgb, var(--surface) 92%, transparent);
-  box-shadow: 0 14px 30px color-mix(in srgb, var(--border) 24%, transparent);
-  backdrop-filter: blur(18px) saturate(1.06);
+  background: var(--surface-solid);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
   animation: chatModeMenuAppear 140ms var(--ease-out) both;
 }
 @keyframes chatModeMenuAppear {
@@ -412,10 +411,10 @@ html[data-keyboard-open='true'] .chat-box-shell { box-shadow: var(--chat-compose
 }
 .chat-mode-option:hover,
 .chat-mode-option:focus-visible {
-  background: color-mix(in srgb, var(--surface) 48%, transparent);
+  background: var(--accent-soft);
 }
 .chat-mode-option.active {
-  background: color-mix(in srgb, var(--pink-light) 68%, transparent);
+  background: var(--pink-light);
 }
 .chat-mode-option > svg { flex: 0 0 auto; margin-top: 1px; }
 .chat-mode-option-copy {

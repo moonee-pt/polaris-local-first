@@ -115,7 +115,7 @@
   .task-runtime-card.floating,
   .chat-jump-latest-btn,
   .thinking-inline-trigger,
-  .assistant-stage-live { backdrop-filter: blur(8px) saturate(1.04); box-shadow: 0 8px 16px color-mix(in srgb, var(--accent-soft) 6%, transparent); }
+  .assistant-stage-live { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); }
   .chat-floating-controls {
     left: 16px;
     right: 16px;

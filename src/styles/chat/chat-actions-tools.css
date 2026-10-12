@@ -368,18 +368,15 @@ html[data-native-keyboard-overlay='true'][data-keyboard-open='true'] .task-recei
   justify-content: center;
   padding: 0;
   border-radius: 999px;
-  backdrop-filter: blur(16px);
   cursor: pointer;
   z-index: 4;
   transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background 180ms ease, color 180ms ease;
 }
 .task-runtime-fab {
-  border: 1px solid color-mix(in srgb, var(--border-hover) 68%, transparent);
-  background: color-mix(in srgb, var(--surface-deep) 84%, rgba(255,255,255,0.72));
+  border: 1px solid color-mix(in srgb, var(--border-hover) 40%, transparent);
+  background: var(--bg);
   color: color-mix(in srgb, var(--text-soft) 88%, var(--accent-soft) 12%);
-  box-shadow:
-    0 10px 24px rgba(103, 122, 171, 0.12),
-    0 0 0 1px color-mix(in srgb, rgba(255,255,255,0.2) 52%, transparent) inset;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 /* Running wears the project pink so the floating task button matches the bottom tab bar. */
 .task-runtime-fab.running {
@@ -399,8 +396,8 @@ html[data-native-keyboard-overlay='true'][data-keyboard-open='true'] .task-recei
     0 0 0 1px color-mix(in srgb, var(--accent) 14%, transparent) inset;
 }
 .task-runtime-fab.completed {
-  border-color: color-mix(in srgb, var(--border-hover) 68%, transparent);
-  background: var(--surface-solid);
+  border-color: color-mix(in srgb, var(--border-hover) 40%, transparent);
+  background: var(--bg);
   color: var(--text-soft);
 }
 .task-runtime-fab.blocked {
@@ -443,32 +440,28 @@ html[data-native-keyboard-overlay='true'][data-keyboard-open='true'] .task-recei
   animation: taskFabCheckBloom 560ms var(--ease-out) both;
 }
 .chat-jump-latest-btn {
-  border: 1px solid color-mix(in srgb, var(--border-hover) 64%, transparent);
-  background: color-mix(in srgb, var(--surface-deep) 82%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border-hover) 40%, transparent);
+  background: var(--bg);
   color: var(--text-soft);
-  box-shadow: 0 10px 24px rgba(103, 122, 171, 0.12);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
-.chat-jump-latest-btn:hover { transform: translateY(-1px); box-shadow: 0 14px 26px rgba(103, 122, 171, 0.14); }
+.chat-jump-latest-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08); }
 .task-runtime-fab:hover,
 .task-runtime-fab:focus-visible,
 .chat-jump-latest-btn:hover,
 .chat-jump-latest-btn:focus-visible {
   transform: translateY(-1px);
-  box-shadow: 0 14px 26px rgba(103, 122, 171, 0.14);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
 }
 .task-runtime-fab.running:hover,
 .task-runtime-fab.running:focus-visible {
   border-color: color-mix(in srgb, var(--pink-ink) 58%, transparent);
-  box-shadow:
-    0 14px 28px rgba(213, 136, 161, 0.24),
-    0 0 0 1px color-mix(in srgb, #ffffff 54%, transparent) inset;
+  box-shadow: 0 6px 16px rgba(213, 136, 161, 0.18);
 }
 .task-runtime-fab.armed:hover,
 .task-runtime-fab.armed:focus-visible {
   border-color: color-mix(in srgb, var(--accent) 40%, transparent);
-  box-shadow:
-    0 14px 28px rgba(103, 122, 171, 0.16),
-    0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent) inset;
+  box-shadow: 0 6px 16px rgba(103, 122, 171, 0.1);
 }
 
 .tool-event { width: min(100%, 332px); padding: 7px 10px; border-radius: 18px; border: 1px solid color-mix(in srgb, var(--border) 22%, transparent); background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 10%, transparent) 0%, color-mix(in srgb, var(--surface) 5%, transparent) 100%); box-shadow: 0 8px 18px color-mix(in srgb, var(--accent-soft) 4%, transparent); backdrop-filter: blur(14px) saturate(1.02); display: flex; flex-direction: column; align-items: stretch; gap: 8px; transform-origin: bottom left; transition: opacity 180ms var(--ease-out), transform 180ms var(--ease-out), box-shadow 180ms ease, background 180ms ease, border-color 180ms ease; will-change: opacity, transform; }
@@ -612,3 +605,54 @@ html[data-native-keyboard-overlay='true'][data-keyboard-open='true'] .task-recei
 .tool-event-live-dots span { width: 4px; height: 4px; border-radius: 999px; background: currentColor; opacity: 0.28; animation: softPulse 1.2s ease-in-out infinite; }
 .tool-event-live-dots span:nth-child(2) { animation-delay: .15s; }
 .tool-event-live-dots span:nth-child(3) { animation-delay: .3s; }
+
+/* Reply cost: tappable amount + expandable per-line breakdown (usage pricing). */
+.message-cost-pill {
+  cursor: pointer;
+  font: inherit;
+  border-bottom: 1px dashed color-mix(in srgb, var(--text-muted) 55%, transparent);
+}
+
+.message-cost-pill.open {
+  color: var(--text);
+}
+
+.message-cost-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 6px 0 2px;
+  padding-top: 8px;
+  border-top: 1px solid color-mix(in srgb, var(--border) 45%, transparent);
+  font-size: var(--type-tiny);
+  color: var(--text-muted);
+}
+
+.message-cost-breakdown-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.message-cost-breakdown-label {
+  flex: 0 0 34px;
+}
+
+.message-cost-breakdown-calc {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.message-cost-breakdown-amount {
+  flex: 0 0 auto;
+  font-variant-numeric: tabular-nums;
+}
+
+.message-cost-breakdown-row.total {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.message-cost-breakdown-row.total .message-cost-breakdown-label {
+  flex: 1 1 auto;
+}
