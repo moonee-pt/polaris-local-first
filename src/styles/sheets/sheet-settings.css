@@ -232,11 +232,30 @@
   gap: 8px;
   align-items: center;
 }
+.voice-setting-row select {
+  width: 100%;
+  min-width: 0;
+  border: var(--control-border);
+  border-radius: 10px;
+  background: var(--control-surface);
+  padding: 8px 10px;
+  color: var(--control-text);
+  font: inherit;
+  font-size: var(--type-small);
+  outline: none;
+  box-shadow: var(--control-shadow);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+.voice-setting-row select:focus {
+  border: var(--control-border-focus);
+  box-shadow: var(--control-focus-shadow);
+  background: var(--control-surface-focus);
+}
 .voice-setting-row input {
   min-width: 0;
 }
 .voice-preview-button {
-  min-width: 84px;
+  min-width: 72px;
   white-space: nowrap;
 }
 .voice-preview-status {
