@@ -121,4 +121,30 @@ describe('resolveRequestConversationSummaryPlan', () => {
     expect(plan.entries.find((entry) => entry.id === 'recent-3')?.status).toBe('dropped_budget');
     expect(plan.entries.find((entry) => entry.id === 'recent-huge')?.status).toBe('dropped_budget');
   });
+
+  it('collapses identical summaries copied into a forked branch', () => {
+    const plan = resolveRequestConversationSummaryPlan({
+      enabled: true,
+      maxTokens: null,
+      summaries: [
+        summary({
+          id: 'origin-topic',
+          kind: 'recent_topic',
+          content: '你们决定把费解的设置留在本机。',
+          updatedAt: 30,
+          sourceConversationIds: ['origin']
+        }),
+        summary({
+          id: 'fork-topic',
+          kind: 'recent_topic',
+          content: '你们决定把费解的设置留在本机。',
+          updatedAt: 40,
+          sourceConversationIds: ['fork']
+        })
+      ]
+    });
+
+    expect(plan.selectedSummaries.map((entry) => entry.id)).toEqual(['fork-topic']);
+    expect(plan.entries.some((entry) => entry.id === 'origin-topic')).toBe(false);
+  });
 });

@@ -141,6 +141,7 @@ export function resolveRequestConversationSummaryPlan(args: {
   }
 
   const now = args.now ?? Date.now();
+  const seenContentFingerprints = new Set<string>();
   const entries = (args.summaries ?? [])
     .map(toDecision)
     .filter((entry) => entry.content)
@@ -149,7 +150,15 @@ export function resolveRequestConversationSummaryPlan(args: {
         ? { ...entry, status: 'expired' as const }
         : entry
     ))
-    .sort(sortSummaries);
+    .sort(sortSummaries)
+    // Forking a conversation copies the same turns into a second branch, which can leave two
+    // summaries carrying identical text; keep the first (newest or earliest) and drop the copies.
+    .filter((entry) => {
+      if (entry.status === 'expired' || !entry.contentFingerprint) return true;
+      if (seenContentFingerprints.has(entry.contentFingerprint)) return false;
+      seenContentFingerprints.add(entry.contentFingerprint);
+      return true;
+    });
   const candidates = entries.filter((entry) => entry.status !== 'expired');
 
   if (!entries.length || !candidates.length) {
