@@ -34,6 +34,10 @@ export function buildSemanticRecallVectorCandidateDecisions(
     .filter((result) => result.entry.sourceMessageIds.length > 0)
     .map((result) => {
       const text = vectorCandidateText(result);
+      const contentKey = [result.entry.summary, result.entry.semanticText]
+        .map((part) => part.trim())
+        .filter(Boolean)
+        .join('\n') || text;
       const title = result.entry.conversationTitle.trim() || '未命名对话';
       return {
         id: `recall:vector_match:${result.entry.conversationId}:${result.entry.sourceChunkId}`,
@@ -47,7 +51,7 @@ export function buildSemanticRecallVectorCandidateDecisions(
         score: result.score,
         contentFingerprint: fingerprintRequestContextValue({
           kind: 'context-topography-evidence',
-          text: text.replace(/\s+/g, ' ')
+          text: contentKey.replace(/\s+/g, ' ')
         }),
         status: 'kept'
       };

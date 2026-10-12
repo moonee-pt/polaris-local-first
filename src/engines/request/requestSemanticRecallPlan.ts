@@ -279,6 +279,7 @@ function sameCollaboratorScope(params: {
 function dedupeCandidates(candidates: AssistantSemanticRecallCandidateDecision[]) {
   const seen = new Set<string>();
   const seenMessageKeys = new Set<string>();
+  const seenContentFingerprints = new Set<string>();
   return candidates.filter((candidate) => {
     const key = `${candidate.sourceConversationId ?? 'unknown'}:${candidate.sourceMessageIds.join('|')}`;
     if (seen.has(key)) return false;
@@ -286,10 +287,14 @@ function dedupeCandidates(candidates: AssistantSemanticRecallCandidateDecision[]
       `${candidate.sourceConversationId ?? 'unknown'}:${messageId}`
     );
     if (messageKeys.some((messageKey) => seenMessageKeys.has(messageKey))) return false;
+    // Forking a conversation clones the same turns under fresh ids, so identity keys alone
+    // would let one piece of content in twice; the content fingerprint collapses the copies.
+    if (candidate.contentFingerprint && seenContentFingerprints.has(candidate.contentFingerprint)) return false;
     seen.add(key);
     for (const messageKey of messageKeys) {
       seenMessageKeys.add(messageKey);
     }
+    if (candidate.contentFingerprint) seenContentFingerprints.add(candidate.contentFingerprint);
     return true;
   });
 }

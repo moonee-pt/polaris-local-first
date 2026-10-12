@@ -614,4 +614,37 @@ describe('resolveRequestSemanticRecallPlan', () => {
       voiceAnchorCount: 2
     });
   });
+
+  it('collapses the same content recalled from a forked branch', () => {
+    const plan = resolveRequestSemanticRecallPlan({
+      activeConversationId: 'active',
+      currentCollaboratorId: 'pharos',
+      maxTokens: null,
+      messages: [message('current-user', '今天先歇一会儿', 10)],
+      conversations: [
+        conversation({
+          id: 'origin',
+          title: '本机优先',
+          updatedAt: 30,
+          messages: [
+            message('origin-user', '我们把费解的设置留在本机。', 30),
+            assistantMessage('origin-reply', '好，本机优先，不上传。', 31)
+          ]
+        }),
+        conversation({
+          id: 'fork',
+          title: '本机优先',
+          updatedAt: 40,
+          messages: [
+            message('fork-user', '我们把费解的设置留在本机。', 40),
+            assistantMessage('fork-reply', '好，本机优先，不上传。', 41)
+          ]
+        })
+      ]
+    });
+
+    const fingerprints = plan.selectedCandidates.map((candidate) => candidate.contentFingerprint);
+    expect(fingerprints.length).toBeGreaterThan(0);
+    expect(new Set(fingerprints).size).toBe(fingerprints.length);
+  });
 });
