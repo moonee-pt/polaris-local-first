@@ -15,6 +15,7 @@ import {
 import { ChatWorkspaceBanner } from './ChatWorkspaceBanner';
 import { ComposerAttachments, ComposerQuickActions } from './ComposerAttachments';
 import { ComposerCardReferenceStrip } from './ComposerCardReferenceStrip';
+import { ChatModeSwitch } from './ChatModeSwitch';
 import { ComposerPreviewStrip } from './ComposerPreviewStrip';
 import { SlashCommandSuggestions } from './SlashCommandSuggestions';
 import { useComposerFileIngest } from './useComposerFileIngest';
@@ -279,6 +280,7 @@ export function ChatComposer({ onStartVoiceCall }: ChatComposerProps = {}) {
           query={slashCommandQuery}
           onPick={handlePickSlashCommand}
         />
+        <ChatModeSwitch />
         <div className="chat-submit-anchor">
           {ui.submitFlight ? (
             <div key={ui.submitFlight.id} className="chat-submit-flight" aria-hidden="true">

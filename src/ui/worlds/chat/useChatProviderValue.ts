@@ -19,7 +19,7 @@ import type {
   ChatReplyStoreBindings,
   ChatStoreBindings
 } from '../../../app/chat/useChatStoreBindings';
-import type { ChatMessage } from '../../../types/domain';
+import type { ChatMessage, ChatOutputMode } from '../../../types/domain';
 import { cancelChatStreaming } from './chatStreamingLifecycle';
 import type {
   ChatContextActionsValue,
@@ -35,6 +35,8 @@ import { acceptPendingWorkspaceProposal, rejectPendingWorkspaceProposal } from '
 import { useChatStore } from '../../../stores/chatStore';
 import { createChatSlashCommandHandler } from '../../../app/chat/chatSlashCommands';
 import { setTaskModeEnabledForConversations } from '../../../app/chat/taskModeToggle';
+import { resolveChatOutputMode } from '../../../config/prompts/outputModePrompt';
+import { createUid } from '../../../engines/id';
 import { useI18n, type I18nTranslator } from '../../../i18n';
 
 type UseChatProviderValueArgs = {
@@ -51,6 +53,12 @@ type UseChatProviderValueArgs = {
 };
 
 type Translate = I18nTranslator['t'];
+
+const OUTPUT_MODE_LABEL_KEY = {
+  chat: 'chat.mode.option.chat',
+  novel: 'chat.mode.option.novel',
+  voice: 'chat.mode.option.voice'
+} as const;
 
 function buildPresentationSection(args: {
   presentation: ChatPresentation;
@@ -100,6 +108,7 @@ function buildComposerSection(args: {
     }),
     toolPromptPreferences: args.store.runtime.toolPromptPreferences,
     taskModeEnabled: args.store.runtime.taskModeEnabled,
+    outputMode: resolveChatOutputMode(args.derived.activeConversation?.outputMode),
     themeToolMode: args.store.space.theme.toolMode,
     canReviveTheme: args.store.space.theme.skinHistory.length > 0
   };
@@ -252,6 +261,26 @@ function buildActionsSection(args: {
           : args.t('chat.command.taskModeOff')
       );
     },
+    setOutputMode: (mode: ChatOutputMode) => {
+      const chatState = useChatStore.getState();
+      const conversationId = chatState.activeConversationId;
+      if (!conversationId) return;
+      const conversation = chatState.conversations.find((entry) => entry.id === conversationId);
+      if (!conversation) return;
+      if (resolveChatOutputMode(conversation.outputMode) === mode) return;
+      chatState.setConversationOutputMode(conversationId, mode);
+      const writable = chatState.getConversationWritable(conversationId);
+      if (writable) {
+        chatState.addMessage(writable, {
+          id: createUid('mode'),
+          role: 'system',
+          content: args.t('chat.mode.switched', { mode: args.t(OUTPUT_MODE_LABEL_KEY[mode]) }),
+          timestamp: Date.now(),
+          origin: 'system-note'
+        });
+      }
+    },
+
     setThemeToolMode: (mode) => {
       const previousMode = args.store.space.themeToolMode;
       args.store.space.setThemeToolMode(mode);

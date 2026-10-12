@@ -1,5 +1,5 @@
 import { createUid } from '../engines/id';
-import type { Conversation } from '../types/domain';
+import type { ChatOutputMode, Conversation } from '../types/domain';
 
 function normalizeMemberIds(memberIds: string[]) {
   return Array.from(new Set(memberIds.map((memberId) => memberId.trim()).filter(Boolean)));
@@ -177,6 +177,28 @@ export function setConversationLiveStateInRecords(
   const target = conversations.find((conversation) => conversation.id === conversationId);
   if (!target) return null;
   const nextConversation = setConversationLiveStateRecord(target, liveState, round);
+  if (!nextConversation) return null;
+  return conversations.map((conversation) =>
+    conversation.id === conversationId ? nextConversation : conversation
+  );
+}
+
+export function setConversationOutputModeRecord(
+  conversation: Conversation,
+  outputMode: ChatOutputMode
+): Conversation | null {
+  if ((conversation.outputMode ?? 'chat') === outputMode) return null;
+  return { ...conversation, outputMode };
+}
+
+export function setConversationOutputModeInRecords(
+  conversations: Conversation[],
+  conversationId: string,
+  outputMode: ChatOutputMode
+): Conversation[] | null {
+  const target = conversations.find((conversation) => conversation.id === conversationId);
+  if (!target) return null;
+  const nextConversation = setConversationOutputModeRecord(target, outputMode);
   if (!nextConversation) return null;
   return conversations.map((conversation) =>
     conversation.id === conversationId ? nextConversation : conversation

@@ -12,6 +12,10 @@ import {
 import { requestCollaboratorReply } from '../../engines/request/requestPipeline';
 import { VOICE_CALL_MODE_INSTRUCTION } from '../../config/prompts/callModePrompt';
 import { SPEECH_CUE_INSTRUCTION } from '../../config/prompts/speechCuePrompt';
+import {
+  buildOutputModeInstruction,
+  outputModeSuppressesSpeechCue
+} from '../../config/prompts/outputModePrompt';
 import { shouldIncludeSpeechCueInstruction } from '../../config/prompts/speechCueScene';
 import { buildProgressTitleInstruction } from '../../config/prompts/progressTitlePrompt';
 import { buildChatStateInstruction } from '../../config/prompts/chatStatePrompt';
@@ -376,6 +380,17 @@ async function requestReplyRound({
     persona: collaboratorForReply,
     messages
   });
+  const conversationOutputMode = writableConversation.conversation.outputMode;
+  const outputModeInstruction = buildOutputModeInstruction(conversationOutputMode);
+  const speechCueInstruction =
+    !outputModeSuppressesSpeechCue(conversationOutputMode) && includeSpeechCueInstruction
+      ? SPEECH_CUE_INSTRUCTION
+      : null;
+  const modeInstructionText = voiceCallActive
+    ? `${SPEECH_CUE_INSTRUCTION}\n\n${VOICE_CALL_MODE_INSTRUCTION}`
+    : [outputModeInstruction, speechCueInstruction]
+        .filter((part): part is string => Boolean(part))
+        .join('\n\n') || undefined;
 
   try {
     const reply = await requestCollaboratorReply({
@@ -395,11 +410,7 @@ async function requestReplyRound({
       toolContext: toolContextWithMcp,
       currentTask: activeRequestSnapshot.currentTask,
       preferredOpenAiToolHistoryMode,
-      modeInstruction: voiceCallActive
-        ? `${SPEECH_CUE_INSTRUCTION}\n\n${VOICE_CALL_MODE_INSTRUCTION}`
-        : includeSpeechCueInstruction
-          ? SPEECH_CUE_INSTRUCTION
-          : undefined,
+      modeInstruction: modeInstructionText,
       progressInstruction: writableConversation.conversation.kind === 'group'
         ? undefined
         : [

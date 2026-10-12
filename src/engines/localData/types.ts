@@ -153,6 +153,7 @@ export type ConversationCatalogRow = {
   // topbar can show it without loading bodies.
   liveState?: string;
   liveStateRound?: number;
+  outputMode?: 'chat' | 'novel' | 'voice';
   kind?: 'direct' | 'group';
   collaboratorId: string | null;
   group?: GroupConversationState;

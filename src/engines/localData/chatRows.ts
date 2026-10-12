@@ -152,6 +152,7 @@ export function buildConversationCatalogLocalDataRow(args: ChatConversationLocal
     ...(snapshot.progressTitleRound != null ? { progressTitleRound: snapshot.progressTitleRound } : {}),
     ...(snapshot.liveState ? { liveState: snapshot.liveState } : {}),
     ...(snapshot.liveStateRound != null ? { liveStateRound: snapshot.liveStateRound } : {}),
+    ...(snapshot.outputMode ? { outputMode: snapshot.outputMode } : {}),
     kind: snapshot.kind ?? 'direct',
     collaboratorId: snapshot.collaboratorId ?? null,
     group: snapshot.group,

@@ -3,6 +3,7 @@ import type { RuntimeFeedbackEvent } from '../engines/runtime-feedback/runtimeFe
 import type { PendingWorkspaceProposalRecord } from '../engines/workspaceBinding';
 import type {
   ChatMessage,
+  ChatOutputMode,
   Conversation,
   ConversationTaskMode,
   ConversationTaskState
@@ -69,6 +70,7 @@ export type ChatState = {
   renameConversation: (conversationId: string, title: string) => void;
   setConversationProgressTitle: (conversationId: string, progressTitle: string, round: number) => void;
   setConversationLiveState: (conversationId: string, liveState: string, round: number) => void;
+  setConversationOutputMode: (conversationId: string, outputMode: ChatOutputMode) => void;
   toggleConversationPinned: (conversationId: string) => void;
   orphanConversation: (conversationId: string) => void;
   clearConversationAttachmentsByAssetIds: (assetIds: string[], clearedAt?: number) => void;

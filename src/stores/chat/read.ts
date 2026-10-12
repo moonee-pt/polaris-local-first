@@ -283,6 +283,7 @@ function toConversation(catalog: ConversationCatalogRow, record: ConversationRec
     progressTitleRound: catalog.progressTitleRound,
     liveState: catalog.liveState,
     liveStateRound: catalog.liveStateRound,
+    outputMode: catalog.outputMode,
     kind: catalog.kind ?? 'direct',
     collaboratorId: catalog.collaboratorId,
     group: catalog.group,
@@ -302,6 +303,7 @@ function toUnloadedConversation(catalog: ConversationCatalogRow): Conversation {
   return {
     id: catalog.id,
     title: normalizeConversationTitle(catalog.title, []),
+    outputMode: catalog.outputMode,
     kind: catalog.kind ?? 'direct',
     collaboratorId: catalog.collaboratorId,
     group: catalog.group,

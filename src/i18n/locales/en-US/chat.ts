@@ -367,4 +367,13 @@ export const chat = {
   'chat.performanceTag.cueSoft': 'soft',
   'chat.performanceTag.cueHard': 'hard',
   'chat.performanceTag.cueExtreme': 'extreme',
+  'chat.mode.button': 'Output mode',
+  'chat.mode.menuAria': 'Choose output mode',
+  'chat.mode.option.chat': 'Chat',
+  'chat.mode.option.novel': 'Novel',
+  'chat.mode.option.voice': 'Voice',
+  'chat.mode.desc.chat': 'Talk like a real person',
+  'chat.mode.desc.novel': 'First-person novel, you steer the plot',
+  'chat.mode.desc.voice': 'Listen-only script narrating actions and scene',
+  'chat.mode.switched': 'Switched to {mode} mode',
 } satisfies Record<keyof typeof zhChat, string>;

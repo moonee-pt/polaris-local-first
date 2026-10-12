@@ -1,7 +1,7 @@
 import { createContext, useContext } from 'react';
 import type { CodeCardActionMode, CodeCardMessageProgress } from '../../../../app/chat/chatDerivedState';
 import type { WorkspaceBannerState } from '../../../../engines/workspaceBannerState';
-import type { ChatAttachment, ChatCardReference, ChatMessage, ChatMessageVoiceCache, CodeCard, Conversation, Persona, ThemeToolMode } from '../../../../types/domain';
+import type { ChatAttachment, ChatCardReference, ChatMessage, ChatMessageVoiceCache, ChatOutputMode, CodeCard, Conversation, Persona, ThemeToolMode } from '../../../../types/domain';
 import type { PolarisToolPromptGroup } from '../../../../engines/tool-protocol/assistantToolProtocolTypes';
 import type { ChatCommandStatus, ChatEditingState, ChatStreamingState, ChatSubmitFlightState } from './ChatUiState';
 import type { ChatConversationBodyStatus } from '../../../../stores/chatConversationBodyStatus';
@@ -34,6 +34,7 @@ export type ChatContextComposerValue = {
   workspaceBanner: WorkspaceBannerState;
   toolPromptPreferences: Record<PolarisToolPromptGroup, boolean>;
   taskModeEnabled: boolean;
+  outputMode: ChatOutputMode;
   themeToolMode: ThemeToolMode;
   canReviveTheme: boolean;
 };
@@ -105,6 +106,7 @@ export type ChatContextActionsValue = {
   clearCommandStatus: () => void;
   setToolPromptGroupEnabled: (group: PolarisToolPromptGroup, enabled: boolean) => void;
   setTaskModeEnabled: (enabled: boolean) => void;
+  setOutputMode: (mode: ChatOutputMode) => void;
   setThemeToolMode: (mode: ThemeToolMode) => void;
   reviveTheme: () => void;
   restoreDefaultTheme: () => void;

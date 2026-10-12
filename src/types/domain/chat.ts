@@ -152,6 +152,8 @@ export interface ConversationTaskState {
   lastAssistantMessageId?: string;
 }
 
+export type ChatOutputMode = 'chat' | 'novel' | 'voice';
+
 export interface Conversation {
   id: string;
   title: string;
@@ -159,6 +161,9 @@ export interface Conversation {
   progressTitle?: string;
   // How many of the user's turns it took when that title was written; paces the next change.
   progressTitleRound?: number;
+  // Which output shape this conversation talks in: plain chat, first-person novel, or a
+  // voice-script. Absent means 'chat'.
+  outputMode?: ChatOutputMode;
   // One short line the assistant writes about what it is doing right now; shown under the
   // collaborator name at the top of the chat.
   liveState?: string;

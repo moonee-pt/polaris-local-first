@@ -340,3 +340,91 @@ html[data-keyboard-open='true'] .chat-box-shell { box-shadow: var(--chat-compose
     min-height: 42px;
   }
 }
+
+/* ── Chat output-mode switch (composer-left, above the box) ── */
+.chat-mode-switch {
+  order: 19;
+  align-self: flex-start;
+  position: relative;
+  display: inline-flex;
+  z-index: 6;
+}
+.chat-mode-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 30px;
+  padding: 0 10px;
+  border: 1px solid color-mix(in srgb, var(--pink-ink) 30%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--pink-light) 62%, transparent);
+  color: var(--pink-ink-deep);
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background 180ms ease, border-color 180ms ease, color 180ms ease;
+}
+.chat-mode-button:hover,
+.chat-mode-button:focus-visible {
+  border-color: color-mix(in srgb, var(--pink-ink) 48%, transparent);
+  background: color-mix(in srgb, var(--pink-light) 82%, transparent);
+}
+.chat-mode-button svg { display: block; }
+.chat-mode-button-label { white-space: nowrap; }
+
+.chat-mode-menu {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 6px);
+  z-index: 7;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: min(248px, 76vw);
+  padding: 5px;
+  border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  box-shadow: 0 14px 30px color-mix(in srgb, var(--border) 24%, transparent);
+  backdrop-filter: blur(18px) saturate(1.06);
+  animation: chatModeMenuAppear 140ms var(--ease-out) both;
+}
+@keyframes chatModeMenuAppear {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.chat-mode-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 9px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-soft);
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease;
+}
+.chat-mode-option:hover,
+.chat-mode-option:focus-visible {
+  background: color-mix(in srgb, var(--surface) 48%, transparent);
+}
+.chat-mode-option.active {
+  background: color-mix(in srgb, var(--pink-light) 68%, transparent);
+}
+.chat-mode-option > svg { flex: 0 0 auto; margin-top: 1px; }
+.chat-mode-option-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+.chat-mode-option-label { font-size: 12.5px; line-height: 1.3; color: var(--text); }
+.chat-mode-option-desc { font-size: 11px; line-height: 1.4; color: var(--text-muted); }
+.chat-mode-option.active .chat-mode-option-label { color: var(--pink-ink-deep); }

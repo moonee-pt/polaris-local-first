@@ -365,4 +365,13 @@ export const chat = {
   'chat.performanceTag.cueSoft': '轻',
   'chat.performanceTag.cueHard': '重',
   'chat.performanceTag.cueExtreme': '极重',
+  'chat.mode.button': '输出模式',
+  'chat.mode.menuAria': '选择输出模式',
+  'chat.mode.option.chat': '对话',
+  'chat.mode.option.novel': '小说',
+  'chat.mode.option.voice': '音声',
+  'chat.mode.desc.chat': '像真人一样聊天',
+  'chat.mode.desc.novel': '第一人称写小说，你推剧情',
+  'chat.mode.desc.voice': '纯听台本，用语言讲出动作和场景',
+  'chat.mode.switched': '已切换到「{mode}」模式',
 } as const;

@@ -14,6 +14,7 @@ import {
   orphanConversationInRecords,
   renameConversationInRecords,
   setConversationLiveStateInRecords,
+  setConversationOutputModeInRecords,
   setConversationProgressTitleInRecords,
   toggleConversationPinnedInRecords,
   touchConversationInRecords,
@@ -25,6 +26,7 @@ import {
 } from './chatPersistenceMarkers';
 import { flushChatPersistenceIfHydrated } from './chatStoreFlush';
 import type { ChatState, ChatStoreGet, ChatStoreSet } from './chatStoreTypes';
+import type { ChatOutputMode } from '../types/domain';
 
 type ChatConversationActions = Pick<
   ChatState,
@@ -39,6 +41,7 @@ type ChatConversationActions = Pick<
   | 'renameConversation'
   | 'setConversationProgressTitle'
   | 'setConversationLiveState'
+  | 'setConversationOutputMode'
   | 'toggleConversationPinned'
   | 'orphanConversation'
 >;
@@ -173,6 +176,21 @@ export function createChatConversationActions(
           conversationId,
           liveState,
           round
+        );
+        if (!conversations) return state;
+        return {
+          conversations,
+          ...markConversationDirty(state, conversationId)
+        };
+      });
+    },
+
+    setConversationOutputMode: (conversationId, outputMode) => {
+      set((state) => {
+        const conversations = setConversationOutputModeInRecords(
+          state.conversations,
+          conversationId,
+          outputMode
         );
         if (!conversations) return state;
         return {
