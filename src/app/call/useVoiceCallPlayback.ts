@@ -13,7 +13,7 @@ import {
   type VoiceCallSpeechPlan,
   type VoiceCallSpeechUnit
 } from '../../engines/voice/voiceCallSpeechUnits';
-import { useRuntimeStore } from '../../stores/runtimeStore';
+import { useVoiceSettingsForSpeaker } from '../voice/useVoiceSettingsForSpeaker';
 import { getCallAudio, markCallAudioBlocked, markCallAudioUnlocked, setCallAudioInUse } from './callAudio';
 import type { ChatMessageVoiceCache } from '../../types/domain';
 
@@ -73,7 +73,7 @@ export function useVoiceCallPlayback({
   onPlaybackStarted,
   onError
 }: UseVoiceCallPlaybackArgs = {}): UseVoiceCallPlaybackResult {
-  const voiceGeneration = useRuntimeStore((state) => state.voiceGeneration);
+  const voiceGeneration = useVoiceSettingsForSpeaker(null);
   const [status, setStatus] = useState<VoiceCallPlaybackStatus>('idle');
   const [activeMessageId, setActiveMessageId] = useState<string | null>(null);
   const [visibleParts, setVisibleParts] = useState<VoiceCallCaptionSourcePart[]>([]);

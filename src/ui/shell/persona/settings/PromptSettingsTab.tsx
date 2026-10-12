@@ -5,6 +5,7 @@ import { type PersonaTabProps } from '../personaUiShared';
 import { PromptCoreSettingsPage } from './PromptCoreSettingsPage';
 import { SnippetsSettingsTab } from './SnippetsSettingsTab';
 import { LanguageStylePromptField } from './LanguageStylePromptField';
+import { VoiceSelectField } from './VoiceSelectField';
 
 type PromptSettingsTabProps = PersonaTabProps & {
   expandedUsesPageScroll?: boolean;
@@ -106,12 +107,19 @@ export function PromptSettingsTab({
       ) : null}
 
       {activePromptPage === 'style' ? (
-        <LanguageStylePromptField
-          activeCollaboratorId={activeCollaboratorId}
-          activePersona={activePersona}
-          onUpdatePersona={onUpdatePersona}
-          expandedUsesPageScroll={expandedUsesPageScroll}
-        />
+        <>
+          <VoiceSelectField
+            activeCollaboratorId={activeCollaboratorId}
+            activePersona={activePersona}
+            onUpdatePersona={onUpdatePersona}
+          />
+          <LanguageStylePromptField
+            activeCollaboratorId={activeCollaboratorId}
+            activePersona={activePersona}
+            onUpdatePersona={onUpdatePersona}
+            expandedUsesPageScroll={expandedUsesPageScroll}
+          />
+        </>
       ) : null}
     </div>
   );

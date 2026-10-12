@@ -210,6 +210,7 @@ export function createPersonaTemplate(
       regexRules: overrides.advanced?.regexRules ?? '',
       regexTriggers: overrides.advanced?.regexTriggers ?? '',
       languageStylePrompt: overrides.advanced?.languageStylePrompt ?? '',
+      speechVoiceId: overrides.advanced?.speechVoiceId ?? '',
       snippets: overrides.advanced?.snippets ?? []
     },
     mcp: {

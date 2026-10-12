@@ -6,7 +6,7 @@ import { playChatSpeechBlob, primeChatSpeechAudio, stopChatSpeechAudio } from '.
 import { requestGeneratedSpeech } from '../../../../engines/voiceGenerationClient';
 import { useFleshAmbience } from '../../../../app/call/useFleshAmbience';
 import { writeTextToClipboard } from '../../../../infrastructure/clipboard';
-import { useRuntimeStore } from '../../../../stores/runtimeStore';
+import { useVoiceSettingsForSpeaker } from '../../../../app/voice/useVoiceSettingsForSpeaker';
 import type { ChatMemoryEvidence, ChatMessageVoiceCache, ConversationTaskStatus } from '../../../../types/domain';
 import { Icon } from '../../../Icon';
 import { runSelectionAction, runSuccessAction } from '../../../haptics';
@@ -41,6 +41,7 @@ type MessageActionsProps = {
   speechContent: string;
   speechCache?: ChatMessageVoiceCache | null;
   /** Set on the newest settled reply so its voice can start without a tap. */
+  speakerCollaboratorId?: string | null;
   autoSpeakKey?: string | null;
   autoSpeakAt?: number | null;
   /** Only the turn's final reply reads aloud; intermediate steps stay quiet. */
@@ -68,6 +69,7 @@ export function MessageActions({
   messageContent,
   speechContent,
   speechCache = null,
+  speakerCollaboratorId = null,
   autoSpeakKey = null,
   autoSpeakAt = null,
   allowAssistantSpeech = true,
@@ -88,7 +90,7 @@ export function MessageActions({
   const [assistantSheetMode, setAssistantSheetMode] = useState<'menu' | 'edit' | 'memory'>('menu');
   const [assistantDraft, setAssistantDraft] = useState(messageContent);
   const abortRef = useRef<AbortController | null>(null);
-  const voiceGeneration = useRuntimeStore((state) => state.voiceGeneration);
+  const voiceGeneration = useVoiceSettingsForSpeaker(speakerCollaboratorId);
   const autoSpeakRef = useRef<(() => void) | null>(null);
   /** Auto read-aloud keeps its ambience alive after the clip ends. */
   const autoPlaybackRef = useRef(false);

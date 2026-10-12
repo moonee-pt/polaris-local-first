@@ -205,6 +205,8 @@ export interface PersonaAdvancedSettings {
   regexRules: string;
   regexTriggers?: string;
   languageStylePrompt?: string;
+  /** 这个角色朗读用的音色 id；留空就跟随全局语音配置。 */
+  speechVoiceId?: string;
   snippets: string[];
 }
 

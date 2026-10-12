@@ -112,10 +112,26 @@ export async function readMessageSpeechCacheBlob(cache: ChatMessageVoiceCache): 
  */
 export async function messageSpeechCacheMatchesText(
   cache: ChatMessageVoiceCache | null | undefined,
-  text: string
+  text: string,
+  settings?: VoiceGenerationSettings | null
 ): Promise<boolean> {
   const normalizedText = text.trim();
   if (!cache?.assetId || !normalizedText) return false;
   if (cache.textLength !== normalizedText.length) return false;
+  if (settings && !speechCacheMatchesVoice(cache, settings)) return false;
   return (await hashText(normalizedText)) === cache.textHash;
+}
+
+/**
+ * A clip also has to have been made with the voice in play right now, so switching a
+ * character's voice cannot replay the one before it. Only the settings we actually
+ * chose are compared; a blank value means "provider default", which we cannot verify.
+ */
+function speechCacheMatchesVoice(cache: ChatMessageVoiceCache, settings: VoiceGenerationSettings): boolean {
+  if (cache.providerType !== resolveProviderType(settings)) return false;
+  const voice = (settings.voice ?? '').trim();
+  if (voice && (cache.voice ?? '').trim() !== voice) return false;
+  const model = (settings.model ?? settings.modelOverride ?? '').trim();
+  if (model && cache.model.trim() && cache.model.trim() !== model) return false;
+  return true;
 }

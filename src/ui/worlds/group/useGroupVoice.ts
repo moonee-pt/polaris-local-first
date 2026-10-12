@@ -8,6 +8,8 @@ import { playChatSpeechBlob, primeChatSpeechAudio, stopChatSpeechAudio } from '.
 import { registerAmbienceStop, stopAllAmbiences, stopOtherAmbiences } from '../../../app/audio/ambienceRegistry';
 import { useFleshAmbience } from '../../../app/call/useFleshAmbience';
 import { requestGeneratedSpeech } from '../../../engines/voiceGenerationClient';
+import { resolveVoiceSettingsForVoiceId } from '../../../engines/voice/personaVoice';
+import { usePersonaStore } from '../../../stores/personaStore';
 import { useRuntimeStore } from '../../../stores/runtimeStore';
 import { useI18n } from '../../../i18n';
 import type { ChatMessageVoiceCache } from '../../../types/domain';
@@ -15,6 +17,7 @@ import { getAssistantAmbiencePlan, getAssistantVoiceContent } from '../chat/mess
 
 export type GroupVoiceMessage = {
   id: string;
+  speakerCollaboratorId?: string | null;
   content: string;
   voiceCache?: ChatMessageVoiceCache | null;
 };
@@ -47,6 +50,7 @@ const MAX_QUEUE = 40;
 export function useGroupVoice({ onSpeechCacheReady, onError }: UseGroupVoiceArgs = {}): GroupVoiceController {
   const { t } = useI18n();
   const voiceGeneration = useRuntimeStore((state) => state.voiceGeneration);
+  const personas = usePersonaStore((state) => state.personas);
   const [nativeSpeechAvailable, setNativeSpeechAvailable] = useState(false);
   const [enabled, setEnabled] = useState(false);
   const [speakingId, setSpeakingId] = useState<string | null>(null);
@@ -61,6 +65,8 @@ export function useGroupVoice({ onSpeechCacheReady, onError }: UseGroupVoiceArgs
   const tokenRef = useRef(0);
   const abortsRef = useRef<Map<string, AbortController>>(new Map());
   const enabledRef = useRef(false);
+  const personasRef = useRef(personas);
+  personasRef.current = personas;
 
   const pumpRef = useRef<() => void>(() => {});
   const prepareRef = useRef<(message: GroupVoiceMessage) => void>(() => {});
@@ -101,6 +107,14 @@ export function useGroupVoice({ onSpeechCacheReady, onError }: UseGroupVoiceArgs
   };
 
   const speakTextFor = (content: string) => getAssistantVoiceContent(content)?.ttsText?.trim() ?? '';
+
+  // Each member speaks with its own voice id when it has one.
+  const settingsForMessage = (message: GroupVoiceMessage) => {
+    const voiceId = message.speakerCollaboratorId
+      ? personasRef.current.find((persona) => persona.id === message.speakerCollaboratorId)?.advanced.speechVoiceId
+      : '';
+    return resolveVoiceSettingsForVoiceId(voiceGeneration, voiceId);
+  };
 
   const finish = (messageId: string) => {
     if (runningRef.current !== messageId) return;
@@ -189,19 +203,20 @@ export function useGroupVoice({ onSpeechCacheReady, onError }: UseGroupVoiceArgs
     const token = tokenRef.current;
     setLoading(message.id, true);
     try {
+      const settings = settingsForMessage(message);
       const cache = message.voiceCache ?? null;
-      if (cache?.assetId && (await messageSpeechCacheMatchesText(cache, text))) {
+      if (cache?.assetId && (await messageSpeechCacheMatchesText(cache, text, settings))) {
         const blob = await readMessageSpeechCacheBlob(cache);
         if (token !== tokenRef.current) return;
         preparedRef.current.set(message.id, blob);
       } else if (canUseConfigured) {
         const controller = new AbortController();
         abortsRef.current.set(message.id, controller);
-        const result = await requestGeneratedSpeech({ settings: voiceGeneration, text, signal: controller.signal });
+        const result = await requestGeneratedSpeech({ settings, text, signal: controller.signal });
         if (token !== tokenRef.current) return;
         preparedRef.current.set(message.id, result.blob);
         try {
-          const voiceCache = await saveMessageSpeechCache({ text, settings: voiceGeneration, result });
+          const voiceCache = await saveMessageSpeechCache({ text, settings, result });
           if (token === tokenRef.current) cacheReadyRef.current?.(message.id, voiceCache);
         } catch {
           // Saving the clip is best-effort; the voice still plays this turn.

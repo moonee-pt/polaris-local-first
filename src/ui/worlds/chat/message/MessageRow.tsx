@@ -23,6 +23,7 @@ import { MessageToolEvent } from './MessageToolEvent';
 import { isProjectedCodeToolName } from './projectedCodeTools';
 import { getAssistantVoiceContent } from './messageSpeechText';
 import { messageSpeechCacheMatchesText } from '../../../../app/chat/messageSpeechCache';
+import { useVoiceSettingsForSpeaker } from '../../../../app/voice/useVoiceSettingsForSpeaker';
 import {
   buildVisibleToolProductCardMessageIds,
   nextToolProductCardActivationBlockedUntil,
@@ -125,6 +126,7 @@ function MessageRowComponent({
   taskReceiptAction = null
 }: MessageRowProps) {
   const { t } = useI18n();
+  const speakerVoiceSettings = useVoiceSettingsForSpeaker(message.speakerCollaboratorId ?? null);
   const isToolEvent = Boolean(message.toolInvocation);
   const isAssistantReply = message.role === 'assistant' && !isToolEvent;
   const isUserMessage = message.role === 'user' && !isToolEvent;
@@ -186,13 +188,13 @@ function MessageRowComponent({
       return;
     }
     let cancelled = false;
-    void messageSpeechCacheMatchesText(cache, speechContent).then((matches) => {
+    void messageSpeechCacheMatchesText(cache, speechContent, speakerVoiceSettings).then((matches) => {
       if (!cancelled) setSpeechCacheMatches(matches);
     });
     return () => {
       cancelled = true;
     };
-  }, [isAssistantReply, message.voiceCache, speechContent]);
+  }, [isAssistantReply, message.voiceCache, speechContent, speakerVoiceSettings]);
   const currentInteractionTimeMs = () => (
     typeof performance !== 'undefined' && typeof performance.now === 'function'
       ? performance.now()
@@ -263,6 +265,7 @@ function MessageRowComponent({
       codeCardProgressLabel={codeCardProgressLabel}
       messageContent={message.content}
       speechContent={speechContent}
+      speakerCollaboratorId={message.speakerCollaboratorId ?? null}
       speechCache={speechCacheMatches ? message.voiceCache ?? null : null}
       autoSpeakKey={isAssistantReply && isLatestMessage && !isStreamingLike ? message.id : null}
       autoSpeakAt={isAssistantReply && isLatestMessage && !isStreamingLike ? message.timestamp : null}

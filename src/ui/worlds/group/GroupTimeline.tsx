@@ -149,7 +149,12 @@ function MemberMessage({
               className={`group-msg-voice-btn ${voiceSpeaking ? 'is-speaking' : ''} ${voiceLoading ? 'is-loading' : ''}`}
               onClick={(event) => {
                 event.stopPropagation();
-                voice.playMessage({ id: message.id, content: message.content, voiceCache: message.voiceCache ?? null });
+                voice.playMessage({
+                  id: message.id,
+                  content: message.content,
+                  speakerCollaboratorId: message.speakerCollaboratorId ?? null,
+                  voiceCache: message.voiceCache ?? null
+                });
               }}
               disabled={voiceLoading}
               aria-pressed={voiceSpeaking}
@@ -373,6 +378,7 @@ export function GroupTimeline({ controller, voice }: GroupTimelineProps) {
       .map((item) => ({
         id: item.message.id,
         content: item.message.content,
+        speakerCollaboratorId: item.message.speakerCollaboratorId ?? null,
         voiceCache: item.message.voiceCache ?? null
       })),
     [timelineItems]

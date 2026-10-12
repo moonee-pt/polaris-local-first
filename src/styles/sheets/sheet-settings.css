@@ -315,3 +315,63 @@
   justify-content: flex-start;
   flex-wrap: wrap;
 }
+
+/* 音色清单：一条一个名字 + 一个音色 id，右侧试听与删除 */
+.voice-library-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+}
+.voice-library-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) auto auto;
+  gap: 8px;
+  align-items: center;
+}
+.voice-library-row input {
+  min-width: 0;
+}
+.voice-library-row input:focus-visible {
+  outline: 2px solid var(--pink);
+  outline-offset: 1px;
+}
+.voice-library-preview {
+  min-width: 78px;
+  white-space: nowrap;
+}
+.voice-library-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-chip);
+  border: 1px solid color-mix(in srgb, var(--border) 78%, transparent);
+  background: transparent;
+  color: var(--sheet-readable-muted);
+}
+.voice-library-remove:hover,
+.voice-library-remove:focus-visible {
+  color: #c46f8d;
+  border-color: color-mix(in srgb, var(--pink) 60%, transparent);
+}
+.voice-library-empty {
+  margin: 0;
+  color: var(--sheet-readable-muted);
+  font-size: var(--type-caption);
+  line-height: 1.5;
+}
+.voice-library-add {
+  align-self: flex-start;
+}
+
+@media (max-width: 420px) {
+  .voice-library-row {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+  }
+
+  .voice-library-name {
+    grid-column: 1 / -1;
+  }
+}

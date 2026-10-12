@@ -9,6 +9,7 @@ import { useI18n } from '../../../i18n';
 import { HelpHint } from '../../HelpHint';
 import { Icon } from '../../Icon';
 import { MiniMaxVoiceDesignerDialog } from './MiniMaxVoiceDesignerDialog';
+import { VoiceLibrarySection } from './VoiceLibrarySection';
 
 type MenuVoicePageProps = {
   voiceGeneration: VoiceGenerationSettings;
@@ -429,6 +430,10 @@ export function MenuVoicePage({
           </div>
         </div>
       </section>
+      <VoiceLibrarySection
+        voiceGeneration={voiceGeneration}
+        onSetVoiceGeneration={onSetVoiceGeneration}
+      />
       {voiceDesignerOpen ? (
         <MiniMaxVoiceDesignerDialog
           voiceGeneration={voiceGeneration}

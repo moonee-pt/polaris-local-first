@@ -92,3 +92,64 @@ describe('messageSpeechCache', () => {
     })).rejects.toThrow('语音缓存文件');
   });
 });
+
+describe('messageSpeechCacheMatchesText', () => {
+  const settings: VoiceGenerationSettings = {
+    enabled: true,
+    providerType: 'fishaudio',
+    baseUrl: 'https://api.fish.audio',
+    model: 's1',
+    voice: 'voice-a',
+    format: 'mp3'
+  };
+  const result: VoiceGenerationResult = {
+    blob: new Blob(['audio'], { type: 'audio/mpeg' }),
+    mimeType: 'audio/mpeg',
+    model: 's1',
+    voice: 'voice-a',
+    format: 'mp3'
+  };
+
+  async function cachedClip(text: string, overrides: Partial<VoiceGenerationSettings> = {}) {
+    assetStoreMocks.saveAsset.mockResolvedValue({
+      id: 'asset-speech',
+      kind: 'file',
+      name: 'voice.mp3',
+      mimeType: 'audio/mpeg',
+      size: 5,
+      createdAt: 1
+    });
+    const { saveMessageSpeechCache } = await import('./messageSpeechCache');
+    return saveMessageSpeechCache({ text, settings: { ...settings, ...overrides }, result });
+  }
+
+  it('matches the text it was generated from and rejects a different one', async () => {
+    const { messageSpeechCacheMatchesText } = await import('./messageSpeechCache');
+    const cache = await cachedClip('你好呀');
+    expect(await messageSpeechCacheMatchesText(cache, '你好呀')).toBe(true);
+    expect(await messageSpeechCacheMatchesText(cache, '你好呀', settings)).toBe(true);
+    expect(await messageSpeechCacheMatchesText(cache, '再见啦')).toBe(false);
+  });
+
+  it('rejects a clip made with another voice, provider or model', async () => {
+    const { messageSpeechCacheMatchesText } = await import('./messageSpeechCache');
+    const cache = await cachedClip('你好呀');
+    expect(await messageSpeechCacheMatchesText(cache, '你好呀', { ...settings, voice: 'voice-b' })).toBe(false);
+    expect(await messageSpeechCacheMatchesText(cache, '你好呀', { ...settings, providerType: 'minimax' })).toBe(false);
+    expect(await messageSpeechCacheMatchesText(cache, '你好呀', { ...settings, model: 's2' })).toBe(false);
+  });
+
+  it('treats a blank voice or model as the provider default', async () => {
+    const { messageSpeechCacheMatchesText } = await import('./messageSpeechCache');
+    const cache = await cachedClip('你好呀');
+    expect(await messageSpeechCacheMatchesText(cache, '你好呀', { ...settings, voice: '' })).toBe(true);
+    expect(await messageSpeechCacheMatchesText(cache, '你好呀', { ...settings, model: '' })).toBe(true);
+  });
+
+  it('rejects empty caches and empty text', async () => {
+    const { messageSpeechCacheMatchesText } = await import('./messageSpeechCache');
+    const cache = await cachedClip('你好呀');
+    expect(await messageSpeechCacheMatchesText(null, '你好呀', settings)).toBe(false);
+    expect(await messageSpeechCacheMatchesText(cache, '   ', settings)).toBe(false);
+  });
+});
