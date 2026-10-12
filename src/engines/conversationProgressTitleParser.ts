@@ -1,11 +1,11 @@
 const MAX_PROGRESS_TITLE_LENGTH = 24;
 
-export const PROGRESS_TITLE_MIN_ROUNDS_BETWEEN_CHANGES = 3;
+export const PROGRESS_TITLE_MIN_ROUNDS_BETWEEN_CHANGES = 1;
 
 /**
  * The model decides whether the title still fits and repeats it when nothing moved.
- * This only holds the line still for a few rounds, so a reworded synonym cannot make
- * the list row flicker.
+ * A new title it writes lands on the next round, so when the user asks for a
+ * different name it is not silently dropped.
  */
 export function shouldApplyProgressTitleChange(args: {
   userRoundCount: number;

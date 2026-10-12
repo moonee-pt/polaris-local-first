@@ -52,19 +52,19 @@ describe('shouldApplyProgressTitleChange', () => {
     expect(shouldApplyProgressTitleChange({ userRoundCount: 1, lastAppliedRound: null })).toBe(true);
   });
 
-  it('holds the row still for a couple of rounds after a change', () => {
-    expect(shouldApplyProgressTitleChange({ userRoundCount: 6, lastAppliedRound: 5 })).toBe(false);
-    expect(shouldApplyProgressTitleChange({ userRoundCount: 7, lastAppliedRound: 5 })).toBe(false);
-    expect(shouldApplyProgressTitleChange({ userRoundCount: 8, lastAppliedRound: 5 })).toBe(true);
+  it('applies a new title the model writes on the next round', () => {
+    expect(shouldApplyProgressTitleChange({ userRoundCount: 6, lastAppliedRound: 5 })).toBe(true);
+    expect(shouldApplyProgressTitleChange({ userRoundCount: 5, lastAppliedRound: 5 })).toBe(false);
   });
 });
 
 describe('buildProgressTitleInstruction', () => {
-  it('shows the model the title it wrote last time so it can keep it', () => {
+  it('tells the model the current title so it can keep or change it', () => {
     const instruction = buildProgressTitleInstruction('第三版封面定稿');
 
     expect(instruction).toContain('现在的进度标题是「第三版封面定稿」');
     expect(instruction).toContain('一字不差地重复它');
+    expect(instruction).toContain('用户让你改标题');
   });
 
   it('says this is the first title when there is none yet', () => {
