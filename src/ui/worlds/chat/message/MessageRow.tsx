@@ -24,6 +24,7 @@ import { isProjectedCodeToolName } from './projectedCodeTools';
 import { getAssistantVoiceContent } from './messageSpeechText';
 import { messageSpeechCacheMatchesText } from '../../../../app/chat/messageSpeechCache';
 import { useVoiceSettingsForSpeaker } from '../../../../app/voice/useVoiceSettingsForSpeaker';
+import { useChatComposer } from '../context/ChatContext';
 import {
   buildVisibleToolProductCardMessageIds,
   nextToolProductCardActivationBlockedUntil,
@@ -168,6 +169,8 @@ function MessageRowComponent({
     state.codeCardProgress,
     t
   );
+  const { outputMode } = useChatComposer();
+  const isVoiceScriptMode = outputMode === 'voice';
   const resolvedCodeCard = resolvedCardReference ? codeCardsById[resolvedCardReference.id] ?? null : null;
   const visibleToolProductCardMessageIds = useMemo(
     () => buildVisibleToolProductCardMessageIds(toolMessages),
@@ -265,8 +268,10 @@ function MessageRowComponent({
       codeCardProgressLabel={codeCardProgressLabel}
       messageContent={message.content}
       speechContent={speechContent}
+      messageId={message.id}
       speakerCollaboratorId={message.speakerCollaboratorId ?? null}
       speechCache={speechCacheMatches ? message.voiceCache ?? null : null}
+      isVoiceScriptMode={isVoiceScriptMode}
       autoSpeakKey={isAssistantReply && isLatestMessage && !isStreamingLike ? message.id : null}
       autoSpeakAt={isAssistantReply && isLatestMessage && !isStreamingLike ? message.timestamp : null}
       allowAssistantSpeech={isTerminalAssistantInUserTurn}

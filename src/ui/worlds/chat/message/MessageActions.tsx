@@ -7,6 +7,7 @@ import { requestGeneratedSpeech } from '../../../../engines/voiceGenerationClien
 import { useFleshAmbience } from '../../../../app/call/useFleshAmbience';
 import { writeTextToClipboard } from '../../../../infrastructure/clipboard';
 import { useVoiceSettingsForSpeaker } from '../../../../app/voice/useVoiceSettingsForSpeaker';
+import { useVoiceScriptPlayback } from '../../../../app/chat/voiceScriptPlayback';
 import type { ChatMemoryEvidence, ChatMessageVoiceCache, ConversationTaskStatus } from '../../../../types/domain';
 import { Icon } from '../../../Icon';
 import { runSelectionAction, runSuccessAction } from '../../../haptics';
@@ -40,12 +41,15 @@ type MessageActionsProps = {
   messageContent: string;
   speechContent: string;
   speechCache?: ChatMessageVoiceCache | null;
+  messageId?: string;
   /** Set on the newest settled reply so its voice can start without a tap. */
   speakerCollaboratorId?: string | null;
   autoSpeakKey?: string | null;
   autoSpeakAt?: number | null;
   /** Only the turn's final reply reads aloud; intermediate steps stay quiet. */
   allowAssistantSpeech?: boolean;
+  /** 音声模式：每句独立 TTS + 句间停顿 + 自动朗读 */
+  isVoiceScriptMode?: boolean;
   role: 'assistant' | 'user';
   onSetCommandStatus: (text: string, isError?: boolean) => void;
   onCodeCardAction: () => void;
@@ -69,10 +73,12 @@ export function MessageActions({
   messageContent,
   speechContent,
   speechCache = null,
+  messageId = '',
   speakerCollaboratorId = null,
   autoSpeakKey = null,
   autoSpeakAt = null,
   allowAssistantSpeech = true,
+  isVoiceScriptMode = false,
   role,
   onSetCommandStatus,
   onCodeCardAction,
@@ -132,9 +138,23 @@ export function MessageActions({
     setDucked: setAmbienceDucked
   } = useFleshAmbience();
 
+  const {
+    speaking: voiceScriptSpeaking,
+    loading: voiceScriptLoading,
+    speak: speakVoiceScript,
+    stop: stopVoiceScript
+  } = useVoiceScriptPlayback({
+    speakerCollaboratorId,
+    onSpeechCacheReady: (voiceCache) => onSpeechCacheReady(voiceCache),
+    onStarted: (durationSec) => applyMessageAmbience(durationSec)
+  });
+
+  const effectiveSpeaking = speaking || voiceScriptSpeaking;
+  const effectiveLoading = speechLoading || voiceScriptLoading;
+
   useEffect(() => {
-    setAmbienceDucked(speaking);
-  }, [speaking, setAmbienceDucked]);
+    setAmbienceDucked(effectiveSpeaking);
+  }, [effectiveSpeaking, setAmbienceDucked]);
 
   useEffect(() => registerAmbienceStop(stopAmbience), [stopAmbience]);
 
@@ -148,10 +168,11 @@ export function MessageActions({
     if (autoSpokenMessageIds.has(autoSpeakKey)) return;
     if (role !== 'assistant' || !speakableContent) return;
     if (!canUseConfiguredSpeech && !hasSpeechCache) return;
-    if (!getAssistantAmbiencePlan(messageContent).cues.length) return;
+    // 音声模式：每句都自动朗读，不需要环境音提示
+    if (!isVoiceScriptMode && !getAssistantAmbiencePlan(messageContent).cues.length) return;
     autoSpokenMessageIds.add(autoSpeakKey);
     autoSpeakRef.current?.();
-  }, [autoSpeakKey, autoSpeakAt, role, speakableContent, canUseConfiguredSpeech, hasSpeechCache, messageContent]);
+  }, [autoSpeakKey, autoSpeakAt, role, speakableContent, canUseConfiguredSpeech, hasSpeechCache, messageContent, isVoiceScriptMode]);
 
   if (!canCopyAssistant && !canSpeakAssistant && !hasAssistantMore && !showCodeCardAction && !taskReceiptAction) {
     return null;
@@ -170,6 +191,7 @@ export function MessageActions({
       window.speechSynthesis.cancel();
     }
     stopChatSpeechAudio();
+    stopVoiceScript();
     abortRef.current?.abort();
     abortRef.current = null;
     setSpeaking(false);
@@ -274,7 +296,21 @@ export function MessageActions({
     }
   };
 
+  const beginVoiceScriptSpeech = (auto = false) => {
+    const text = speakableContent;
+    if (!text) return;
+    autoPlaybackRef.current = auto;
+    primeChatSpeechAudio();
+    stopSpeechPlayback();
+    speakVoiceScript(messageId, text, speechCache ?? null);
+  };
+
   const beginSpeech = (auto = false) => {
+    // 音声模式：走分句 TTS 管线（逐句生成 + 句间停顿）
+    if (isVoiceScriptMode && (canUseConfiguredSpeech || hasSpeechCache)) {
+      beginVoiceScriptSpeech(auto);
+      return;
+    }
     const text = speakableContent;
     if (!text) return;
     autoPlaybackRef.current = auto;
@@ -294,8 +330,8 @@ export function MessageActions({
   autoSpeakRef.current = () => beginSpeech(true);
 
   const toggleSpeech = () => {
-    if (!canSpeakAssistant || speechLoading) return;
-    if (speaking) {
+    if (!canSpeakAssistant || effectiveLoading) return;
+    if (effectiveSpeaking) {
       stopSpeechPlayback();
       return;
     }
@@ -434,15 +470,15 @@ export function MessageActions({
       {canSpeakAssistant ? (
         <button
           type="button"
-          className={`micro-action-btn ${speaking ? 'active' : ''} ${speechLoading ? 'generating' : ''}`}
+          className={`micro-action-btn ${effectiveSpeaking ? 'active' : ''} ${effectiveLoading ? 'generating' : ''}`}
           onClick={(event) => {
             runSelectionAction(toggleSpeech, { element: event.currentTarget });
           }}
-          aria-label={speechLoading ? t('chat.messageActions.generatingSpeech') : speaking ? t('chat.messageActions.stopReading') : t('chat.messageActions.readAssistant')}
-          title={speechLoading ? t('chat.messageActions.generatingSpeech') : speaking ? t('chat.messageActions.stopReading') : t('chat.messageActions.read')}
-          aria-pressed={speaking || speechLoading}
+          aria-label={effectiveLoading ? t('chat.messageActions.generatingSpeech') : effectiveSpeaking ? t('chat.messageActions.stopReading') : t('chat.messageActions.readAssistant')}
+          title={effectiveLoading ? t('chat.messageActions.generatingSpeech') : effectiveSpeaking ? t('chat.messageActions.stopReading') : t('chat.messageActions.read')}
+          aria-pressed={effectiveSpeaking || effectiveLoading}
         >
-          <Icon name={speechLoading ? 'refresh' : speaking ? 'pause' : 'voice'} size={14} />
+          <Icon name={effectiveLoading ? 'refresh' : effectiveSpeaking ? 'pause' : 'voice'} size={14} />
         </button>
       ) : null}
       {showCodeCardAction && (
