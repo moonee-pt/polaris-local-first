@@ -30,6 +30,7 @@ export function VoiceLibrarySection({ voiceGeneration, onSetVoiceGeneration }: V
   const [previewingId, setPreviewingId] = useState<string | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewStatus, setPreviewStatus] = useState('');
+  const [draft, setDraft] = useState<VoiceGenerationCustomVoice | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioUrlRef = useRef<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -54,24 +55,43 @@ export function VoiceLibrarySection({ voiceGeneration, onSetVoiceGeneration }: V
 
   useEffect(() => stopPreview, []);
 
+  // Switching provider changes which voices are shown; drop any half-filled draft so it
+  // can't linger as a row for the wrong provider.
+  useEffect(() => {
+    setDraft(null);
+  }, [providerType]);
+
   const writeVoices = (next: VoiceGenerationCustomVoice[]) => {
     const others = (voiceGeneration.customVoices ?? []).filter((voice) => voice.providerType !== providerType);
     onSetVoiceGeneration({ customVoices: [...others, ...next] });
   };
 
+  // The store's normalizer drops rows with an empty voice id, so a freshly added row lives
+  // in local state until the id is filled in and committed.
   const addVoice = () => {
-    writeVoices([
-      ...voices,
-      {
-        id: createUid('voice'),
-        providerType,
-        label: '',
-        voice: '',
-        source: 'manual',
-        createdAt: Date.now()
-      }
-    ]);
+    setDraft((prev) => prev ?? {
+      id: createUid('voice'),
+      providerType,
+      label: '',
+      voice: '',
+      source: 'manual',
+      createdAt: Date.now()
+    });
   };
+
+  const updateDraft = (patch: Partial<VoiceGenerationCustomVoice>) => {
+    setDraft((prev) => (prev ? { ...prev, ...patch } : prev));
+  };
+
+  const commitDraft = () => {
+    if (!draft) return;
+    const voice = draft.voice.trim();
+    if (!voice) return;
+    writeVoices([...voices, { ...draft, voice, label: draft.label.trim() || voice }]);
+    setDraft(null);
+  };
+
+  const cancelDraft = () => setDraft(null);
 
   const updateVoice = (id: string, patch: Partial<VoiceGenerationCustomVoice>) => {
     writeVoices(voices.map((voice) => (
@@ -192,7 +212,46 @@ export function VoiceLibrarySection({ voiceGeneration, onSetVoiceGeneration }: V
             </button>
           </div>
         ))}
-        {!voices.length ? <p className="voice-library-empty">{t('settings.voice.libraryListEmpty')}</p> : null}
+        {draft ? (
+          <div className="voice-library-row" key={draft.id}>
+            <input
+              className="voice-library-name"
+              value={draft.label}
+              onChange={(event) => updateDraft({ label: event.target.value })}
+              placeholder={t('settings.voice.libraryNamePlaceholder')}
+              aria-label={t('settings.voice.libraryNamePlaceholder')}
+            />
+            <input
+              className="voice-library-id"
+              value={draft.voice}
+              onChange={(event) => updateDraft({ voice: event.target.value })}
+              onBlur={commitDraft}
+              placeholder={t('settings.voice.libraryVoicePlaceholder')}
+              aria-label={t('settings.voice.libraryVoicePlaceholder')}
+            />
+            <button
+              type="button"
+              className="btn-secondary compact voice-library-preview"
+              onClick={() => void playPreview(draft)}
+              disabled={!draft.voice.trim()}
+              aria-label={t('settings.voice.previewPlay')}
+              title={t('settings.voice.previewPlay')}
+            >
+              <Icon name="play" size={14} />
+              <span>{t('settings.voice.previewPlay')}</span>
+            </button>
+            <button
+              type="button"
+              className="voice-library-remove"
+              onClick={cancelDraft}
+              aria-label={t('settings.voice.libraryCancel')}
+              title={t('settings.voice.libraryCancel')}
+            >
+              <Icon name="x" size={14} />
+            </button>
+          </div>
+        ) : null}
+        {!voices.length && !draft ? <p className="voice-library-empty">{t('settings.voice.libraryListEmpty')}</p> : null}
         <button type="button" className="btn-secondary compact voice-library-add" onClick={addVoice}>
           <Icon name="plus" size={14} />
           <span>{t('settings.voice.libraryAdd')}</span>

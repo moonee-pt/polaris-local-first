@@ -89,6 +89,7 @@ export const settings = {
   'settings.voice.libraryNamePlaceholder': 'Name, e.g. Deep male voice',
   'settings.voice.libraryVoicePlaceholder': 'Voice id',
   'settings.voice.libraryAdd': 'Add one',
+  'settings.voice.libraryCancel': 'Cancel',
   'settings.voice.libraryRemove': 'Remove this voice',
   'settings.voice.libraryListEmpty': 'No voices yet. Add one below.',
   'settings.voice.designerOpen': 'Voices',

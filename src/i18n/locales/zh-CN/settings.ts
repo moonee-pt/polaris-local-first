@@ -87,6 +87,7 @@ export const settings = {
   'settings.voice.libraryNamePlaceholder': '名称，例如 低沉男声',
   'settings.voice.libraryVoicePlaceholder': '填音色 id',
   'settings.voice.libraryAdd': '新增一条',
+  'settings.voice.libraryCancel': '取消新增',
   'settings.voice.libraryRemove': '删除这条音色',
   'settings.voice.libraryListEmpty': '还没有音色，点下面新增一条。',
   'settings.voice.designerOpen': '音色库',
