@@ -2,6 +2,7 @@ import { ImpactStyle } from '@capacitor/haptics';
 import type { ClipboardEvent, KeyboardEvent } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { resolveChatCardReference } from '../../../../app/collection/codeCollectionSource';
+import { DESKTOP_LAYOUT_QUERY } from '../../../../app/shell/appLayoutSurface';
 import { Icon } from '../../../Icon';
 import { runImpactAction } from '../../../haptics';
 import {
@@ -171,10 +172,13 @@ export function ChatComposer({ onStartVoiceCall }: ChatComposerProps = {}) {
   };
   const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key !== 'Enter' || event.ctrlKey || interactionLocked || hasUnsupportedPendingImages) return;
-    const prefersTouchInput =
+    // Enter only sends from a real desktop layout (wide window + mouse/trackpad).
+    // Phones, tablets and the narrow mobile layout keep it as a plain newline.
+    const isDesktopInput =
       typeof window !== 'undefined' &&
-      window.matchMedia('(pointer: coarse)').matches;
-    if (prefersTouchInput || event.nativeEvent.isComposing) return;
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia(DESKTOP_LAYOUT_QUERY).matches;
+    if (!isDesktopInput || event.nativeEvent.isComposing) return;
     if (tryCastThemeReviveSpell()) {
       event.preventDefault();
       return;
