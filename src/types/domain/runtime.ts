@@ -30,13 +30,16 @@ export type AppBackgroundThemeId =
   | 'mistPurple'
   | 'apricot'
   | 'mistTeal'
-  | 'roseBeige';
+  | 'roseBeige'
+  | 'custom';
 
 export interface AppDisplayPreferences {
   appearance: AppAppearancePreference;
   hapticsEnabled: boolean;
   fontScale: number;
   backgroundTheme?: AppBackgroundThemeId;
+  backgroundStrength?: number;
+  backgroundCustomColor?: string | null;
 }
 
 export interface AppCustomization {

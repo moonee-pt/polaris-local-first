@@ -331,6 +331,8 @@ export function useMenuSheetController({
     onSetDisplayFontScale: (fontScale: number) => setDisplayPreferences({ fontScale }),
     onSetHapticsEnabled: (enabled: boolean) => setDisplayPreferences({ hapticsEnabled: enabled }),
     onSetBackgroundTheme: (backgroundTheme: AppBackgroundThemeId) => setDisplayPreferences({ backgroundTheme }),
+    onSetBackgroundStrength: (backgroundStrength: number) => setDisplayPreferences({ backgroundStrength }),
+    onSetBackgroundCustomColor: (backgroundCustomColor: string) => setDisplayPreferences({ backgroundTheme: 'custom', backgroundCustomColor }),
     onDeleteCustomFont: fontLibrary.onDeleteCustomFont,
     onRefreshStorageHealth: () => refreshStorageHealth({ includeRuntimeLog: true }),
     onClearDiagnostics: clearDiagnostics,

@@ -272,6 +272,8 @@ export function MenuSheet({
             onSetAppearance={controller.onSetAppearance}
             onSetHapticsEnabled={controller.onSetHapticsEnabled}
             onSetBackgroundTheme={controller.onSetBackgroundTheme}
+            onSetBackgroundStrength={controller.onSetBackgroundStrength}
+            onSetBackgroundCustomColor={controller.onSetBackgroundCustomColor}
           />
         ) : null}
         {visiblePage === 'fonts' ? (

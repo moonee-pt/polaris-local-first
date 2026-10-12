@@ -1,7 +1,7 @@
 /* Polaris app background themes.
-   Selectable in Settings > Display. Gated by html[data-polaris-app-bg], which the
-   shell sets from displayPreferences.backgroundTheme (default: pink).
-   Geometry is identical across themes; only the wash colors change. */
+   Wash colors are generated in src/config/theme/appBackgroundThemes.ts and applied as
+   inline CSS variables on .app-shell. This file only neutralizes the legacy glow blobs
+   and the collection stage overlay so the generated wash is what you actually see. */
 
 html[data-polaris-app-bg] .app-shell .bg-glow,
 html[data-polaris-app-bg] .app-shell .bg-glow-top,
@@ -15,74 +15,13 @@ html[data-polaris-app-bg] .app-shell .app-stage::before {
   opacity: 0 !important;
 }
 
-html[data-polaris-app-bg='pink'] .app-shell {
-  --bg: radial-gradient(56% 38% at 16% 6%, rgba(252,214,228,0.62) 0%, rgba(252,214,228,0) 60%), radial-gradient(52% 34% at 84% 4%, rgba(255,238,244,0.85) 0%, rgba(255,238,244,0) 58%), radial-gradient(70% 44% at 62% 100%, rgba(246,185,201,0.40) 0%, rgba(246,185,201,0) 64%), linear-gradient(180deg, #fffdfe 0%, #fff8fb 55%, #fdf1f6 100%);
-  --warm-bg: radial-gradient(56% 38% at 16% 6%, rgba(252,214,228,0.62) 0%, rgba(252,214,228,0) 60%), radial-gradient(52% 34% at 84% 4%, rgba(255,238,244,0.85) 0%, rgba(255,238,244,0) 58%), radial-gradient(70% 44% at 62% 100%, rgba(246,185,201,0.40) 0%, rgba(246,185,201,0) 64%), linear-gradient(180deg, #fffdfe 0%, #fff8fb 55%, #fdf1f6 100%);
-  --cool-bg: radial-gradient(56% 38% at 16% 6%, rgba(252,214,228,0.62) 0%, rgba(252,214,228,0) 60%), radial-gradient(52% 34% at 84% 4%, rgba(255,238,244,0.85) 0%, rgba(255,238,244,0) 58%), radial-gradient(70% 44% at 62% 100%, rgba(246,185,201,0.40) 0%, rgba(246,185,201,0) 64%), linear-gradient(180deg, #fffdfe 0%, #fff8fb 55%, #fdf1f6 100%);
-  --chat-bg: radial-gradient(56% 38% at 16% 6%, rgba(252,214,228,0.62) 0%, rgba(252,214,228,0) 60%), radial-gradient(52% 34% at 84% 4%, rgba(255,238,244,0.85) 0%, rgba(255,238,244,0) 58%), radial-gradient(70% 44% at 62% 100%, rgba(246,185,201,0.40) 0%, rgba(246,185,201,0) 64%), linear-gradient(180deg, #fffdfe 0%, #fff8fb 55%, #fdf1f6 100%);
-  --card-bg: linear-gradient(140deg, #ffffff 0%, #fff9fb 60%, #fdf2f6 100%);
-}
-
-html[data-polaris-app-bg='claude'] .app-shell {
-  --bg: radial-gradient(56% 38% at 16% 6%, rgba(232,230,220,0.62) 0%, rgba(232,230,220,0) 60%), radial-gradient(52% 34% at 84% 4%, rgba(240,238,230,0.85) 0%, rgba(240,238,230,0) 58%), radial-gradient(70% 44% at 62% 100%, rgba(232,230,220,0.55) 0%, rgba(232,230,220,0) 64%), linear-gradient(180deg, rgba(250,249,245,0.92) 0%, rgba(247,246,240,0.75) 55%, #f5f4ed 100%);
-  --warm-bg: radial-gradient(56% 38% at 16% 6%, rgba(232,230,220,0.62) 0%, rgba(232,230,220,0) 60%), radial-gradient(52% 34% at 84% 4%, rgba(240,238,230,0.85) 0%, rgba(240,238,230,0) 58%), radial-gradient(70% 44% at 62% 100%, rgba(232,230,220,0.55) 0%, rgba(232,230,220,0) 64%), linear-gradient(180deg, rgba(250,249,245,0.92) 0%, rgba(247,246,240,0.75) 55%, #f5f4ed 100%);
-  --cool-bg: radial-gradient(56% 38% at 16% 6%, rgba(232,230,220,0.62) 0%, rgba(232,230,220,0) 60%), radial-gradient(52% 34% at 84% 4%, rgba(240,238,230,0.85) 0%, rgba(240,238,230,0) 58%), radial-gradient(70% 44% at 62% 100%, rgba(232,230,220,0.55) 0%, rgba(232,230,220,0) 64%), linear-gradient(180deg, rgba(250,249,245,0.92) 0%, rgba(247,246,240,0.75) 55%, #f5f4ed 100%);
-  --chat-bg: radial-gradient(56% 38% at 16% 6%, rgba(232,230,220,0.62) 0%, rgba(232,230,220,0) 60%), radial-gradient(52% 34% at 84% 4%, rgba(240,238,230,0.85) 0%, rgba(240,238,230,0) 58%), radial-gradient(70% 44% at 62% 100%, rgba(232,230,220,0.55) 0%, rgba(232,230,220,0) 64%), linear-gradient(180deg, rgba(250,249,245,0.92) 0%, rgba(247,246,240,0.75) 55%, #f5f4ed 100%);
-  --card-bg: linear-gradient(140deg, #ffffff 0%, #faf9f5 60%, #f2efe6 100%);
-}
-
-html[data-polaris-app-bg='lotus'] .app-shell {
-  --bg: radial-gradient(56% 38% at 16% 6%, rgba(231,206,204,0.62) 0%, rgba(231,206,204,0) 60%), radial-gradient(52% 34% at 84% 4%, rgba(248,241,237,0.86) 0%, rgba(248,241,237,0) 58%), radial-gradient(70% 44% at 62% 100%, rgba(219,186,184,0.38) 0%, rgba(219,186,184,0) 64%), linear-gradient(180deg, #fefcfa 0%, #faf4f1 55%, #f4eae6 100%);
-  --warm-bg: radial-gradient(56% 38% at 16% 6%, rgba(231,206,204,0.62) 0%, rgba(231,206,204,0) 60%), radial-gradient(52% 34% at 84% 4%, rgba(248,241,237,0.86) 0%, rgba(248,241,237,0) 58%), radial-gradient(70% 44% at 62% 100%, rgba(219,186,184,0.38) 0%, rgba(219,186,184,0) 64%), linear-gradient(180deg, #fefcfa 0%, #faf4f1 55%, #f4eae6 100%);
-  --cool-bg: radial-gradient(56% 38% at 16% 6%, rgba(231,206,204,0.62) 0%, rgba(231,206,204,0) 60%), radial-gradient(52% 34% at 84% 4%, rgba(248,241,237,0.86) 0%, rgba(248,241,237,0) 58%), radial-gradient(70% 44% at 62% 100%, rgba(219,186,184,0.38) 0%, rgba(219,186,184,0) 64%), linear-gradient(180deg, #fefcfa 0%, #faf4f1 55%, #f4eae6 100%);
-  --chat-bg: radial-gradient(56% 38% at 16% 6%, rgba(231,206,204,0.62) 0%, rgba(231,206,204,0) 60%), radial-gradient(52% 34% at 84% 4%, rgba(248,241,237,0.86) 0%, rgba(248,241,237,0) 58%), radial-gradient(70% 44% at 62% 100%, rgba(219,186,184,0.38) 0%, rgba(219,186,184,0) 64%), linear-gradient(180deg, #fefcfa 0%, #faf4f1 55%, #f4eae6 100%);
-  --card-bg: linear-gradient(140deg, #ffffff 0%, #fdf8f6 60%, #f8efec 100%);
-}
-
-html[data-polaris-app-bg='sage'] .app-shell {
-  --bg: radial-gradient(56% 38% at 16% 6%, rgba(203,216,204,0.60) 0%, rgba(203,216,204,0) 60%), radial-gradient(52% 34% at 84% 4%, rgba(241,246,240,0.86) 0%, rgba(241,246,240,0) 58%), radial-gradient(70% 44% at 62% 100%, rgba(176,196,182,0.34) 0%, rgba(176,196,182,0) 64%), linear-gradient(180deg, #fbfdfb 0%, #f4f8f4 55%, #e9f0ea 100%);
-  --warm-bg: radial-gradient(56% 38% at 16% 6%, rgba(203,216,204,0.60) 0%, rgba(203,216,204,0) 60%), radial-gradient(52% 34% at 84% 4%, rgba(241,246,240,0.86) 0%, rgba(241,246,240,0) 58%), radial-gradient(70% 44% at 62% 100%, rgba(176,196,182,0.34) 0%, rgba(176,196,182,0) 64%), linear-gradient(180deg, #fbfdfb 0%, #f4f8f4 55%, #e9f0ea 100%);
-  --cool-bg: radial-gradient(56% 38% at 16% 6%, rgba(203,216,204,0.60) 0%, rgba(203,216,204,0) 60%), radial-gradient(52% 34% at 84% 4%, rgba(241,246,240,0.86) 0%, rgba(241,246,240,0) 58%), radial-gradient(70% 44% at 62% 100%, rgba(176,196,182,0.34) 0%, rgba(176,196,182,0) 64%), linear-gradient(180deg, #fbfdfb 0%, #f4f8f4 55%, #e9f0ea 100%);
-  --chat-bg: radial-gradient(56% 38% at 16% 6%, rgba(203,216,204,0.60) 0%, rgba(203,216,204,0) 60%), radial-gradient(52% 34% at 84% 4%, rgba(241,246,240,0.86) 0%, rgba(241,246,240,0) 58%), radial-gradient(70% 44% at 62% 100%, rgba(176,196,182,0.34) 0%, rgba(176,196,182,0) 64%), linear-gradient(180deg, #fbfdfb 0%, #f4f8f4 55%, #e9f0ea 100%);
-  --card-bg: linear-gradient(140deg, #ffffff 0%, #f9fcfa 60%, #eff4f0 100%);
-}
-
-html[data-polaris-app-bg='mistBlue'] .app-shell {
-  --bg: radial-gradient(56% 38% at 16% 6%, rgba(198,212,222,0.60) 0%, rgba(198,212,222,0) 60%), radial-gradient(52% 34% at 84% 4%, rgba(241,246,250,0.86) 0%, rgba(241,246,250,0) 58%), radial-gradient(70% 44% at 62% 100%, rgba(170,190,206,0.34) 0%, rgba(170,190,206,0) 64%), linear-gradient(180deg, #fbfcfd 0%, #f4f7fa 55%, #e8eef3 100%);
-  --warm-bg: radial-gradient(56% 38% at 16% 6%, rgba(198,212,222,0.60) 0%, rgba(198,212,222,0) 60%), radial-gradient(52% 34% at 84% 4%, rgba(241,246,250,0.86) 0%, rgba(241,246,250,0) 58%), radial-gradient(70% 44% at 62% 100%, rgba(170,190,206,0.34) 0%, rgba(170,190,206,0) 64%), linear-gradient(180deg, #fbfcfd 0%, #f4f7fa 55%, #e8eef3 100%);
-  --cool-bg: radial-gradient(56% 38% at 16% 6%, rgba(198,212,222,0.60) 0%, rgba(198,212,222,0) 60%), radial-gradient(52% 34% at 84% 4%, rgba(241,246,250,0.86) 0%, rgba(241,246,250,0) 58%), radial-gradient(70% 44% at 62% 100%, rgba(170,190,206,0.34) 0%, rgba(170,190,206,0) 64%), linear-gradient(180deg, #fbfcfd 0%, #f4f7fa 55%, #e8eef3 100%);
-  --chat-bg: radial-gradient(56% 38% at 16% 6%, rgba(198,212,222,0.60) 0%, rgba(198,212,222,0) 60%), radial-gradient(52% 34% at 84% 4%, rgba(241,246,250,0.86) 0%, rgba(241,246,250,0) 58%), radial-gradient(70% 44% at 62% 100%, rgba(170,190,206,0.34) 0%, rgba(170,190,206,0) 64%), linear-gradient(180deg, #fbfcfd 0%, #f4f7fa 55%, #e8eef3 100%);
-  --card-bg: linear-gradient(140deg, #ffffff 0%, #f9fbfd 60%, #eef3f7 100%);
-}
-
-html[data-polaris-app-bg='mistPurple'] .app-shell {
-  --bg: radial-gradient(56% 38% at 16% 6%, rgba(214,206,226,0.60) 0%, rgba(214,206,226,0) 60%), radial-gradient(52% 34% at 84% 4%, rgba(245,242,249,0.86) 0%, rgba(245,242,249,0) 58%), radial-gradient(70% 44% at 62% 100%, rgba(190,180,208,0.34) 0%, rgba(190,180,208,0) 64%), linear-gradient(180deg, #fcfbfd 0%, #f7f4fa 55%, #efeaf5 100%);
-  --warm-bg: radial-gradient(56% 38% at 16% 6%, rgba(214,206,226,0.60) 0%, rgba(214,206,226,0) 60%), radial-gradient(52% 34% at 84% 4%, rgba(245,242,249,0.86) 0%, rgba(245,242,249,0) 58%), radial-gradient(70% 44% at 62% 100%, rgba(190,180,208,0.34) 0%, rgba(190,180,208,0) 64%), linear-gradient(180deg, #fcfbfd 0%, #f7f4fa 55%, #efeaf5 100%);
-  --cool-bg: radial-gradient(56% 38% at 16% 6%, rgba(214,206,226,0.60) 0%, rgba(214,206,226,0) 60%), radial-gradient(52% 34% at 84% 4%, rgba(245,242,249,0.86) 0%, rgba(245,242,249,0) 58%), radial-gradient(70% 44% at 62% 100%, rgba(190,180,208,0.34) 0%, rgba(190,180,208,0) 64%), linear-gradient(180deg, #fcfbfd 0%, #f7f4fa 55%, #efeaf5 100%);
-  --chat-bg: radial-gradient(56% 38% at 16% 6%, rgba(214,206,226,0.60) 0%, rgba(214,206,226,0) 60%), radial-gradient(52% 34% at 84% 4%, rgba(245,242,249,0.86) 0%, rgba(245,242,249,0) 58%), radial-gradient(70% 44% at 62% 100%, rgba(190,180,208,0.34) 0%, rgba(190,180,208,0) 64%), linear-gradient(180deg, #fcfbfd 0%, #f7f4fa 55%, #efeaf5 100%);
-  --card-bg: linear-gradient(140deg, #ffffff 0%, #fbf9fd 60%, #f3eff8 100%);
-}
-
-html[data-polaris-app-bg='apricot'] .app-shell {
-  --bg: radial-gradient(56% 38% at 16% 6%, rgba(250,224,210,0.62) 0%, rgba(250,224,210,0) 60%), radial-gradient(52% 34% at 84% 4%, rgba(255,245,238,0.88) 0%, rgba(255,245,238,0) 58%), radial-gradient(70% 44% at 62% 100%, rgba(240,196,176,0.30) 0%, rgba(240,196,176,0) 64%), linear-gradient(180deg, #fffdfb 0%, #fdf5ef 55%, #fbeae0 100%);
-  --warm-bg: radial-gradient(56% 38% at 16% 6%, rgba(250,224,210,0.62) 0%, rgba(250,224,210,0) 60%), radial-gradient(52% 34% at 84% 4%, rgba(255,245,238,0.88) 0%, rgba(255,245,238,0) 58%), radial-gradient(70% 44% at 62% 100%, rgba(240,196,176,0.30) 0%, rgba(240,196,176,0) 64%), linear-gradient(180deg, #fffdfb 0%, #fdf5ef 55%, #fbeae0 100%);
-  --cool-bg: radial-gradient(56% 38% at 16% 6%, rgba(250,224,210,0.62) 0%, rgba(250,224,210,0) 60%), radial-gradient(52% 34% at 84% 4%, rgba(255,245,238,0.88) 0%, rgba(255,245,238,0) 58%), radial-gradient(70% 44% at 62% 100%, rgba(240,196,176,0.30) 0%, rgba(240,196,176,0) 64%), linear-gradient(180deg, #fffdfb 0%, #fdf5ef 55%, #fbeae0 100%);
-  --chat-bg: radial-gradient(56% 38% at 16% 6%, rgba(250,224,210,0.62) 0%, rgba(250,224,210,0) 60%), radial-gradient(52% 34% at 84% 4%, rgba(255,245,238,0.88) 0%, rgba(255,245,238,0) 58%), radial-gradient(70% 44% at 62% 100%, rgba(240,196,176,0.30) 0%, rgba(240,196,176,0) 64%), linear-gradient(180deg, #fffdfb 0%, #fdf5ef 55%, #fbeae0 100%);
-  --card-bg: linear-gradient(140deg, #ffffff 0%, #fef9f4 60%, #fbf0e7 100%);
-}
-
-html[data-polaris-app-bg='mistTeal'] .app-shell {
-  --bg: radial-gradient(56% 38% at 16% 6%, rgba(200,216,214,0.60) 0%, rgba(200,216,214,0) 60%), radial-gradient(52% 34% at 84% 4%, rgba(241,247,246,0.86) 0%, rgba(241,247,246,0) 58%), radial-gradient(70% 44% at 62% 100%, rgba(172,194,192,0.34) 0%, rgba(172,194,192,0) 64%), linear-gradient(180deg, #fbfdfc 0%, #f4f9f8 55%, #e9f1f0 100%);
-  --warm-bg: radial-gradient(56% 38% at 16% 6%, rgba(200,216,214,0.60) 0%, rgba(200,216,214,0) 60%), radial-gradient(52% 34% at 84% 4%, rgba(241,247,246,0.86) 0%, rgba(241,247,246,0) 58%), radial-gradient(70% 44% at 62% 100%, rgba(172,194,192,0.34) 0%, rgba(172,194,192,0) 64%), linear-gradient(180deg, #fbfdfc 0%, #f4f9f8 55%, #e9f1f0 100%);
-  --cool-bg: radial-gradient(56% 38% at 16% 6%, rgba(200,216,214,0.60) 0%, rgba(200,216,214,0) 60%), radial-gradient(52% 34% at 84% 4%, rgba(241,247,246,0.86) 0%, rgba(241,247,246,0) 58%), radial-gradient(70% 44% at 62% 100%, rgba(172,194,192,0.34) 0%, rgba(172,194,192,0) 64%), linear-gradient(180deg, #fbfdfc 0%, #f4f9f8 55%, #e9f1f0 100%);
-  --chat-bg: radial-gradient(56% 38% at 16% 6%, rgba(200,216,214,0.60) 0%, rgba(200,216,214,0) 60%), radial-gradient(52% 34% at 84% 4%, rgba(241,247,246,0.86) 0%, rgba(241,247,246,0) 58%), radial-gradient(70% 44% at 62% 100%, rgba(172,194,192,0.34) 0%, rgba(172,194,192,0) 64%), linear-gradient(180deg, #fbfdfc 0%, #f4f9f8 55%, #e9f1f0 100%);
-  --card-bg: linear-gradient(140deg, #ffffff 0%, #f9fcfc 60%, #eef4f4 100%);
-}
-
-html[data-polaris-app-bg='roseBeige'] .app-shell {
-  --bg: radial-gradient(56% 38% at 16% 6%, rgba(230,212,206,0.62) 0%, rgba(230,212,206,0) 60%), radial-gradient(52% 34% at 84% 4%, rgba(240,232,214,0.58) 0%, rgba(240,232,214,0) 58%), radial-gradient(70% 44% at 62% 100%, rgba(250,246,240,0.86) 0%, rgba(250,246,240,0) 64%), linear-gradient(180deg, #fdfbf8 0%, #f9f3ee 55%, #f3ebe2 100%);
-  --warm-bg: radial-gradient(56% 38% at 16% 6%, rgba(230,212,206,0.62) 0%, rgba(230,212,206,0) 60%), radial-gradient(52% 34% at 84% 4%, rgba(240,232,214,0.58) 0%, rgba(240,232,214,0) 58%), radial-gradient(70% 44% at 62% 100%, rgba(250,246,240,0.86) 0%, rgba(250,246,240,0) 64%), linear-gradient(180deg, #fdfbf8 0%, #f9f3ee 55%, #f3ebe2 100%);
-  --cool-bg: radial-gradient(56% 38% at 16% 6%, rgba(230,212,206,0.62) 0%, rgba(230,212,206,0) 60%), radial-gradient(52% 34% at 84% 4%, rgba(240,232,214,0.58) 0%, rgba(240,232,214,0) 58%), radial-gradient(70% 44% at 62% 100%, rgba(250,246,240,0.86) 0%, rgba(250,246,240,0) 64%), linear-gradient(180deg, #fdfbf8 0%, #f9f3ee 55%, #f3ebe2 100%);
-  --chat-bg: radial-gradient(56% 38% at 16% 6%, rgba(230,212,206,0.62) 0%, rgba(230,212,206,0) 60%), radial-gradient(52% 34% at 84% 4%, rgba(240,232,214,0.58) 0%, rgba(240,232,214,0) 58%), radial-gradient(70% 44% at 62% 100%, rgba(250,246,240,0.86) 0%, rgba(250,246,240,0) 64%), linear-gradient(180deg, #fdfbf8 0%, #f9f3ee 55%, #f3ebe2 100%);
-  --card-bg: linear-gradient(140deg, #ffffff 0%, #fcf8f3 60%, #f5efe7 100%);
+/* Let the wash run edge to edge: the app chrome (bottom shelf, side drawer,
+   desktop sidebar) stops painting its own opaque panel so there are no white bars. */
+html[data-polaris-app-bg] .collection-shelf-tabs,
+html[data-polaris-app-bg] .collaborator-scope-drawer-panel,
+html[data-polaris-app-bg] .desktop-app-sidebar {
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }

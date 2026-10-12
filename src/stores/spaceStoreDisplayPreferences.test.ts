@@ -19,7 +19,9 @@ describe('normalizeDisplayPreferences', () => {
       appearance: 'dark',
       hapticsEnabled: false,
       fontScale: 1.5,
-      backgroundTheme: 'pink'
+      backgroundTheme: 'pink',
+      backgroundStrength: 0.7,
+      backgroundCustomColor: '#f6b9c9'
     });
   });
 
@@ -32,7 +34,9 @@ describe('normalizeDisplayPreferences', () => {
       appearance: 'system',
       hapticsEnabled: true,
       fontScale: 1,
-      backgroundTheme: 'pink'
+      backgroundTheme: 'pink',
+      backgroundStrength: 0.7,
+      backgroundCustomColor: '#f6b9c9'
     });
   });
 });
@@ -46,7 +50,9 @@ describe('mergeDisplayPreferencesPatch', () => {
       appearance: 'light',
       hapticsEnabled: false,
       fontScale: 0.9,
-      backgroundTheme: 'pink'
+      backgroundTheme: 'pink',
+      backgroundStrength: 0.7,
+      backgroundCustomColor: '#f6b9c9'
     });
   });
 });

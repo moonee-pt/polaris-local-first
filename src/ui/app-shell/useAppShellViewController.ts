@@ -16,6 +16,7 @@ import { isWorldFrameInteractive } from './worldFrameInteractivity';
 import type { PersistenceReadFailureNoticeState } from './usePersistenceReadFailureNotice';
 import { useAppearanceDomEffects } from '../useAppearanceDomEffects';
 import { useAppBackgroundThemeDomEffects } from '../useAppBackgroundThemeDomEffects';
+import { buildAppBackgroundStyle } from '../../config/theme/appBackgroundThemes';
 import type { World } from '../../types/domain';
 
 type AppShellViewControllerInput = ReturnType<typeof useAppShellController> & {
@@ -144,7 +145,12 @@ export function useAppShellViewController(props: AppShellViewControllerInput) {
   const lastCollaboratorTransitionKeyRef = useRef<string | null>(null);
   const backgroundUrl = useAssetObjectUrl(customization.backgroundAssetId ?? undefined, true);
   const backgroundBlur = resolveBackgroundBlur(customization.backgroundBlur, activeChatDensity);
-  const starStyle = buildStarStyle(customization);
+  const backgroundThemeStyle = buildAppBackgroundStyle(
+    displayPreferences.backgroundTheme,
+    displayPreferences.backgroundStrength,
+    displayPreferences.backgroundCustomColor
+  );
+  const starStyle = { ...buildStarStyle(customization), ...backgroundThemeStyle };
   const appLayoutSurface = useAppLayoutSurface();
   const hasWideLayout = isWideLayoutSurface(appLayoutSurface);
   const hasSidebarLayout = isSidebarLayoutSurface(appLayoutSurface);
