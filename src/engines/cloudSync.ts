@@ -4,7 +4,7 @@ import {
 } from '../stores/storeExportPackage';
 import { importStructuredExportSnapshot } from '../stores/storeImportPackage';
 import type { StoreTransferProgressReporter } from '../stores/storeImportProgress';
-import { isSyncConfigured, pullTables, pushOps } from './syncClient';
+import { pullTables, pushOps } from './syncClient';
 import type { PullResponse, SyncOp, SyncTableName } from './syncProtocol';
 import { SYNC_TABLES } from './syncProtocol';
 
@@ -18,19 +18,6 @@ type HashCache = Record<SyncTableName, Record<string, RowHash>>;
 
 function emptyHashCache(): HashCache {
   return Object.fromEntries(SYNC_TABLES.map((t) => [t, {}])) as HashCache;
-}
-
-function readHashCache(): HashCache {
-  try {
-    const raw = window.localStorage.getItem(HASH_CACHE_KEY);
-    if (!raw) return emptyHashCache();
-    const parsed = JSON.parse(raw) as Partial<HashCache>;
-    const out = emptyHashCache();
-    for (const table of SYNC_TABLES) Object.assign(out[table], parsed[table] ?? {});
-    return out;
-  } catch {
-    return emptyHashCache();
-  }
 }
 
 function writeHashCache(cache: HashCache): void {
@@ -252,83 +239,10 @@ export function mergeCloudIntoLocal(
 }
 
 // ---- public sync entry points --------------------------------------------------
-
-let syncInFlight = false;
-
-export type SyncTickResult = 'ok' | 'skipped-not-configured' | 'skipped-inflight' | 'skipped-clean' | 'error';
-
-export type StartupResult = 'restored' | 'pushed' | 'clean' | 'skipped-not-configured' | 'error';
-
-// Startup: pull cloud rows newer than our last sync, merge them into local, import the
-// merged snapshot back into the store, then push whatever local rows are still dirty.
-export async function syncOnStartup(): Promise<StartupResult> {
-  if (!isSyncConfigured()) return 'skipped-not-configured';
-  if (syncInFlight) return 'skipped-not-configured';
-  syncInFlight = true;
-  try {
-    const since = getLastSyncAt();
-    const cache = readHashCache();
-    const hasCache = SYNC_TABLES.some((t) => Object.keys(cache[t]).length > 0);
-    let pull: PullResponse | null = null;
-    let pullFailed = false;
-    try {
-      pull = await pullTables(since > 0 ? since : null);
-    } catch {
-      pullFailed = true;
-    }
-    // A fresh device that cannot see the cloud has no way to know whether pushing its
-    // own (possibly empty) rows would clobber real cloud data — bail out.
-    if (pullFailed && !hasCache) return 'error';
-
-    if (pull && pull.latestAt > since) {
-      const local = await buildCloudSyncSnapshot();
-      const merged = mergeCloudIntoLocal(local, pull);
-      await importStructuredExportSnapshot(merged, { skipDomains: ['asset'] });
-    }
-
-    const snapshot = await buildCloudSyncSnapshot();
-    const rows = splitSnapshotToRows(snapshot);
-    const { ops: rawOps, next } = buildOps(rows, cache);
-    const ops = filterWipedDeviceOps(rawOps, rows, cache);
-    if (ops.length > 0) {
-      const result = await pushOps(ops);
-      writeHashCache(ops.length === rawOps.length ? next : retainProtectedRows(next, ops, cache));
-      setLastSyncAt(Math.max(result.latestAt, pull?.latestAt ?? 0));
-      return 'pushed';
-    }
-    if (pull && pull.latestAt > since) return 'restored';
-    return 'clean';
-  } catch {
-    return 'error';
-  } finally {
-    syncInFlight = false;
-  }
-}
-
-export async function runAutoCloudBackup(): Promise<SyncTickResult> {
-  if (!isSyncConfigured()) return 'skipped-not-configured';
-  if (syncInFlight) return 'skipped-inflight';
-  syncInFlight = true;
-  try {
-    const snapshot = await buildCloudSyncSnapshot();
-    const rows = splitSnapshotToRows(snapshot);
-    const cache = readHashCache();
-    const { ops, next } = buildOps(rows, cache);
-    const safeOps = filterWipedDeviceOps(ops, rows, cache);
-    if (safeOps.length === 0) return 'skipped-clean';
-    const result = await pushOps(safeOps);
-    writeHashCache(safeOps.length === ops.length ? next : retainProtectedRows(next, safeOps, cache));
-    setLastSyncAt(result.latestAt);
-    return 'ok';
-  } catch {
-    return 'error';
-  } finally {
-    syncInFlight = false;
-  }
-}
-
-/** @deprecated Alias so existing imports keep working. */
-export const autoRestoreIfLocalEmpty = syncOnStartup;
+// Cloud sync is manual-only: it runs exclusively from the "备份到云端" /
+// "从云端恢复" buttons below. There is intentionally no startup timer, no
+// periodic tick, and no visibility-change trigger — background auto-sync kept
+// pushing a depleted device's view over the shared cloud slot and wiping rows.
 
 export type CloudBackupResult = { updatedAt: string };
 export type CloudRestoreResult = { restored: boolean; updatedAt?: string };

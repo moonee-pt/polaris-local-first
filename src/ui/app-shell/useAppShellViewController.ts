@@ -7,7 +7,6 @@ import {
 import type { useAppShellController } from './useAppShellController';
 import { loadChatWorldModule, loadCollectionWorldModule, loadGroupWorldModule, preloadLazyModule } from './appShellLazyModules';
 import { useCustomFontDomEffects } from '../customFontDomEffects';
-import { useCloudAutoSync } from '../useCloudAutoSync';
 import { useAssetObjectUrl } from '../useAssetObjectUrl';
 import { isSidebarLayoutSurface, isWideLayoutSurface, shouldShowDesktopSidebar } from '../../app/shell/appLayoutSurface';
 import { useAppLayoutSurface, useDesktopSidebarAutoCollapse } from './useAppLayoutSurface';
@@ -182,7 +181,6 @@ export function useAppShellViewController(props: AppShellViewControllerInput) {
   useAppearanceDomEffects(displayPreferences.appearance);
   useAppBackgroundThemeDomEffects(displayPreferences);
   useCustomFontDomEffects(customization, displayPreferences);
-  useCloudAutoSync();
 
   useEffect(() => {
     const preloadWorldModules = () => {
