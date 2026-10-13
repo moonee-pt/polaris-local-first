@@ -686,6 +686,7 @@ export async function importStructuredExportSnapshot(
   return {
     status: failures.length === 0 ? 'complete' : 'partial',
     importedDomains,
-    retainedDomains: failures
+    retainedDomains: failures,
+    quarantinedConversationIds: restoreResult.chatQuarantinedConversationIds
   };
 }

@@ -13,6 +13,8 @@ import {
   LOCAL_DATA_SCHEMA_VERSION,
   LOCAL_DATA_NAMESPACE,
   buildLocalDataStoreHydrationValidationReports,
+  type ChatMigrationLegacySnapshot,
+  type ChatMigrationRehearsal,
   type LocalDataCommitMeta,
   type LocalDataBackendMutation,
   type LocalDataDomain,
@@ -71,6 +73,9 @@ export type StructuredImportLocalDataRestoreResult = {
   skippedDomains: StructuredImportLocalDataRestoreSkippedDomain[];
   promotionSkippedDomains: LocalDataLiveSourcePromotionSkippedDomain[];
   promotionFailure: string | null;
+  // Conversation ids that could not be projected during a chat restore and were quarantined
+  // (kept as recoverable incomplete rows) instead of failing the whole chat domain.
+  chatQuarantinedConversationIds: string[];
 };
 
 export type StructuredImportLocalDataRestoreOptions = {
@@ -120,6 +125,92 @@ function restoreFailureReason(error: unknown) {
   return message;
 }
 
+export type ChatRestoreSalvage = {
+  rehearsal: ChatMigrationRehearsal;
+  quarantinedConversationIds: string[];
+};
+
+type ChatRestoreSalvageContext = {
+  version: number;
+  committedAt: number;
+  knownCollaboratorIds: readonly string[];
+};
+
+type ChatSnapshotConversation = ChatMigrationLegacySnapshot['conversations'][number];
+
+// A quarantined conversation is projected as an incomplete catalog row with no record body, so
+// strip the (possibly malformed) messages and carry only the counts the planner requires.
+function toQuarantinedConversation(conversation: ChatSnapshotConversation): ChatSnapshotConversation {
+  const messages = Array.isArray(conversation.messages) ? conversation.messages : [];
+  const expectedLatestMessageTimestamp = messages.reduce(
+    (latest, message) => Math.max(latest, Number(message?.timestamp) || 0),
+    0
+  );
+  const { messages: _messages, ...rest } = conversation;
+  return {
+    ...rest,
+    expectedMessageCount: messages.length,
+    expectedLatestMessageTimestamp
+  };
+}
+
+// Build the chat restore rehearsal. The fast path projects every conversation as-is. If that
+// throws — a single malformed conversation (duplicate/blank id, a non-string attachment assetId,
+// etc.) aborts the whole synchronous projection — fall back to screening each conversation on its
+// own and quarantining only the unprojectable ones, so one bad row can never cost the whole chat
+// domain. If even the salvaged projection throws, the error propagates and the chat domain is
+// skipped exactly as before (nothing is written; the store is left untouched).
+export function buildChatRestoreRehearsalWithSalvage(
+  snapshot: ChatMigrationLegacySnapshot,
+  context: ChatRestoreSalvageContext
+): ChatRestoreSalvage {
+  const build = (candidate: ChatMigrationLegacySnapshot) => buildChatMigrationRehearsal({
+    snapshot: candidate,
+    version: context.version,
+    committedAt: context.committedAt,
+    unitId: `import-chat-${context.committedAt}`,
+    knownCollaboratorIds: context.knownCollaboratorIds
+  });
+
+  try {
+    return { rehearsal: build(snapshot), quarantinedConversationIds: [] };
+  } catch {
+    // Fall through to per-conversation salvage.
+  }
+
+  const priorQuarantined = new Set(snapshot.quarantinedConversationIds ?? []);
+  const seenIds = new Set<string>();
+  const projectable: ChatSnapshotConversation[] = [];
+  const unprojectable: ChatSnapshotConversation[] = [];
+  for (const conversation of snapshot.conversations) {
+    const id = typeof conversation.id === 'string' ? conversation.id : '';
+    // A blank or duplicate id can never become a distinct row; drop it rather than abort.
+    if (!id.trim() || seenIds.has(id)) continue;
+    seenIds.add(id);
+    if (priorQuarantined.has(id)) {
+      projectable.push(conversation);
+      continue;
+    }
+    try {
+      build({ conversations: [conversation], activeConversationId: null });
+      projectable.push(conversation);
+    } catch {
+      unprojectable.push(conversation);
+    }
+  }
+
+  const salvagedIds = unprojectable.map((conversation) => conversation.id);
+  const rehearsal = build({
+    conversations: [
+      ...projectable,
+      ...unprojectable.map(toQuarantinedConversation)
+    ],
+    activeConversationId: snapshot.activeConversationId,
+    quarantinedConversationIds: Array.from(new Set([...priorQuarantined, ...salvagedIds]))
+  });
+  return { rehearsal, quarantinedConversationIds: salvagedIds };
+}
+
 export async function restoreStructuredImportToLocalDataRepository(
   payload: StructuredImportLocalDataRestorePayload,
   options: StructuredImportLocalDataRestoreOptions = {}
@@ -135,6 +226,7 @@ export async function restoreStructuredImportToLocalDataRepository(
   const restoredDomains: LocalDataDomain[] = [];
   const skippedDomains: StructuredImportLocalDataRestoreSkippedDomain[] = [];
   const skippedDomainSet = new Set(options.skipDomains ?? []);
+  let chatSalvagedQuarantinedIds: string[] = [];
 
   async function prepareReplacement(unitOfWork: Parameters<typeof repository.commit>[0]) {
     const currentRows = [];
@@ -237,16 +329,21 @@ export async function restoreStructuredImportToLocalDataRepository(
   }
 
   await restoreDomain('chat', async () => {
-    const chatRehearsal = buildChatMigrationRehearsal({
-      snapshot: {
+    const { rehearsal: chatRehearsal, quarantinedConversationIds } = buildChatRestoreRehearsalWithSalvage(
+      {
         conversations: payload.chatState.conversations,
-        activeConversationId: payload.chatState.activeConversationId
+        activeConversationId: payload.chatState.activeConversationId,
+        ...(payload.chatState.quarantinedConversationIds?.length
+          ? { quarantinedConversationIds: payload.chatState.quarantinedConversationIds }
+          : {})
       },
-      version,
-      committedAt,
-      unitId: `import-chat-${committedAt}`,
-      knownCollaboratorIds: personasWithDocContent.map((persona) => persona.id)
-    });
+      {
+        version,
+        committedAt,
+        knownCollaboratorIds: personasWithDocContent.map((persona) => persona.id)
+      }
+    );
+    chatSalvagedQuarantinedIds = quarantinedConversationIds;
     await prepareReplacement(chatRehearsal.unitOfWork);
     return await commitAndPromoteProjectedDomain(chatRehearsal.unitOfWork, (meta, projected) => (
       buildChatMigrationRehearsalValidationReport(chatRehearsal, {
@@ -354,6 +451,7 @@ export async function restoreStructuredImportToLocalDataRepository(
     promotedDomains: STRUCTURED_IMPORT_DOMAINS.filter((domain) => restoredDomains.includes(domain)),
     skippedDomains,
     promotionSkippedDomains: [],
-    promotionFailure: null
+    promotionFailure: null,
+    chatQuarantinedConversationIds: chatSalvagedQuarantinedIds
   };
 }
