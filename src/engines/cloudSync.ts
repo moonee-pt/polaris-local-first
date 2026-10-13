@@ -3,6 +3,7 @@ import {
   type StructuredExportSnapshot
 } from '../stores/storeExportPackage';
 import { importStructuredExportSnapshot } from '../stores/storeImportPackage';
+import type { StoreImportResult } from '../stores/storeImportResult';
 import type { StoreTransferProgressReporter } from '../stores/storeImportProgress';
 import { pullTables, pushOps } from './syncClient';
 import type { PullResponse, SyncOp, SyncTableName } from './syncProtocol';
@@ -245,7 +246,7 @@ export function mergeCloudIntoLocal(
 // pushing a depleted device's view over the shared cloud slot and wiping rows.
 
 export type CloudBackupResult = { updatedAt: string };
-export type CloudRestoreResult = { restored: boolean; updatedAt?: string };
+export type CloudRestoreResult = { restored: boolean; updatedAt?: string; importResult?: StoreImportResult };
 
 function commitCacheFor(rows: Row[], at: number): void {
   writeHashCache(
@@ -278,10 +279,10 @@ export async function downloadCloudBackup(
   if (pull.latestAt <= 0) return { restored: false };
   const local = await buildCloudSyncSnapshot();
   const merged = mergeCloudIntoLocal(local, pull);
-  await importStructuredExportSnapshot(merged, {
+  const importResult = await importStructuredExportSnapshot(merged, {
     ...(options.onProgress ? { onProgress: options.onProgress } : {}),
     skipDomains: ['asset']
   });
   commitCacheFor(splitSnapshotToRows(merged), pull.latestAt);
-  return { restored: true, updatedAt: new Date(pull.latestAt).toISOString() };
+  return { restored: true, updatedAt: new Date(pull.latestAt).toISOString(), importResult };
 }

@@ -212,9 +212,14 @@ export function useMenuBackupTransferController({
       if (!ui.confirm('会从云端拉取最近一份备份并解密覆盖当前数据，确定吗？')) return;
       setImportProgress({ message: '读取并解密云端备份' });
       const result = await downloadCloudBackup(null, { onProgress: setImportProgress });
-      ui.alert(result.restored
-        ? `已从云端恢复：${result.updatedAt ? new Date(result.updatedAt).toLocaleString() : ''}`
-        : '云端还没有备份，请先在旧设备点一次“同步到云端”。');
+      if (!result.restored) {
+        ui.alert('云端还没有备份，请先在旧设备点一次“同步到云端”。');
+        return;
+      }
+      const stamp = result.updatedAt ? new Date(result.updatedAt).toLocaleString() : '';
+      ui.alert(result.importResult
+        ? `${formatStoreImportResult(result.importResult)}${stamp ? `（云端备份时间：${stamp}）` : ''}`
+        : `已从云端恢复：${stamp}`);
     } catch (error) {
       ui.alert(error instanceof Error ? error.message : '云端恢复失败');
     } finally {

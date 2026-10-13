@@ -4,6 +4,7 @@ import { installBootRescueSurface } from './app/bootstrap/bootRescueSurface';
 import { installClientDiagnosticsReporter } from './app/bootstrap/clientDiagnosticsReporter';
 import { installGlobalClientErrorLogging } from './app/bootstrap/clientErrorLog';
 import { initializeRuntimeStoreLocalDataBackend } from './app/bootstrap/storeLocalDataBackendBootstrap';
+import { requestPersistentStorage } from './app/bootstrap/persistentStorageRequest';
 import { recordAppRuntimeLogEntry } from './infrastructure/appRuntimeLog';
 import { AppErrorBoundary } from './ui/AppErrorBoundary';
 import { AppShell } from './ui/AppShell';
@@ -25,6 +26,9 @@ recordAppRuntimeLogEntry({
 });
 
 async function startApplication() {
+  // Best-effort: ask the browser to keep our storage persistent so it is less likely to be
+  // evicted under storage pressure. Fire-and-forget — must never block or fail the boot.
+  void requestPersistentStorage();
   // Install the one LocalData backend, reconcile only already-active pointers left behind by old
   // clean builds, then finish or abandon any durable asset-import stage before stores hydrate.
   await initializeRuntimeStoreLocalDataBackend();
