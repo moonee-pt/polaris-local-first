@@ -51,7 +51,10 @@ function isTableName(value: unknown): value is SyncTableName {
 
 async function readTable(userId: string, table: SyncTableName, since: number | null): Promise<SyncDoc[]> {
   const collection = await getTableCollection(table);
-  const filter: Record<string, unknown> = { userId };
+  // Soft-deleted rows (deletedAt set) are excluded from sync so an intentional delete still
+  // propagates, but the document is never physically removed — it stays recoverable in Mongo.
+  // `{ deletedAt: null }` matches both an explicit null and a missing field (pre-existing rows).
+  const filter: Record<string, unknown> = { userId, deletedAt: null };
   if (since !== null) filter.updatedAt = { $gt: new Date(since) };
   const docs = await collection
     .find<{ _id: string; updatedAt: Date; data: unknown }>(filter)
@@ -125,12 +128,21 @@ export async function handleSyncPush(req: SyncRequest): Promise<SyncResponse> {
     for (const op of ops) {
       const collection = await getTableCollection(op.table);
       if (op.delete === true) {
-        await collection.deleteOne({ userId: SYNC_OWNER_ID, _id: op.id });
+        // Never hard-delete. Mark the row deleted and retain its data so a stale client's
+        // "missing locally => deleted" push (or any accidental delete) can never destroy the
+        // shared cloud slot; the document stays recoverable and re-writing the id revives it.
+        await collection.updateOne(
+          { userId: SYNC_OWNER_ID, _id: op.id },
+          { $set: { userId: SYNC_OWNER_ID, deletedAt: new Date(now) } }
+        );
       } else {
         const updatedAt = new Date(typeof op.updatedAt === 'number' ? op.updatedAt : now);
         await collection.updateOne(
           { userId: SYNC_OWNER_ID, _id: op.id },
-          { $set: { userId: SYNC_OWNER_ID, data: op.data, updatedAt }, $setOnInsert: { createdAt: updatedAt } },
+          {
+            $set: { userId: SYNC_OWNER_ID, data: op.data, updatedAt, deletedAt: null },
+            $setOnInsert: { createdAt: updatedAt }
+          },
           { upsert: true }
         );
       }

@@ -100,12 +100,31 @@ describe('api/sync/push (table ops)', () => {
     expect(getTable('sync_conversations').updateOne).toHaveBeenCalled();
   });
 
-  it('deletes a row when op.delete is true', async () => {
+  it('soft-deletes a row when op.delete is true, never hard-deleting', async () => {
     for (const key of Object.keys(tables)) delete tables[key];
     const res = makeRes();
     await pushHandler(req({ body: { ops: [{ table: 'sync_personas', id: 'p-9', delete: true }] } }), res);
-    expect(getTable('sync_personas').deleteOne).toHaveBeenCalledWith({ userId: 'owner', _id: 'p-9' });
-    expect(getTable('sync_personas').updateOne).not.toHaveBeenCalled();
+    expect(res.statusCode).toBe(200);
+    expect(getTable('sync_personas').deleteOne).not.toHaveBeenCalled();
+    expect(getTable('sync_personas').updateOne).toHaveBeenCalledWith(
+      { userId: 'owner', _id: 'p-9' },
+      expect.objectContaining({ $set: expect.objectContaining({ userId: 'owner', deletedAt: expect.any(Date) }) })
+    );
+  });
+
+  it('clears a prior soft-delete when the same id is written again', async () => {
+    for (const key of Object.keys(tables)) delete tables[key];
+    const res = makeRes();
+    await pushHandler(
+      req({ body: { ops: [{ table: 'sync_conversations', id: 'c-1', data: { id: 'c-1', messages: [] } }] } }),
+      res
+    );
+    expect(res.statusCode).toBe(200);
+    expect(getTable('sync_conversations').updateOne).toHaveBeenCalledWith(
+      { userId: 'owner', _id: 'c-1' },
+      expect.objectContaining({ $set: expect.objectContaining({ deletedAt: null }) }),
+      { upsert: true }
+    );
   });
 });
 
@@ -149,5 +168,15 @@ describe('api/sync/pull (all tables)', () => {
       updatedAt: { $gt: new Date(1700000000000) }
     }));
     expect(res.statusCode).toBe(200);
+  });
+
+  it('excludes soft-deleted rows from every pulled table', async () => {
+    tables.sync_conversations = makeTable();
+    const res = makeRes();
+    await pullHandler(req({ method: 'GET', body: undefined }), res);
+    expect(res.statusCode).toBe(200);
+    expect(getTable('sync_conversations').find).toHaveBeenCalledWith(
+      expect.objectContaining({ userId: 'owner', deletedAt: null })
+    );
   });
 });
