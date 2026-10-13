@@ -59,7 +59,14 @@ export const getCloudLastBackupAt = getCloudLastSyncIso;
 
 export type Row = { table: SyncTableName; id: string; data: unknown };
 
-type ChatLike = { conversations: Array<{ id?: string }>; activeConversationId?: string | null };
+type ChatLike = {
+  conversations: Array<{ id?: string }>;
+  activeConversationId?: string | null;
+  activeGroupRoomId?: string | null;
+  groupRooms?: unknown[];
+  deletedConversationIds?: string[];
+  quarantinedConversationIds?: string[];
+};
 type PersonaLike = {
   personas: Array<{ id?: string }>;
   activeCollaboratorId?: string | null;
@@ -81,7 +88,14 @@ export function splitSnapshotToRows(snapshot: StructuredExportSnapshot): Row[] {
   rows.push({
     table: 'sync_settings',
     id: 'global',
-    data: { spaceState: snapshot.spaceState ?? {}, activeConversationId: chat.activeConversationId ?? null }
+    data: {
+      spaceState: snapshot.spaceState ?? {},
+      activeConversationId: chat.activeConversationId ?? null,
+      activeGroupRoomId: chat.activeGroupRoomId ?? null,
+      groupRooms: chat.groupRooms ?? [],
+      deletedConversationIds: chat.deletedConversationIds ?? [],
+      quarantinedConversationIds: chat.quarantinedConversationIds ?? []
+    }
   });
   rows.push({ table: 'sync_providers', id: 'global', data: snapshot.runtimeState ?? { providers: [] } });
   rows.push({ table: 'sync_collection', id: 'global', data: snapshot.collectionState ?? {} });

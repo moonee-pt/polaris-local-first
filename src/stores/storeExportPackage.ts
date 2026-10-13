@@ -30,7 +30,8 @@ import { readCollectionStateFromLocalDataRepositoryIfActive } from './collection
 import {
   loadWorkspaceReferenceDocsContent
 } from './workspaceReferenceDocContentPersistence';
-import type { Conversation, Persona } from '../types/domain';
+import type { Conversation, Persona, GroupChatRoom } from '../types/domain';
+import type { ChatConversationLifecycleEntry } from './chat/index';
 import type { StoreTransferProgressReporter } from './storeImportProgress';
 
 export const SPACE_STORE_KEY = 'polaris-space-store-v1';
@@ -98,6 +99,15 @@ export type ExportReport = {
 type ExportChatState = {
   conversations: Conversation[];
   activeConversationId: string | null;
+  groupRooms?: GroupChatRoom[];
+  activeGroupRoomId?: string | null;
+  loadedConversationIds?: string[];
+  recoveredConversationIds?: string[];
+  prunedConversationIds?: string[];
+  quarantinedConversationIds?: string[];
+  failedConversationIds?: string[];
+  deletedConversationIds?: string[];
+  legacyLifecycleByConversationId?: Record<string, ChatConversationLifecycleEntry>;
 };
 
 type ExportPersonaState = {

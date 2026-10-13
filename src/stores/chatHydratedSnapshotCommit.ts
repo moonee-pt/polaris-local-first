@@ -100,8 +100,8 @@ async function commitHydratedSnapshotPayload(
   await (options.writeState ?? writeChatState)({
     conversations: snapshotConversations,
     activeConversationId: resolveWritableActiveConversationId(snapshotPayload.activeConversationId, snapshotConversations),
-    groupRooms: [],
-    activeGroupRoomId: null,
+    groupRooms: snapshotPayload.groupRooms ?? [],
+    activeGroupRoomId: snapshotPayload.activeGroupRoomId ?? null,
     dirtyConversationIds: snapshotConversationIds,
     loadedConversationIds: snapshotConversationIds,
     deletedConversationIds: uniqueConversationIds([

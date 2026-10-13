@@ -130,8 +130,8 @@ async function readChatStateFromLocalDataRows(
     return {
       conversations: [],
       activeConversationId: null,
-      activeGroupRoomId: null,
-      groupRooms: [],
+      activeGroupRoomId: domainMeta.value.activeGroupRoomId ?? null,
+      groupRooms: domainMeta.value.groupRooms ?? [],
       loadedConversationIds: [],
       deletedConversationIds,
       quarantinedConversationIds: uniqueConversationIds(quarantinedConversationIds),
@@ -196,8 +196,8 @@ async function readChatStateFromLocalDataRows(
   return {
     conversations,
     activeConversationId,
-    activeGroupRoomId: null,
-    groupRooms: [],
+    activeGroupRoomId: domainMeta.value.activeGroupRoomId ?? null,
+    groupRooms: domainMeta.value.groupRooms ?? [],
     loadedConversationIds,
     failedConversationIds,
     deletedConversationIds,
