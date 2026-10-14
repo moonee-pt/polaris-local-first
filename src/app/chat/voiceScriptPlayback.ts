@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from 'react';
 import { AudioQueueManager } from '../../engines/voiceScriptAudioQueue';
 import { requestGeneratedSpeech } from '../../engines/voiceGenerationClient';
 import { useVoiceSettingsForSpeaker } from '../voice/useVoiceSettingsForSpeaker';
-import { buildAssistantSpeechPlan } from '../../ui/worlds/chat/message/messageSpeechText';
+import { buildAssistantSpeechPlan, getAssistantAmbiencePlan } from '../../ui/worlds/chat/message/messageSpeechText';
 import type { VoiceCallSpeechPlan } from '../../engines/voice/voiceCallSpeechUnits';
 import type { ChatMessageVoiceCache } from '../../types/domain';
 import { readMessageSpeechCacheBlob, saveMessageSpeechCache } from './messageSpeechCache';
@@ -66,6 +66,7 @@ export function useVoiceScriptPlayback({
 
   const speakPlan = useCallback(async (
     messageId: string,
+    content: string,
     plan: VoiceCallSpeechPlan,
     cache: ChatMessageVoiceCache | null
   ) => {
@@ -144,7 +145,8 @@ export function useVoiceScriptPlayback({
                 setSpeaking(true);
                 setLoading(false);
                 if (index === 0) {
-                  onStartedRef.current?.(0);
+                  const ambiencePlan = getAssistantAmbiencePlan(content);
+                  onStartedRef.current?.(ambiencePlan.estimatedSec);
                 }
               },
               onEnded: () => settle('ended'),
@@ -188,13 +190,13 @@ export function useVoiceScriptPlayback({
 
     // If the whole reply is already cached as one blob, skip the pipeline.
     if (cache?.assetId && plan.units.length === 1) {
-      void speakPlan(messageId, plan, cache);
+      void speakPlan(messageId, content, plan, cache);
       return;
     }
 
     if (!canSpeak) return;
 
-    void speakPlan(messageId, plan, cache ?? null);
+    void speakPlan(messageId, content, plan, cache ?? null);
   }, [canSpeak, speakPlan, stop]);
 
   return {
