@@ -139,6 +139,9 @@ export function normalizeVoiceGenerationSettings(
     voice: normalizeOptionalString(settings.voice) ?? DEFAULT_VOICE_GENERATION_SETTINGS.voice,
     customVoices: normalizeVoiceGenerationCustomVoices(settings.customVoices),
     format: normalizeVoiceGenerationFormat(settings.format),
+    speed: typeof settings.speed === 'number' && Number.isFinite(settings.speed)
+      ? Math.max(0.5, Math.min(2.0, settings.speed))
+      : undefined,
     lastUpdatedAt: typeof settings.lastUpdatedAt === 'number' && Number.isFinite(settings.lastUpdatedAt)
       ? settings.lastUpdatedAt
       : undefined
