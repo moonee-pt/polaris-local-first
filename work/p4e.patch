@@ -1,0 +1,38 @@
+*** Begin Patch
+*** Update File: src/ui/worlds/group/GroupTimeline.tsx
+@@
+-export function GroupTimeline({ controller }: GroupTimelineProps) {
++export function GroupTimeline({ controller, voice }: GroupTimelineProps) {
+@@
+                controller={controller}
++              voice={voice}
+               streaming={streaming}
+@@
+     return () => observer.disconnect();
+   }, [groupId, scrollToBottom]);
++
++  const voiceCandidates = useMemo(
++    () => timelineItems
++      .filter((item) => item.kind === 'member' && !item.streaming && Boolean(item.message.content.trim()))
++      .map((item) => ({
++        id: item.message.id,
++        content: item.message.content,
++        voiceCache: item.message.voiceCache ?? null
++      })),
++    [timelineItems]
++  );
++  const voiceCandidateKey = voiceCandidates.map((item) => item.id).join('|');
++  const seenAutoVoiceRef = useRef<{ groupId: string | null; ids: Set<string> }>({ groupId: null, ids: new Set() });
++  useEffect(() => {
++    if (!group) return;
++    const seen = seenAutoVoiceRef.current;
++    if (seen.groupId !== group.id) {
++      seenAutoVoiceRef.current = { groupId: group.id, ids: new Set(voiceCandidates.map((item) => item.id)) };
++      return;
++    }
++    const fresh = voiceCandidates.filter((item) => !seen.ids.has(item.id));
++    if (fresh.length === 0) return;
++    fresh.forEach((item) => seen.ids.add(item.id));
++    if (voice.enabled) fresh.forEach((item) => voice.enqueueAuto(item));
++  }, [group, voice, voiceCandidateKey]);
+*** End Patch

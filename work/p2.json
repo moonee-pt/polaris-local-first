@@ -1,0 +1,1 @@
+{"endpoint":"https://api.siliconflow.cn/v1/audio/speech","headers":{"authorization":"Bearer test","content-type":"application/json"},"body":{"model":"m","input":"hello","voice":"v"}}

@@ -1,0 +1,73 @@
+
+  [32m[1mVITE[22m v5.4.21[39m  [2mready in [0m[1m546[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5178[22m/[39m
+[2m  [32m➜[39m  [1mNetwork[22m[2m: use [22m[1m--host[22m[2m to expose[22m
+[2m17:53:07[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/base.css[22m
+[2m17:53:45[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/base.css[22m
+[2m18:14:00[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/ui/worlds/chat/message/MessageMarkdown.tsx[22m
+[2m18:14:05[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/ui/worlds/chat/message/MessageMarkdown.tsx[22m
+[2m18:14:09[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/ui/worlds/chat/message/MessageMarkdown.tsx[22m
+[2m18:14:17[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/ui/worlds/chat/message/MessageMarkdown.tsx[22m
+[2m18:14:22[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/ui/worlds/chat/message/MessageMarkdown.tsx[22m
+[2m18:14:50[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/ui/worlds/chat/message/MessageCodeBlockView.tsx[22m
+[2m18:14:57[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/ui/worlds/chat/message/MessageCodeBlockView.tsx[22m
+[2m18:19:15[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/ui/worlds/chat/message/MessageMarkdown.tsx[22m
+[2m18:21:37[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/base.css[22m
+[2m18:48:33[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/ui/worlds/chat/message/MessageMarkdown.tsx[22m
+[2m18:55:28[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/base.css[22m
+[2m18:56:57[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/ui/worlds/chat/message/MessageMarkdown.tsx[22m
+[2m18:57:02[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/ui/worlds/chat/message/MessageMarkdown.tsx[22m
+[2m18:57:06[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/ui/worlds/chat/message/MessageMarkdown.tsx[22m
+[2m18:57:19[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/ui/worlds/chat/message/MessageMarkdown.tsx[22m
+[2m18:57:30[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/ui/worlds/chat/message/MessageCodeBlockView.tsx[22m
+[2m18:57:34[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/ui/worlds/chat/message/MessageCodeBlockView.tsx[22m
+[2m18:57:45[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/ui/worlds/chat/message/MessageCodeBlockView.tsx[22m
+[2m18:57:51[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/ui/worlds/chat/message/MessageCodeBlockView.tsx[22m
+[2m20:05:45[22m [36m[1m[vite][22m[39m [32mvite.config.ts changed, restarting server...[39m
+[2m20:05:46[22m [36m[1m[vite][22m[39m server restarted.
+[2m20:07:37[22m [36m[1m[vite][22m[39m [32mvite.config.ts changed, restarting server...[39m
+[2m20:07:37[22m [36m[1m[vite][22m[39m server restarted.
+[2m20:53:43[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mwork/option-bar-preview.html[22m
+[2m20:54:54[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mwork/option-bar-preview.html[22m
+[2m20:55:48[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mwork/option-bar-preview.html[22m
+[2m21:08:32[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mwork/option-bar-preview.html[22m
+[2m21:08:32[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mwork/option-bar-preview-dark.html[22m
+[2m21:10:01[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mwork/option-bar-preview.html[22m
+[2m21:10:01[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mwork/option-bar-preview-dark.html[22m
+[2m21:11:15[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mwork/option-bar-preview.html[22m
+[2m21:11:15[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mwork/option-bar-preview-dark.html[22m
+[2m21:26:41[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mwork/option-bar-preview.html[22m
+[2m21:26:41[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mwork/option-bar-preview-dark.html[22m
+[2m21:28:03[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mwork/option-bar-preview.html[22m
+[2m21:28:03[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mwork/option-bar-preview-dark.html[22m
+[2m21:31:53[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mwork/reading-snapshot.html[22m
+[2m21:39:51[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mwork/option-bar-preview.html[22m
+[2m21:39:51[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mwork/option-bar-preview-dark.html[22m
+[2m00:44:32[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mwork/dock-preview-full.html[22m
+[2m00:44:32[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mwork/dock-preview.html[22m
+[2m01:04:11[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mwork/top3-compare.html[22m
+[2m12:57:20[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mwork/bg-preview4/board.html[22m
+node:internal/fs/watchers:323
+    const error = new UVException({
+                  ^
+
+Error: EBUSY: resource busy or locked, watch 'D:\project\polaris-local-first\work\prompt-drafts\refs\sudachi.json'
+    at FSWatcher.<computed> (node:internal/fs/watchers:323:19)
+    at Object.watch (node:fs:2609:36)
+    at createFsWatchInstance (file:///D:/project/polaris-local-first/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:42780:17)
+    at setFsWatchListener (file:///D:/project/polaris-local-first/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:42827:15)
+    at NodeFsHandler._watchWithNodeFs (file:///D:/project/polaris-local-first/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:42982:14)
+    at NodeFsHandler._handleFile (file:///D:/project/polaris-local-first/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:43046:23)
+    at NodeFsHandler._addToNodeFs (file:///D:/project/polaris-local-first/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:43288:21)
+Emitted 'error' event on FSWatcher instance at:
+    at FSWatcher._handleError (file:///D:/project/polaris-local-first/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:44481:10)
+    at NodeFsHandler._addToNodeFs (file:///D:/project/polaris-local-first/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:43296:18) {
+  errno: -4082,
+  syscall: 'watch',
+  code: 'EBUSY',
+  path: 'D:\\project\\polaris-local-first\\work\\prompt-drafts\\refs\\sudachi.json',
+  filename: 'D:\\project\\polaris-local-first\\work\\prompt-drafts\\refs\\sudachi.json'
+}
+
+Node.js v24.19.0

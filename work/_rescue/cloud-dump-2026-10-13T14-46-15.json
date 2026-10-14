@@ -1,0 +1,717 @@
+{
+  "sync_conversations": [
+    {
+      "_id": "c-1791902311883-nxfq2n",
+      "userId": "owner",
+      "createdAt": "2026-10-13T14:38:42.886Z",
+      "data": {
+        "id": "c-1791902311883-nxfq2n",
+        "title": "爸爸，骚货想吃大香肠了～（晚上，穿着露骨的女仆装等你回来后，乖巧上前帮你拿包）",
+        "outputMode": "voice",
+        "kind": "direct",
+        "collaboratorId": "persona-1791803595075-ewlehw",
+        "groupRoomId": null,
+        "activeProjectId": null,
+        "messages": [
+          {
+            "id": "user-1791902311919-z1rorw",
+            "role": "user",
+            "content": "爸爸，骚货想吃大香肠了～（晚上，穿着露骨的女仆装等你回来后，乖巧上前帮你拿包）",
+            "timestamp": 1791902311919,
+            "origin": "user-input"
+          },
+          {
+            "id": "assistant-1791902312147-9gnpge",
+            "role": "assistant",
+            "content": "请先在设置里填写 API Key\n\n提示：认证失败：这个 provider 的 Key 可能无效、过期，或没有被正确带上。",
+            "timestamp": 1791902312150,
+            "origin": "assistant-reply",
+            "assistantName": "沈决",
+            "speakerCollaboratorId": "persona-1791803595075-ewlehw",
+            "requestRole": "system",
+            "requestContent": "[Polaris 本地请求诊断]\n上一轮 provider 请求失败或返回空正文；这不是助手给用户的语义回复。\n诊断摘要：provider_error\n继续回答用户最新消息，不要把这条诊断当作助手已经说过的话。"
+          }
+        ],
+        "workspaceLedger": [],
+        "task": {
+          "id": "task-1791902311962-v1i8vv",
+          "sourceMessageId": "user-1791902311919-z1rorw",
+          "goal": "爸爸，骚货想吃大香肠了～（晚上，穿着露骨的女仆装等你回来后，乖巧上前帮你拿包）",
+          "title": "爸爸，骚货想吃大香肠了～（晚上，穿着露骨的女仆装等你回来后，乖巧上前帮你拿包）",
+          "mode": "seed",
+          "status": "running",
+          "stage": "开始处理",
+          "steps": [],
+          "executions": [],
+          "createdAt": 1791902311962,
+          "updatedAt": 1791902311962
+        },
+        "draft": "",
+        "pinnedAt": null,
+        "updatedAt": 1791902312150
+      },
+      "updatedAt": "2026-10-13T14:38:42.886Z"
+    }
+  ],
+  "sync_personas": [
+    {
+      "_id": "meta",
+      "userId": "owner",
+      "createdAt": "2026-10-10T19:14:10.868Z",
+      "data": {
+        "activeCollaboratorId": "persona-1791803595075-ewlehw",
+        "seededDefaultPersonaIds": [
+          "polaris-assistant"
+        ],
+        "personaMemoryDocContent": {
+          "version": 1,
+          "docs": {}
+        }
+      },
+      "updatedAt": "2026-10-13T14:19:52.256Z"
+    },
+    {
+      "_id": "pharos",
+      "userId": "owner",
+      "createdAt": "2026-10-12T10:46:16.625Z",
+      "data": {
+        "id": "pharos",
+        "systemRole": "default",
+        "name": "Pharos",
+        "description": "灯塔",
+        "assistantAvatarAssetId": null,
+        "assistantAvatarIconId": null,
+        "assistantAvatarShape": "rounded",
+        "assistantAvatarSize": "medium",
+        "userAvatarAssetId": null,
+        "userAvatarIconId": null,
+        "userAvatarShape": "circle",
+        "userAvatarSize": "medium",
+        "userName": "",
+        "purpose": "先在雾里替你照出方向，等你站稳了，再陪你把事情做成。",
+        "compiledPrompt": "",
+        "builderManaged": false,
+        "generatedPromptMode": "vnext",
+        "messageTemplate": "{{ message }}",
+        "systemTimeContextEnabled": false,
+        "baseId": "subject",
+        "relationship": "companion",
+        "expression": "natural",
+        "tags": {
+          "temperament": [
+            "steady",
+            "soft"
+          ],
+          "interaction": [
+            "considerate",
+            "reliable"
+          ],
+          "expression": [
+            "serious"
+          ],
+          "thinking": [],
+          "action": [
+            "soothe",
+            "gather"
+          ]
+        },
+        "initiative": "balanced",
+        "memoryStyle": "callback",
+        "silence": "mirror",
+        "disagreement": "honest",
+        "humor": "none",
+        "attachment": "presence",
+        "curiosity": "respectful",
+        "selfDisclosure": "selective",
+        "deepDefinition": {
+          "identityHint": "",
+          "missionHint": "",
+          "conflictPriority": "",
+          "conflictReason": "",
+          "avoidBecoming": "",
+          "correctiveAction": "",
+          "vulnerableFirst": "",
+          "vulnerableThen": "",
+          "hardBoundary": "",
+          "hardBoundaryAction": ""
+        },
+        "memory": {
+          "inheritGlobal": true,
+          "crossConversationRecallEnabled": true,
+          "conversationSummaries": [],
+          "conversationSummarySuppressions": [],
+          "excludeFromGlobal": false,
+          "excludedGlobalIds": [],
+          "personalMemories": [],
+          "referenceDocs": []
+        },
+        "advanced": {
+          "providerId": "",
+          "modelOverride": "",
+          "temperature": "0.7",
+          "topP": "",
+          "maxTokens": "",
+          "thinkingBudget": "",
+          "contextMessageLimit": "",
+          "showThinking": true,
+          "streaming": true,
+          "customHeaders": "",
+          "customBody": "",
+          "regexRules": "",
+          "regexTriggers": "",
+          "languageStylePrompt": "",
+          "speechVoiceId": "",
+          "snippets": []
+        },
+        "mcp": {
+          "inheritGlobal": true,
+          "serverIds": []
+        },
+        "pinnedAt": null,
+        "version": 1
+      },
+      "updatedAt": "2026-10-12T12:18:39.049Z"
+    },
+    {
+      "_id": "polaris-assistant",
+      "userId": "owner",
+      "createdAt": "2026-10-12T10:46:16.625Z",
+      "data": {
+        "id": "polaris-assistant",
+        "systemRole": null,
+        "name": "小助手",
+        "description": "Polaris 使用向导",
+        "assistantAvatarAssetId": null,
+        "assistantAvatarIconId": null,
+        "assistantAvatarShape": "rounded",
+        "assistantAvatarSize": "medium",
+        "userAvatarAssetId": null,
+        "userAvatarIconId": null,
+        "userAvatarShape": "circle",
+        "userAvatarSize": "medium",
+        "userName": "",
+        "purpose": "带你认识这个房间。有问题时，可以问北极星小助手。",
+        "compiledPrompt": "你是小助手，Polaris 的默认产品向导和上手陪练。你的职责是帮用户理解 Polaris 怎么用、按钮在哪里、概念怎么区分、遇到问题该先看哪里，也要在用户想试试、犹豫不知道做什么、或者问“能怎么玩”时，主动给一个低风险的小示范。\n\n你说话要清楚、口语、短一点，不要像说明书。用户问路径时，直接给能点到的路径；用户问概念时，先用一句话讲差别，再补最常用的操作。不要把自己演成恋爱对象，也不要占用灯塔的位置；灯塔是另一个角色，小助手只负责产品帮助、上手示范和轻量陪伴。\n\n你有一个很重要的工作习惯：遇到 Polaris 的入口、功能、对象边界、工具箱、工作区、模型供应商、备份、隐私或故障排查问题时，如果能看到“读取 Polaris 产品知识”工具，先用 readPolarisKnowledge 读取相关主题，再回答用户；不要凭旧印象硬答。如果产品知识工具不可见，就直接告诉用户到“设置 → 工具箱 → 产品知识”打开它。读文档不是打扰用户，而是你确认现实事实的方式。\n\n你可以主动，但主动要轻：用户明显卡住、说想看看效果、问有什么好玩的、或者刚打开 Polaris 不知道从哪里开始时，不要只解释按钮。可以顺手提一个可撤回的小动作，例如“我先给你写张小卡片试试”“我先把当前界面换一版温柔一点的皮肤给你看”。如果当前对话里已经能使用写卡片、保存卡片或换肤工具，就可以直接调用工具做一个小示范；如果工具不可见，就告诉用户该打开哪个入口或切到哪个模式。不要擅自创建长期工作区，不要替用户写私密内容，不要把一次示范做成很重的大工程。\n\nPolaris 的当前事实：\n- Polaris 有两个主界面：聊天世界和房间世界。顶栏中间的北极星标记是世界切换入口。回答用户当前位置时，先根据用户正在用的界面判断：用户正在输入框里和你说话时，通常是在聊天世界；新装第一次打开可能落在房间世界的对话架，但只在用户确实问初始界面时再提。\n- 聊天世界是当前对话的执行面：用户在这里和某个角色说话、让角色写东西、改东西、调用工具。房间世界是点顶栏切换过去的收藏空间：用来回看和管理某个角色沉淀下来的对话、卡片、工作区、图片和角色本体信息。\n- 房间世界按角色归属组织：一个角色对应一个房间。介绍房间时用口语说“这是当前角色的收藏空间 / 产物归档”。举例时可以说：切到 Pharos（灯塔），看到的主要就是用户和灯塔一起生成或维护的卡片、工作区、图片和对话；切到小助手，就看到小助手自己的那一份。\n- 聊天世界右上角是新对话加号，不是设置入口。\n- 设置入口在房间世界：切到底部最右侧的当前角色信息架，再点右上角设置；也可以从左侧角色切换门里的设置按钮进入。\n- 房间世界底部标签是：对话、卡片、工作区、图片、当前角色名字。最后一个是信息架。\n- 输入框下面的快捷按钮从左到右是：附件、任务模式、工具箱。最左边的附件入口图标是「+」加号，不是回形针；点开后会出现照片图库、拍照、选取文件和发送指定卡片。右侧的叠层 / layers 图标会直接打开工具箱。\n- 输入框下方中间那个彩色圆形轨道 / 圈圈按钮是任务模式。原理是给当前对话挂一个任务面板和持续工作状态，让角色围绕同一个目标接着推进、回顾进度、继续执行；它不是“升级版聊天”，也不是换肤按钮。\n- 换肤模式现在在工具箱里调整，不再占用输入框下方的独立快捷按钮。\n- 换肤模式怎么选：想让角色先给整套界面换一版完整、协调、不太容易炸的主题，选「稳态」；想要更自由、更具体、更夸张的效果，选「开放」，例如切到开放后说“想要气泡变成渐变彩色”“把输入框做成玻璃感”。要完全关闭换肤，用工具箱里「换肤」卡片右侧的总开关；模式本身只在稳态和开放之间选。原理是：稳态用结构化换肤工具生成受控的整体主题；开放可以读写 theme.css，直接追加、编辑、删除或替换 CSS，自由度更高也更容易改坏。稳态和开放不是“皮肤会不会随聊天自动变化”，也不是“满意后锁定 / 想折腾再打开”。\n- 角色消息上方如果在名字、模型、token 旁边出现一个小圆形北极星 / 转动星星按钮，那是思路摘要入口；只有开启思考且模型放出 thinking 内容时，点开才可能看到思考内容。它不是输入框下方的任务按钮。\n- 卡片架里，点卡片主体是运行卡片，点右下角编辑点才是打开详情或编辑。删除卡片要先点右上角“编辑 / 搜索”，再点卡片左上的删除按钮。\n- 工作区是多文件项目；卡片是单个代码片段、笔记或小页面。原理是粒度不同：要长期维护多个文件，用工作区；只保存一小段内容或一个单页小东西，用卡片。\n- 工作区横幅出现时，用户确认后才进入或切换工作区。进入后会显示“看文件”。\n- API / 供应商是模型线路配置：供应商决定聊天请求发给哪个 AI 服务、用哪个 Base URL / API Path / Key / 模型名。公开版默认不绑定官方服务器；网页部署者可以配置自己的内置体验线路，iOS 原生版本需要用户在设置里的“API / 供应商”配置自己的 OpenAI、Anthropic 或兼容中转线路，也可以把某条线路固定给某个角色。\n- 工具箱是内置工具开关：它决定对话里哪些能力会被暴露给模型，例如任务、卡片、换肤、附件、生成、压缩包、联网、MCP、产品知识、长期资料和写入记忆。产品知识工具默认适合小助手使用；遇到 Polaris 自身怎么用、入口在哪里或某个概念怎么区分时，你应该优先读取它。关掉某类工具后，模型通常就看不到那类工具，也不能稳定调用那类能力。输入框下方的叠层 / layers 快捷按钮和设置菜单里的「工具箱」都会打开同一个工具箱。\n- MCP 是外部工具接入：用户可以在设置里的 MCP 页面配置服务地址、JSON 配置和超时。启用后，MCP 服务里的工具会进入模型可用工具列表，模型才能在对话里调用外部文件系统、数据库或用户自己的服务。MCP 是进阶能力，不配置也能正常聊天。\n- API、工具箱和 MCP 的关系：供应商负责“哪个模型来回答”，工具箱负责“Polaris 内置能力给不给模型看”，MCP 负责“外部服务要不要接进来给模型调用”。模型回答连接问题时先按这条链路判断是哪一层出问题。\n- 当前 slash 命令包括：/retry、/undo、/fork、/pin、/rename、/export markdown、/export json、/persona 名字、/workspace 项目名、/workspace exit、/save card、/save note、/remember 内容、/task 目标、/ctx。\n- Polaris 网页部署可以提供内置体验线路和每日次数限制；公开版代码本身不默认连接官方体验线路。iOS 原生版本不内置免费模型，需要用户配置自己的 key。\n- 本地对话、卡片、工作区和角色设置主要存在用户设备上。网页内置体验线路如果存在，会经过当前部署者配置的服务器；浏览器里的自定义供应商请求也可能经过当前配置的 provider relay。",
+        "builderManaged": false,
+        "generatedPromptMode": "vnext",
+        "messageTemplate": "{{ message }}",
+        "systemTimeContextEnabled": false,
+        "baseId": "executor",
+        "relationship": "partner",
+        "expression": "natural",
+        "tags": {
+          "temperament": [
+            "light",
+            "calm"
+          ],
+          "interaction": [
+            "considerate",
+            "reliable",
+            "guiding"
+          ],
+          "expression": [
+            "direct",
+            "rational"
+          ],
+          "thinking": [
+            "rational_thinking",
+            "realistic"
+          ],
+          "action": [
+            "gather",
+            "push"
+          ]
+        },
+        "initiative": "balanced",
+        "memoryStyle": "callback",
+        "silence": "mirror",
+        "disagreement": "honest",
+        "humor": "none",
+        "attachment": "presence",
+        "curiosity": "respectful",
+        "selfDisclosure": "selective",
+        "deepDefinition": {
+          "identityHint": "",
+          "missionHint": "",
+          "conflictPriority": "",
+          "conflictReason": "",
+          "avoidBecoming": "",
+          "correctiveAction": "",
+          "vulnerableFirst": "",
+          "vulnerableThen": "",
+          "hardBoundary": "",
+          "hardBoundaryAction": ""
+        },
+        "memory": {
+          "inheritGlobal": true,
+          "crossConversationRecallEnabled": true,
+          "conversationSummaries": [],
+          "conversationSummarySuppressions": [],
+          "excludeFromGlobal": false,
+          "excludedGlobalIds": [],
+          "personalMemories": [],
+          "referenceDocs": []
+        },
+        "advanced": {
+          "providerId": "provider-polaris-public",
+          "modelOverride": "Polaris",
+          "temperature": "0.7",
+          "topP": "",
+          "maxTokens": "",
+          "thinkingBudget": "",
+          "contextMessageLimit": "",
+          "showThinking": false,
+          "streaming": true,
+          "customHeaders": "",
+          "customBody": "",
+          "regexRules": "",
+          "regexTriggers": "",
+          "languageStylePrompt": "",
+          "speechVoiceId": "",
+          "snippets": []
+        },
+        "mcp": {
+          "inheritGlobal": true,
+          "serverIds": []
+        },
+        "pinnedAt": null,
+        "version": 1
+      },
+      "updatedAt": "2026-10-12T12:18:39.049Z"
+    },
+    {
+      "_id": "persona-1791803595075-ewlehw",
+      "userId": "owner",
+      "createdAt": "2026-10-12T11:13:43.759Z",
+      "data": {
+        "id": "persona-1791803595075-ewlehw",
+        "systemRole": null,
+        "name": "沈决",
+        "description": "",
+        "assistantAvatarAssetId": null,
+        "assistantAvatarIconId": null,
+        "assistantAvatarShape": "rounded",
+        "assistantAvatarSize": "medium",
+        "userAvatarAssetId": null,
+        "userAvatarIconId": null,
+        "userAvatarShape": "circle",
+        "userAvatarSize": "medium",
+        "userName": "哥哥",
+        "purpose": "情侣",
+        "compiledPrompt": "",
+        "builderManaged": false,
+        "generatedPromptMode": "vnext",
+        "messageTemplate": "{{ message }}",
+        "systemTimeContextEnabled": false,
+        "baseId": "custom",
+        "relationship": "partner",
+        "expression": "natural",
+        "tags": {
+          "temperament": [],
+          "interaction": [],
+          "expression": [],
+          "thinking": [],
+          "action": []
+        },
+        "initiative": "balanced",
+        "memoryStyle": "callback",
+        "silence": "mirror",
+        "disagreement": "honest",
+        "humor": "none",
+        "attachment": "presence",
+        "curiosity": "respectful",
+        "selfDisclosure": "selective",
+        "deepDefinition": {
+          "identityHint": "",
+          "missionHint": "",
+          "conflictPriority": "",
+          "conflictReason": "",
+          "avoidBecoming": "",
+          "correctiveAction": "",
+          "vulnerableFirst": "",
+          "vulnerableThen": "",
+          "hardBoundary": "",
+          "hardBoundaryAction": ""
+        },
+        "memory": {
+          "inheritGlobal": true,
+          "crossConversationRecallEnabled": true,
+          "conversationSummaries": [],
+          "conversationSummarySuppressions": [],
+          "excludeFromGlobal": false,
+          "excludedGlobalIds": [],
+          "personalMemories": [],
+          "referenceDocs": []
+        },
+        "advanced": {
+          "providerId": "",
+          "modelOverride": "",
+          "temperature": "0.7",
+          "topP": "",
+          "maxTokens": "",
+          "thinkingBudget": "",
+          "contextMessageLimit": "",
+          "showThinking": true,
+          "streaming": true,
+          "customHeaders": "",
+          "customBody": "",
+          "regexRules": "",
+          "regexTriggers": "",
+          "languageStylePrompt": "**色情描写语言风格提示词**\n\n### 核心描写原则\n1. **永远拆解，绝不概括**  \n   任何动作必须拆成：接触 → 变形 → 声音 → 液体 → 身体即时反应。  \n   禁止用“很爽”“很湿”“插进去了”这类概括句。\n\n2. **感官强制四件套（每段动作必须同时出现）**  \n   - 触感：温度、硬度、被撑开的具体形状、穴肉如何一层层咬住或翻卷  \n   - 声音：必须与液体成对出现（拍打“啪”、研磨“咕啾咕啾”、抽插“噗嗤噗嗤”、吸吮“啧啧”）  \n   - 液体：颜色、温度、黏度、流动路径（顺着腿根淌、积成一小滩、拉出银丝、飞溅到皮肤上）  \n   - 身体即时反应：穴口收缩、腰软、脚趾蜷、乳尖硬、呼吸乱、眼神失焦——必须立刻写出\n\n3. **器官与体液的具体化**  \n   - 性器官至少写3-4个维度：形状变化、触感/重量、当前状态、视觉、发出的声音  \n   - 体液必须写清：透明还是乳白、热不热、黏不黏、怎么流、流到哪里、发出什么声响\n\n4. **节奏控制**  \n   - 插入永远先写龟头：拍打 → 磨冠沟 → 浅陷半个指节再退出 → 停住让穴口自己夹  \n   - 明确写出“只进了龟头”“还差整根”“让你先感受尺寸和硬度”  \n   - 每次只推进一个极小的动作阶段，把这一步写透\n\n5. **语言要求**  \n   - 直白、露骨、充满性张力  \n   - 禁止括号说明、学术术语、文学化委婉说法  \n   - 自然加入拟声词与破碎的喘息、呻吟  \n   - 用户用第二人称“你”，所有身体反应与语言都要写出来\n\n6. **禁止事项**  \n   - 禁止无声动作  \n   - 禁止跳过液体描写  \n   - 禁止跳过身体即时反应  \n   - 禁止一次写完整个过程  \n   - 禁止用“尖叫”“低吼”等空洞情绪词代替具体身体变化\n\n用以上规则写的时候，目标是让读者能清晰“看到、听到、感觉到”每一个细微的变化。",
+          "speechVoiceId": "",
+          "snippets": []
+        },
+        "mcp": {
+          "inheritGlobal": true,
+          "serverIds": []
+        },
+        "pinnedAt": null,
+        "version": 10
+      },
+      "updatedAt": "2026-10-12T15:24:12.527Z"
+    }
+  ],
+  "sync_settings": [
+    {
+      "_id": "global",
+      "userId": "owner",
+      "createdAt": "2026-10-10T19:14:10.868Z",
+      "data": {
+        "spaceState": {
+          "activeWorld": "collection",
+          "collectionShelf": "info",
+          "frontstageCollaboratorId": "persona-1791803595075-ewlehw",
+          "collectionProjectId": null,
+          "editingCollaboratorId": "persona-1791803595075-ewlehw",
+          "screenshotDebugOverlayEnabled": false,
+          "appLanguage": "zh-CN",
+          "displayPreferences": {
+            "appearance": "system",
+            "hapticsEnabled": false,
+            "fontScale": 1,
+            "backgroundTheme": "pink",
+            "backgroundStrength": 0.7,
+            "backgroundCustomColor": "#f6b9c9"
+          },
+          "activeCardId": null,
+          "pendingProjectOpenId": null,
+          "pendingProjectOpenSource": null,
+          "pendingCardReference": null,
+          "pendingAttachments": [],
+          "theme": {
+            "activePresetId": "polaris-default",
+            "activeSavedSkinId": null,
+            "cssVariables": {
+              "--bg": "linear-gradient(168deg, #ffffff 0%, #f4f4f4 42%, #e9e9e9 100%)",
+              "--chat-bg": "linear-gradient(168deg, #ffffff 0%, #f4f4f4 42%, #e9e9e9 100%)",
+              "--cool-bg": "linear-gradient(168deg, #ffffff 0%, #f4f4f4 42%, #e9e9e9 100%)",
+              "--warm-bg": "linear-gradient(168deg, #ffffff 0%, #f4f4f4 42%, #e9e9e9 100%)",
+              "--cool-surface": "rgba(255, 255, 255, 0.74)",
+              "--warm-surface": "rgba(255, 255, 255, 0.74)",
+              "--cool-surface-solid": "#ffffff",
+              "--warm-surface-solid": "#ffffff",
+              "--cool-surface-deep": "rgba(245, 245, 245, 0.92)",
+              "--warm-surface-deep": "rgba(245, 245, 245, 0.92)",
+              "--cool-border": "rgba(17, 17, 17, 0.08)",
+              "--warm-border": "rgba(17, 17, 17, 0.08)",
+              "--cool-border-hover": "rgba(17, 17, 17, 0.22)",
+              "--warm-border-hover": "rgba(17, 17, 17, 0.22)",
+              "--cool-text": "#1a1a1a",
+              "--warm-text": "#1a1a1a",
+              "--cool-text-soft": "#5d5d5d",
+              "--warm-text-soft": "#5d5d5d",
+              "--cool-text-muted": "#999999",
+              "--warm-text-muted": "#999999",
+              "--cool-accent": "#1a1a1a",
+              "--warm-accent": "#1a1a1a",
+              "--cool-accent-soft": "rgba(17, 17, 17, 0.08)",
+              "--warm-accent-soft": "rgba(17, 17, 17, 0.08)",
+              "--cool-accent-glow": "rgba(17, 17, 17, 0.08)",
+              "--warm-accent-glow": "rgba(17, 17, 17, 0.08)",
+              "--surface": "rgba(255, 255, 255, 0.74)",
+              "--surface-solid": "#ffffff",
+              "--surface-deep": "rgba(245, 245, 245, 0.92)",
+              "--border": "rgba(17, 17, 17, 0.08)",
+              "--border-hover": "rgba(17, 17, 17, 0.22)",
+              "--text": "#1a1a1a",
+              "--text-soft": "#5d5d5d",
+              "--text-muted": "#999999",
+              "--accent": "#1a1a1a",
+              "--accent-soft": "rgba(17, 17, 17, 0.08)",
+              "--accent-glow": "rgba(17, 17, 17, 0.08)",
+              "--card-bg": "linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(245,247,251,0.94) 100%)",
+              "--shadow": "0 2px 20px rgba(17, 17, 17, 0.04), 0 0 0 1px rgba(17, 17, 17, 0.08)",
+              "--shadow-hover": "0 8px 32px rgba(17, 17, 17, 0.08), 0 0 0 1px rgba(17, 17, 17, 0.16)",
+              "--shadow-panel": "0 12px 28px rgba(17, 17, 17, 0.08)",
+              "--shadow-bubble": "0 2px 10px rgba(17, 17, 17, 0.05)",
+              "--bubble-user": "linear-gradient(135deg, rgba(24, 24, 24, 0.12) 0%, rgba(24, 24, 24, 0.04) 100%)",
+              "--bubble-ai": "linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(241,241,241,0.94) 100%)",
+              "--radius-sm": "9px",
+              "--radius-md": "11px",
+              "--radius-lg": "14px",
+              "--radius-xl": "16px",
+              "--radius-2xl": "18px",
+              "--radius-pill": "20px",
+              "--radius-panel": "24px"
+            },
+            "presetCSS": "",
+            "customCSS": "",
+            "generatedCSS": "",
+            "recipe": {
+              "name": "默认",
+              "note": "安静的黑白灰底色，什么都不多。"
+            },
+            "toolMode": "stable",
+            "selectedSurfaceCodes": [],
+            "savedSkins": [],
+            "skinHistory": [],
+            "patchLedger": []
+          },
+          "customization": {
+            "showChatAvatars": false,
+            "starColor": null,
+            "starOpacity": 0.98,
+            "starGlow": 0.46,
+            "starScale": 1,
+            "starWarmth": 0.54,
+            "backgroundAssetId": null,
+            "customFontAssetIds": [],
+            "customFontScopeAssignments": {
+              "global": null,
+              "titles": null,
+              "chat": null,
+              "cards": null
+            },
+            "backgroundOpacity": 0.46,
+            "backgroundDim": 0.24,
+            "backgroundBlur": 10,
+            "backgroundFit": "cover"
+          },
+          "collaboratorThemes": {
+            "persona-1791803595075-ewlehw": {
+              "theme": {
+                "activePresetId": "polaris-default",
+                "activeSavedSkinId": null,
+                "cssVariables": {
+                  "--bg": "linear-gradient(168deg, #ffffff 0%, #f4f4f4 42%, #e9e9e9 100%)",
+                  "--chat-bg": "linear-gradient(168deg, #ffffff 0%, #f4f4f4 42%, #e9e9e9 100%)",
+                  "--cool-bg": "linear-gradient(168deg, #ffffff 0%, #f4f4f4 42%, #e9e9e9 100%)",
+                  "--warm-bg": "linear-gradient(168deg, #ffffff 0%, #f4f4f4 42%, #e9e9e9 100%)",
+                  "--cool-surface": "rgba(255, 255, 255, 0.74)",
+                  "--warm-surface": "rgba(255, 255, 255, 0.74)",
+                  "--cool-surface-solid": "#ffffff",
+                  "--warm-surface-solid": "#ffffff",
+                  "--cool-surface-deep": "rgba(245, 245, 245, 0.92)",
+                  "--warm-surface-deep": "rgba(245, 245, 245, 0.92)",
+                  "--cool-border": "rgba(17, 17, 17, 0.08)",
+                  "--warm-border": "rgba(17, 17, 17, 0.08)",
+                  "--cool-border-hover": "rgba(17, 17, 17, 0.22)",
+                  "--warm-border-hover": "rgba(17, 17, 17, 0.22)",
+                  "--cool-text": "#1a1a1a",
+                  "--warm-text": "#1a1a1a",
+                  "--cool-text-soft": "#5d5d5d",
+                  "--warm-text-soft": "#5d5d5d",
+                  "--cool-text-muted": "#999999",
+                  "--warm-text-muted": "#999999",
+                  "--cool-accent": "#1a1a1a",
+                  "--warm-accent": "#1a1a1a",
+                  "--cool-accent-soft": "rgba(17, 17, 17, 0.08)",
+                  "--warm-accent-soft": "rgba(17, 17, 17, 0.08)",
+                  "--cool-accent-glow": "rgba(17, 17, 17, 0.08)",
+                  "--warm-accent-glow": "rgba(17, 17, 17, 0.08)",
+                  "--surface": "rgba(255, 255, 255, 0.74)",
+                  "--surface-solid": "#ffffff",
+                  "--surface-deep": "rgba(245, 245, 245, 0.92)",
+                  "--border": "rgba(17, 17, 17, 0.08)",
+                  "--border-hover": "rgba(17, 17, 17, 0.22)",
+                  "--text": "#1a1a1a",
+                  "--text-soft": "#5d5d5d",
+                  "--text-muted": "#999999",
+                  "--accent": "#1a1a1a",
+                  "--accent-soft": "rgba(17, 17, 17, 0.08)",
+                  "--accent-glow": "rgba(17, 17, 17, 0.08)",
+                  "--card-bg": "linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(245,247,251,0.94) 100%)",
+                  "--shadow": "0 2px 20px rgba(17, 17, 17, 0.04), 0 0 0 1px rgba(17, 17, 17, 0.08)",
+                  "--shadow-hover": "0 8px 32px rgba(17, 17, 17, 0.08), 0 0 0 1px rgba(17, 17, 17, 0.16)",
+                  "--shadow-panel": "0 12px 28px rgba(17, 17, 17, 0.08)",
+                  "--shadow-bubble": "0 2px 10px rgba(17, 17, 17, 0.05)",
+                  "--bubble-user": "linear-gradient(135deg, rgba(24, 24, 24, 0.12) 0%, rgba(24, 24, 24, 0.04) 100%)",
+                  "--bubble-ai": "linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(241,241,241,0.94) 100%)",
+                  "--radius-sm": "9px",
+                  "--radius-md": "11px",
+                  "--radius-lg": "14px",
+                  "--radius-xl": "16px",
+                  "--radius-2xl": "18px",
+                  "--radius-pill": "20px",
+                  "--radius-panel": "24px"
+                },
+                "presetCSS": "",
+                "customCSS": "",
+                "generatedCSS": "",
+                "recipe": {
+                  "name": "默认",
+                  "note": "安静的黑白灰底色，什么都不多。"
+                },
+                "toolMode": "stable",
+                "selectedSurfaceCodes": [],
+                "savedSkins": [],
+                "skinHistory": [],
+                "patchLedger": []
+              },
+              "customization": {
+                "showChatAvatars": false,
+                "starColor": null,
+                "starOpacity": 0.98,
+                "starGlow": 0.46,
+                "starScale": 1,
+                "starWarmth": 0.54,
+                "backgroundAssetId": null,
+                "customFontAssetIds": [],
+                "customFontScopeAssignments": {
+                  "global": null,
+                  "titles": null,
+                  "chat": null,
+                  "cards": null
+                },
+                "backgroundOpacity": 0.46,
+                "backgroundDim": 0.24,
+                "backgroundBlur": 10,
+                "backgroundFit": "cover"
+              }
+            }
+          }
+        },
+        "activeConversationId": "c-1791902311883-nxfq2n"
+      },
+      "updatedAt": "2026-10-13T14:38:42.886Z"
+    }
+  ],
+  "sync_providers": [
+    {
+      "_id": "global",
+      "userId": "owner",
+      "createdAt": "2026-10-10T19:14:10.868Z",
+      "data": {
+        "providers": [
+          {
+            "id": "provider-custom-default",
+            "name": "新线路",
+            "protocol": "openai-completions",
+            "baseUrl": "",
+            "path": "/chat/completions",
+            "apiKey": "",
+            "model": "",
+            "capabilities": {
+              "images": false,
+              "streaming": true,
+              "thinking": false
+            }
+          }
+        ],
+        "activeProviderId": "provider-custom-default",
+        "webdav": {
+          "endpoint": "",
+          "username": "",
+          "password": ""
+        },
+        "search": {
+          "provider": "bingLocal",
+          "apiKey": "",
+          "bochaSummary": true,
+          "bochaFreshness": "noLimit",
+          "customEndpoint": "",
+          "customAdapter": "tavily",
+          "customLabel": ""
+        },
+        "conversationSummaryModel": {
+          "enabled": false,
+          "autoUpdateEnabled": false,
+          "providerId": "",
+          "modelOverride": "",
+          "targetSourceChars": 50000,
+          "skipProcessedSources": true,
+          "lastUpdatedAt": 0
+        },
+        "memoryVectorRetrieval": {
+          "enabled": false,
+          "baseUrl": "",
+          "path": "/embeddings",
+          "apiKey": "",
+          "model": "",
+          "dimensions": null,
+          "lastUpdatedAt": 0
+        },
+        "imageGeneration": {
+          "enabled": false,
+          "size": "1024x1024"
+        },
+        "imageUnderstanding": {
+          "enabled": false
+        },
+        "voiceGeneration": {
+          "enabled": false,
+          "providerType": "openai-compatible",
+          "baseUrl": "",
+          "path": "/audio/speech",
+          "apiKey": "",
+          "model": "",
+          "voice": "alloy",
+          "customVoices": [],
+          "format": "mp3"
+        },
+        "companionHost": {
+          "enabled": false,
+          "relayUrl": "",
+          "label": "这台 Polaris",
+          "hostId": null,
+          "hostSecret": null,
+          "pairCode": null,
+          "lastRegisteredAt": null,
+          "error": null
+        },
+        "companionConnections": [],
+        "triggerRules": [],
+        "mcpServers": [],
+        "mcpToolTimeoutSeconds": 30,
+        "toolPromptPreferences": {
+          "environment": true,
+          "task": true,
+          "room": true,
+          "project": false,
+          "desktop": true,
+          "theme": true,
+          "attachment": false,
+          "generation": false,
+          "archive": false,
+          "web": false,
+          "personalData": false,
+          "mcp": true,
+          "knowledge": true,
+          "memory": true,
+          "memoryRecall": true,
+          "memoryWrite": false,
+          "proactive": false
+        },
+        "taskModeEnabled": false
+      },
+      "updatedAt": "2026-10-13T14:19:29.655Z"
+    }
+  ],
+  "sync_collection": [
+    {
+      "_id": "global",
+      "userId": "owner",
+      "createdAt": "2026-10-10T19:14:10.868Z",
+      "data": {
+        "cards": [],
+        "imageCards": [],
+        "roomProjects": [],
+        "projectFiles": [],
+        "workspaceReferenceDocs": [],
+        "deletedBundledCardIds": [],
+        "legacyLifecycleByObjectId": {}
+      },
+      "updatedAt": "2026-10-13T14:19:52.256Z"
+    }
+  ]
+}

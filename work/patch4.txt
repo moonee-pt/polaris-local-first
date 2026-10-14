@@ -1,0 +1,25 @@
+*** Begin Patch
+*** Update File: src/app/call/useFleshAmbience.ts
+@@
+-  const prefetchLoops = useCallback((context: AudioContext) => {
++  const prefetchLoops = useCallback((context: AudioContext, preferred: FleshLoopCategory) => {
++    const ordered: FleshLoopCategory[] = [preferred, ...FLESH_LOOP_CATEGORIES.filter((item) => item !== preferred)];
+     void (async () => {
+-      for (const category of FLESH_LOOP_CATEGORIES) {
++      for (const category of ordered) {
+         for (const clip of FLESH_CLIP_NAMES[category]) {
+           if (bufferRef.current.has(`${category}/${clip}`)) continue;
+           await decodeClip(context, category, clip);
+         }
+-        setReady(true);
++        if (category === preferred) setReady(true);
+       }
+     })();
+   }, [decodeClip]);
+@@
+     const context = ensureGraph();
+     if (!context || !masterRef.current) return;
+     void context.resume().catch(() => {});
+-    prefetchLoops(context);
++    prefetchLoops(context, category);
+*** End Patch

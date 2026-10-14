@@ -1,0 +1,29 @@
+*** Begin Patch
+*** Update File: src/ui/worlds/chat/message/MessageRow.tsx
+@@
+ import { buildAssistantSpeechText } from './messageSpeechText';
++import { messageSpeechCacheMatchesText } from '../../../../app/chat/messageSpeechCache';
+@@
+   const speechContent = useMemo(
+     () => (isAssistantReply ? buildAssistantSpeechText(message.content) : ''),
+     [isAssistantReply, message.content]
+   );
++  const [speechCacheMatches, setSpeechCacheMatches] = useState(false);
++  useEffect(() => {
++    const cache = message.voiceCache;
++    if (!isAssistantReply || !cache?.assetId) {
++      setSpeechCacheMatches(false);
++      return;
++    }
++    let cancelled = false;
++    void messageSpeechCacheMatchesText(cache, speechContent).then((matches) => {
++      if (!cancelled) setSpeechCacheMatches(matches);
++    });
++    return () => {
++      cancelled = true;
++    };
++  }, [isAssistantReply, message.voiceCache, speechContent]);
+@@
+-      speechCache={message.voiceCache ?? null}
++      speechCache={speechCacheMatches ? message.voiceCache ?? null : null}
+*** End Patch

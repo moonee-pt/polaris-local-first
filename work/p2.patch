@@ -1,0 +1,31 @@
+*** Begin Patch
+*** Update File: src/app/group/useGroupWorldController.ts
+@@
+ import type {
++  ChatMessageVoiceCache,
+   Conversation,
+   Persona
+ } from '../../types/domain';
+@@
+   const deleteMemberMessage = useCallback(async (messageId: string) => {
+     if (!activeGroup) return;
+     const writableConversation = await store.chat.ensureConversationWritable(activeGroup.id);
+     if (!writableConversation) return;
+     store.chat.replaceConversationMessages(
+       writableConversation,
+       writableConversation.messages.filter((message) => message.id !== messageId)
+     );
+   }, [activeGroup, store.chat]);
++
++  const setMemberMessageVoiceCache = useCallback(async (messageId: string, voiceCache: ChatMessageVoiceCache) => {
++    if (!activeGroup) return;
++    const writableConversation = await store.chat.ensureConversationWritable(activeGroup.id);
++    if (!writableConversation) return;
++    store.chat.updateMessage(writableConversation, messageId, { voiceCache });
++  }, [activeGroup, store.chat]);
+@@
+     editMemberMessage,
+     deleteMemberMessage,
++    setMemberMessageVoiceCache,
+     laneMemberId,
+*** End Patch

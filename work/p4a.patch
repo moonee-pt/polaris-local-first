@@ -1,0 +1,32 @@
+*** Begin Patch
+*** Update File: src/ui/worlds/group/GroupTimeline.tsx
+@@
+ import { GroupAvatar } from './GroupAvatar';
+ import type { GroupController } from './groupController';
++import { getAssistantVoiceContent } from '../chat/message/messageSpeechText';
++import type { GroupVoiceController } from './useGroupVoice';
+ 
+ type GroupTimelineProps = {
+   controller: GroupController;
++  voice: GroupVoiceController;
+ };
+@@
+   controller,
+   streaming = false,
+-  activityHint = null
++  activityHint = null,
++  voice
+ }: {
+@@
+   controller: GroupController;
+   streaming?: boolean;
+   activityHint?: string | null;
++  voice: GroupVoiceController;
+ }) {
+@@
+   const { text, codeBlocks } = useMemo(() => splitFencedCode(message.content), [message.content]);
+   const editing = editDraft !== null;
++  const hasVoice = Boolean(getAssistantVoiceContent(message.content)?.ttsText?.trim());
++  const voiceSpeaking = voice.speakingId === message.id;
++  const voiceLoading = voice.isLoading(message.id);
+*** End Patch

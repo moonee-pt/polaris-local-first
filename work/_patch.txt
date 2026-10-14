@@ -1,0 +1,54 @@
+﻿*** Begin Patch
+*** Update File: src/types/domain/chat.ts
+@@
+ export type ChatMessageVoiceCache = {
+   assetId: string;
+   name: string;
+   mimeType: string;
+   size: number;
+   createdAt: number;
+   textHash: string;
+   textLength: number;
+   providerType: VoiceGenerationProviderType;
+   model: string;
+   voice: string;
+   format: VoiceGenerationFormat;
+ };
++
++/**
++ * Marks the messages that were exchanged during one voice call. Messages without
++ * this marker stay ordinary chat messages; messages carrying it are folded into a
++ * single call record in the timeline.
++ */
++export type ChatMessageVoiceCall = {
++  sessionId: string;
++  startedAt: number;
++  endedAt: number;
++  turnCount: number;
++};
+ 
+ export interface ChatMessage {
+   id: string;
+   role: 'user' | 'assistant' | 'system';
+   content: string;
+   timestamp: number;
+   origin?: 'user-input' | 'assistant-reply' | 'system-note' | 'tool-runtime' | 'trigger-runtime';
+   requestRole?: 'user' | 'assistant' | 'system';
+   requestContent?: string;
+   attachments?: ChatAttachment[];
+   providerId?: string;
+   providerName?: string;
+   model?: string;
+   tokenCount?: number;
+   tokenUsage?: ChatTokenUsage;
+   memoryEvidence?: ChatMemoryEvidence;
+   assistantName?: string;
+   speakerCollaboratorId?: string;
+   thinkingText?: string;
+   voiceCache?: ChatMessageVoiceCache;
++  voiceCall?: ChatMessageVoiceCall;
+   nativeToolCalls?: ChatNativeToolCall[];
+   toolInvocation?: ToolInvocation;
+   cardReference?: ChatCardReference;
+ }
+*** End Patch

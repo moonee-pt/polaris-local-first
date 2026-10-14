@@ -169,6 +169,8 @@ export interface VoiceGenerationSettings {
   voice?: string;
   customVoices?: VoiceGenerationCustomVoice[];
   format?: VoiceGenerationFormat;
+  /** Speech speed multiplier (0.5-2.0, 1.0 is normal). Currently used by Fish Audio. */
+  speed?: number;
   lastUpdatedAt?: number;
 }
 

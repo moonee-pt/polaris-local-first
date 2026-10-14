@@ -1,0 +1,23 @@
+*** Begin Patch
+*** Update File: src/ui/worlds/ChatWorld.tsx
+@@
+-import { Suspense, lazy, useEffect, useRef } from 'react';
++import { Suspense, lazy, useEffect, useRef, useState } from 'react';
+@@
+ import { VoiceCallStage } from './call/VoiceCallStage';
++import { ChatReadingEntry } from './reading/ChatReadingEntry';
++import { ChatReadingStage } from './reading/ChatReadingStage';
+@@
+   const closeVoiceCall = useVoiceCallSession((state) => state.close);
++  const [readingOpen, setReadingOpen] = useState(false);
+@@
++        <ChatReadingEntry onOpen={() => setReadingOpen(true)} />
+         <ChatComposer onStartVoiceCall={openVoiceCall} />
+@@
+       {voiceCallActive ? (
+         <VoiceCallStage onClose={closeVoiceCall} />
+       ) : null}
++      {readingOpen ? (
++        <ChatReadingStage onClose={() => setReadingOpen(false)} />
++      ) : null}
+*** End Patch

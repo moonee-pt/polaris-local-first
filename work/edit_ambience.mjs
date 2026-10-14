@@ -1,0 +1,12 @@
+﻿import { readFileSync, writeFileSync } from 'node:fs';
+const file = 'src/ui/worlds/group/useGroupVoice.ts';
+const CR = '\r\n';
+const EOL = readFileSync(file, 'utf8').includes(CR) ? CR : '\n';
+let text = readFileSync(file, 'utf8');
+const find = ['    ambience.setDucked(false);', '    ambience.stop();', '    pumpRef.current();'].join(EOL);
+const replace = ['    ambience.setDucked(false);', '    if (!enabledRef.current) ambience.stop();', '    pumpRef.current();'].join(EOL);
+const parts = text.split(find);
+if (parts.length - 1 !== 1) throw new Error('matches=' + (parts.length - 1));
+text = parts.join(replace);
+writeFileSync(file, text);
+console.log('OK ambience persists');

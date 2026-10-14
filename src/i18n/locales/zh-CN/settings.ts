@@ -127,6 +127,7 @@ export const settings = {
   'settings.voice.previewMissingConfig': '先填写 Base URL 和 API Key。',
   'settings.voice.previewText': '你好，亲爱的用户，欢迎你跟我聊天。',
   'settings.voice.formatLabel': '格式',
+  'settings.voice.speedLabel': '语速',
   'settings.toolbox.title': '工具箱',
   'settings.toolbox.detail': '{count} 类工具常驻，去这里统一调整',
   'settings.toolbox.help': '决定对话里常驻哪些工具，比如换肤、联网、代码和工作区能力；关掉后模型就不会看到那类工具。',

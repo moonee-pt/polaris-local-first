@@ -1,0 +1,20 @@
+﻿const { chromium } = require("playwright");
+const EXE = String.raw`C:\Users\Administrator\AppData\Local\ms-playwright\chromium-1181\chrome-win\chrome.exe`;
+(async () => {
+  const b = await chromium.launch({ executablePath: EXE, args: ["--autoplay-policy=no-user-gesture-required"] });
+  const page = await b.newPage({ viewport: { width: 390, height: 844 } });
+  const errs = [];
+  page.on("console", (m) => { if (m.type() === "error") errs.push(m.text().slice(0, 160)); });
+  page.on("pageerror", (e) => errs.push("pageerror: " + e.message.slice(0, 160)));
+  await page.goto("http://127.0.0.1:5173/", { waitUntil: "networkidle", timeout: 60000 });
+  await page.waitForTimeout(2000);
+  await page.locator('[aria-label="新建对话"]').first().click().catch(() => {});
+  await page.waitForTimeout(1500);
+  await page.locator('header.topbar [aria-label="开始通话"]').first().click().catch(() => {});
+  await page.waitForTimeout(1200);
+  console.log("STAGE:", await page.locator(".voice-call-stage").count());
+  const r = await page.evaluate(() => ({ sh: document.documentElement.scrollHeight, ch: document.documentElement.clientHeight }));
+  console.log("OVERFLOW:", JSON.stringify(r), r.sh <= r.ch ? "OK" : "OVERFLOW");
+  console.log("ERRORS:", errs.slice(0, 6));
+  await b.close();
+})();

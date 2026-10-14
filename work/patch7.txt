@@ -1,0 +1,51 @@
+*** Begin Patch
+*** Update File: src/ui/worlds/chat/message/messageSpeechText.ts
+@@
+ export function buildAssistantSpeechText(content: string) {
+   const withoutToolDrafts = stripToolDraftBlocks(content);
+   const withoutCodeBlocks = stripCodeBlocksFromMessage(withoutToolDrafts);
+   const cleaned = normalizeSpeechWhitespace(stripMarkdownForSpeech(withoutCodeBlocks));
+   const pairs = cleaned.includes('【') ? CALL_SPEECH_PAIRS : QUOTE_PAIRS;
+   const segments = splitSpeechSegments(cleaned, pairs);
+   const hasSpokenLines = segments.some((segment) => segment.kind === 'speech' && segment.text.trim());
+   const spoken = hasSpokenLines ? joinSpokenSegments(segments) : stripStageDirections(cleaned);
+   return stripFleshCues(normalizeSpeechWhitespace(spoken));
+ }
++
++export type AssistantReadingPart = { kind: 'speech' | 'stage'; text: string };
++
++/** （）wrapped action lines, used when a reply never marked its spoken lines. */
++function splitStageFromProse(content: string): SpeechSegment[] {
++  const parts: SpeechSegment[] = [];
++  const pattern = /（[^（）]*）|\([^()]*\)/g;
++  let cursor = 0;
++  for (const match of content.matchAll(pattern)) {
++    const start = match.index ?? 0;
++    if (start > cursor) parts.push({ kind: 'speech', text: content.slice(cursor, start) });
++    parts.push({ kind: 'stage', text: match[0] });
++    cursor = start + match[0].length;
++  }
++  if (cursor < content.length) parts.push({ kind: 'speech', text: content.slice(cursor) });
++  return parts;
++}
++
++/**
++ * Ordered speech/stage parts of a reply for the reading page: speech parts are the
++ * lines that get voiced, stage parts are the （）action lines shown in muted text.
++ */
++export function buildAssistantReadingParts(content: string): AssistantReadingPart[] {
++  const withoutToolDrafts = stripToolDraftBlocks(content);
++  const withoutCodeBlocks = stripCodeBlocksFromMessage(withoutToolDrafts);
++  const cleaned = normalizeSpeechWhitespace(stripMarkdownForSpeech(withoutCodeBlocks));
++  const pairs = cleaned.includes('【') ? CALL_SPEECH_PAIRS : QUOTE_PAIRS;
++  const segments = splitSpeechSegments(cleaned, pairs);
++  const hasSpokenLines = segments.some((segment) => segment.kind === 'speech' && segment.text.trim());
++  return (hasSpokenLines ? segments : splitStageFromProse(cleaned))
++    .map((part) => {
++      const stripped = stripFleshCues(part.text);
++      const text = (part.kind === 'stage' ? stripped.replace(/[，,、\s]+([）)])$/g, '$1') : stripped).trim();
++      return { kind: part.kind, text };
++    })
++    .filter((part) => part.text);
++}
+*** End Patch

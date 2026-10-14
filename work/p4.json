@@ -1,0 +1,1 @@
+{"endpoint":"https://api.fish.audio/v1/tts","headers":{"authorization":"Bearer test-key","content-type":"application/json"},"body":{"text":"hello","format":"mp3","normalize":true,"latency":"balanced"}}

@@ -1,0 +1,60 @@
+
+> polaris@1.0.0 dev
+> vite
+
+
+  VITE v5.4.21  ready in 666 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+  ➜  press h + enter to show help
+21:57:59 [vite] hmr update /src/ui/worlds/call/VoiceCallStage.tsx
+22:01:08 [vite] hmr update /src/styles/base.css
+22:01:33 [vite] hmr update /src/ui/worlds/chat/timeline/TaskRuntimeDock.tsx
+22:01:33 [vite] hmr invalidate /src/ui/worlds/chat/timeline/TaskRuntimeDock.tsx Could not Fast Refresh (new export)
+22:01:33 [vite] hmr update /src/ui/worlds/chat/timeline/MessageTimeline.tsx
+22:01:39 [vite] hmr update /src/ui/worlds/chat/timeline/TaskRuntimeDock.tsx
+22:11:18 [vite] hmr update /src/ui/worlds/chat/timeline/TaskRuntimeDock.tsx
+22:11:53 [vite] hmr update /src/ui/worlds/chat/timeline/MessageTimeline.tsx
+22:18:39 [vite] hmr update /src/ui/worlds/chat/timeline/MessageTimeline.tsx
+22:18:45 [vite] hmr update /src/ui/worlds/chat/timeline/MessageTimeline.tsx
+22:18:52 [vite] hmr update /src/ui/worlds/chat/timeline/MessageTimeline.tsx
+22:19:05 [vite] hmr update /src/ui/worlds/chat/timeline/MessageTimeline.tsx
+22:19:29 [vite] hmr update /src/styles/base.css
+22:19:34 [vite] hmr update /src/styles/base.css
+22:19:44 [vite] hmr update /src/styles/base.css
+22:20:49 [vite] hmr update /src/styles/base.css
+22:22:03 [vite] hmr update /src/styles/base.css
+22:22:08 [vite] hmr update /src/styles/base.css
+22:22:12 [vite] hmr update /src/styles/base.css
+22:22:20 [vite] hmr update /src/styles/base.css
+22:25:01 [vite] hmr update /src/ui/worlds/ChatWorld.tsx
+22:25:15 [vite] hmr update /src/ui/shell/AppTopbar.tsx
+22:25:47 [vite] hmr update /src/styles/base.css
+22:33:37 [vite] page reload work/deployed-index.html
+22:33:37 [vite] page reload work/deployed-index.html
+22:34:24 [vite] hmr update /src/styles/base.css
+22:34:24 [vite] hmr update /src/styles/base.css
+node:internal/fs/watchers:323
+    const error = new UVException({
+                  ^
+
+Error: EBUSY: resource busy or locked, watch 'D:\project\polaris-local-first\work\breath\README.md'
+    at FSWatcher.<computed> (node:internal/fs/watchers:323:19)
+    at Object.watch (node:fs:2609:36)
+    at createFsWatchInstance (file:///D:/project/polaris-local-first/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:42780:17)
+    at setFsWatchListener (file:///D:/project/polaris-local-first/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:42827:15)
+    at NodeFsHandler._watchWithNodeFs (file:///D:/project/polaris-local-first/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:42982:14)
+    at NodeFsHandler._handleFile (file:///D:/project/polaris-local-first/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:43046:23)
+    at NodeFsHandler._addToNodeFs (file:///D:/project/polaris-local-first/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:43288:21)
+Emitted 'error' event on FSWatcher instance at:
+    at FSWatcher._handleError (file:///D:/project/polaris-local-first/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:44481:10)
+    at NodeFsHandler._addToNodeFs (file:///D:/project/polaris-local-first/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:43296:18) {
+  errno: -4082,
+  syscall: 'watch',
+  code: 'EBUSY',
+  path: 'D:\\project\\polaris-local-first\\work\\breath\\README.md',
+  filename: 'D:\\project\\polaris-local-first\\work\\breath\\README.md'
+}
+
+Node.js v24.19.0

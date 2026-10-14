@@ -424,6 +424,24 @@ export function MenuVoicePage({
                       <option key={option.value} value={option.value}>{option.label}</option>
                     ))}
                   </select>
+
+                  {voiceProviderType === 'fishaudio' ? (
+                    <>
+                      <label>{t('settings.voice.speedLabel')}</label>
+                      <div className="voice-speed-row">
+                        <input
+                          type="range"
+                          min="0.5"
+                          max="2.0"
+                          step="0.1"
+                          value={voiceGeneration.speed ?? 1.0}
+                          onChange={(event) => onSetVoiceGeneration({ speed: parseFloat(event.target.value) })}
+                          className="voice-speed-slider"
+                        />
+                        <span className="voice-speed-value">{(voiceGeneration.speed ?? 1.0).toFixed(1)}x</span>
+                      </div>
+                    </>
+                  ) : null}
                 </div>
               </div>
             ) : null}

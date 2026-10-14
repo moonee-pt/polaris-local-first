@@ -1,0 +1,1 @@
+{"endpoint":"https://api.siliconflow.cn/v1/audio/speech","headers":{"Content-Type":"application/json","Authorization":"Bearer sk-dummy"},"body":{"model":"FunAudioLLM/CosyVoice2-0.5B","input":"??","voice":"alloy"}}

@@ -1,0 +1,6 @@
+2026/10/09-23:22:29.284 6f24 Creating DB C:\Users\Administrator\AppData\Local\Microsoft\Edge\User Data\Default\IndexedDB\https_polaris-local-first-two.vercel.app_0.indexeddb.leveldb since it was missing.
+2026/10/09-23:22:29.291 6f24 Reusing MANIFEST C:\Users\Administrator\AppData\Local\Microsoft\Edge\User Data\Default\IndexedDB\https_polaris-local-first-two.vercel.app_0.indexeddb.leveldb/MANIFEST-000001
+2026/10/09-23:22:45.679 6f24 Level-0 table #5: started
+2026/10/09-23:22:45.682 6f24 Level-0 table #5: 68872 bytes OK
+2026/10/09-23:22:45.684 6f24 Delete type=0 #3
+2026/10/09-23:22:45.685 6f24 Manual compaction at level-0 from (begin) .. (end); will stop at (end)

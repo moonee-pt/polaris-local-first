@@ -1,0 +1,6 @@
+*** Begin Patch
+*** Update File: package.json
+@@
+-  "version": "1.0.1",
++  "version": "1.0.2",
+*** End Patch

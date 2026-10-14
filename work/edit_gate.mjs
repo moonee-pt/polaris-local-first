@@ -1,0 +1,11 @@
+﻿import { readFileSync, writeFileSync } from 'node:fs';
+const file = 'src/ui/worlds/group/GroupTimeline.tsx';
+const CR = '\r\n';
+let text = readFileSync(file, 'utf8');
+const find = '  const hasVoice = Boolean(getAssistantVoiceContent(message.content)?.ttsText?.trim());';
+const replace = '  const hasVoice = Boolean(getAssistantVoiceContent(message.content)?.ttsText?.trim())\r\n    && (voice.supported || Boolean(message.voiceCache?.assetId));';
+const parts = text.split(find);
+if (parts.length - 1 !== 1) throw new Error('matches=' + (parts.length - 1));
+text = parts.join(replace);
+writeFileSync(file, text);
+console.log('OK gating');

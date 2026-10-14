@@ -1,0 +1,1 @@
+{"endpoint":"https://api.openai.com/v1/audio/speech","headers":{"Content-Type":"application/json","Authorization":"Bearer test"},"body":{"model":"gpt-4o-mini-tts","input":"??","voice":"alloy"}}

@@ -1,0 +1,31 @@
+*** Begin Patch
+*** Update File: src/ui/worlds/chat/timeline/MessageTimeline.tsx
+@@
+ function getLatestUserMessageId(messages: ChatMessage[]) {
+   for (let index = messages.length - 1; index >= 0; index -= 1) {
+     const message = messages[index];
+     if (message.role === 'user' && !message.toolInvocation) {
+       return message.id;
+     }
+   }
+   return null;
+ }
++
++function getLatestConversationalMessageId(messages: ChatMessage[]) {
++  for (let index = messages.length - 1; index >= 0; index -= 1) {
++    const message = messages[index];
++    if (message.voiceCall || message.toolInvocation) continue;
++    if (message.role === 'user' || message.role === 'assistant') {
++      return message.id;
++    }
++  }
++  return null;
++}
+@@
+   const latestMessageId = messages[messages.length - 1]?.id ?? null;
+   const latestUserMessageId = getLatestUserMessageId(messages);
++  const latestConversationalMessageId = getLatestConversationalMessageId(messages);
+@@
+-          const isLatestMessage = message.id === stablePayload.messages[stablePayload.messages.length - 1]?.id;
++          const isLatestMessage = message.id === latestConversationalMessageId;
+*** End Patch

@@ -1,0 +1,24 @@
+*** Begin Patch
+*** Update File: src/ui/worlds/group/GroupTimeline.tsx
+@@
+         </div>
++        {!editing && hasVoice ? (
++          <div className="group-msg-voice-row">
++            <button
++              type="button"
++              className={`group-msg-voice-btn ${voiceSpeaking ? 'is-speaking' : ''} ${voiceLoading ? 'is-loading' : ''}`}
++              onClick={(event) => {
++                event.stopPropagation();
++                voice.playMessage({ id: message.id, content: message.content, voiceCache: message.voiceCache ?? null });
++              }}
++              disabled={voiceLoading}
++              aria-pressed={voiceSpeaking}
++              aria-label={voiceLoading ? t('group.voice.generating') : voiceSpeaking ? t('group.voice.stop') : t('group.voice.play')}
++              title={voiceLoading ? t('group.voice.generating') : voiceSpeaking ? t('group.voice.stop') : t('group.voice.play')}
++            >
++              <Icon name={voiceLoading ? 'refresh' : voiceSpeaking ? 'pause' : 'voice'} size={14} />
++            </button>
++          </div>
++        ) : null}
+         {editing ? (
+*** End Patch

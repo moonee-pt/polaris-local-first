@@ -1,0 +1,32 @@
+*** Begin Patch
+*** Update File: src/i18n/locales/zh-CN/chat.ts
+@@
+   'chat.composer.startCall': '开始通话',
++  'chat.reading.open': '当小说读',
++  'chat.reading.title': '读这一篇',
++  'chat.reading.play': '播放',
++  'chat.reading.pause': '暂停',
++  'chat.reading.prev': '上一段',
++  'chat.reading.next': '下一段',
++  'chat.reading.close': '关闭',
++  'chat.reading.you': '你',
++  'chat.reading.progress': '第 {index} / {total} 段有语音',
++  'chat.reading.empty': '这段对话还没有可以读的内容。',
++  'chat.reading.noVoice': '还没有可播的语音。先在消息下面点过语音，这里才能连着播。',
++  'chat.reading.speechFailed': '这条语音文件不在本机了，已跳过。',
+*** Update File: src/i18n/locales/en-US/chat.ts
+@@
+   'chat.composer.startCall': 'Start voice call',
++  'chat.reading.open': 'Read as story',
++  'chat.reading.title': 'Read this thread',
++  'chat.reading.play': 'Play',
++  'chat.reading.pause': 'Pause',
++  'chat.reading.prev': 'Previous',
++  'chat.reading.next': 'Next',
++  'chat.reading.close': 'Close',
++  'chat.reading.you': 'You',
++  'chat.reading.progress': 'Line {index} of {total} voiced',
++  'chat.reading.empty': 'Nothing to read in this conversation yet.',
++  'chat.reading.noVoice': 'No saved voice yet. Play a message first, then the whole thread can run here.',
++  'chat.reading.speechFailed': 'That voice file is no longer on this device; skipped.',
+*** End Patch

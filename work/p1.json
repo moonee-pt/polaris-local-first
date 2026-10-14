@@ -1,0 +1,1 @@
+{"endpoint":"http://localhost/audio/speech","headers":{"authorization":"Bearer test"},"body":{"model":"m","input":"hello","voice":"v"}}

@@ -1,0 +1,18 @@
+*** Begin Patch
+*** Update File: src/ui/worlds/chat/timeline/MessageTimeline.tsx
+@@
+           const canUseAssistantMore =
+             message.role === 'assistant'
+             && !message.toolInvocation
+             && isTerminalAssistantInUserTurn
+             && !ui.sending
+             && Boolean(message.content.trim());
++          const isLatestMessage = message.id === stablePayload.messages[stablePayload.messages.length - 1]?.id;
+ 
+           const rowState: MessageRowState = {
+@@
+                 isAssistantContinuation={isAssistantContinuation}
+                 isTerminalAssistantInUserTurn={isTerminalAssistantInUserTurn}
++                isLatestMessage={isLatestMessage}
+                 taskReceiptAction={taskReceipt ? {
+*** End Patch

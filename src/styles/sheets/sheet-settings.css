@@ -254,6 +254,48 @@
 .voice-setting-row input {
   min-width: 0;
 }
+.voice-speed-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+}
+.voice-speed-slider {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--control-border);
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.voice-speed-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--pink);
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.voice-speed-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--pink);
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.voice-speed-value {
+  min-width: 40px;
+  text-align: right;
+  font-size: var(--type-small);
+  color: var(--sheet-readable);
+  font-variant-numeric: tabular-nums;
+}
 .voice-preview-button {
   min-width: 72px;
   white-space: nowrap;

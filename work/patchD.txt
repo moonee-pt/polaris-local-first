@@ -1,0 +1,29 @@
+*** Begin Patch
+*** Update File: src/styles/base.css
+@@
+ @import './chat-messages.css';
++@import './chat-reading.css';
+ @import './chat-option-bar.css';
+*** Update File: src/ui/worlds/ChatWorld.tsx
+@@
+-import { Suspense, lazy, useEffect, useRef } from 'react';
++import { Suspense, lazy, useEffect, useRef, useState } from 'react';
+@@
+ import { VoiceCallStage } from './call/VoiceCallStage';
++import { ChatReadingEntry } from './reading/ChatReadingEntry';
++import { ChatReadingStage } from './reading/ChatReadingStage';
+@@
+   const closeVoiceCall = useVoiceCallSession((state) => state.close);
++  const [readingOpen, setReadingOpen] = useState(false);
+@@
+       <div className="chat-dock">
++        <ChatReadingEntry onOpen={() => setReadingOpen(true)} />
+         <ChatComposer onStartVoiceCall={openVoiceCall} />
+       </div>
+       {voiceCallActive ? (
+         <VoiceCallStage onClose={closeVoiceCall} />
+       ) : null}
++      {readingOpen ? (
++        <ChatReadingStage onClose={() => setReadingOpen(false)} />
++      ) : null}
+*** End Patch

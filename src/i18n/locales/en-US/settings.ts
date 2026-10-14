@@ -129,6 +129,7 @@ export const settings = {
   'settings.voice.previewMissingConfig': 'Add Base URL and API key first.',
   'settings.voice.previewText': 'Hello, welcome to chat with me.',
   'settings.voice.formatLabel': 'Format',
+  'settings.voice.speedLabel': 'Speed',
   'settings.toolbox.title': 'Toolbox',
   'settings.toolbox.detail': '{count} tool groups on',
   'settings.toolbox.help': 'Choose what collaborators can use in chat, such as themes, web search, code, and workspace tools. Disabled groups are hidden from the model.',

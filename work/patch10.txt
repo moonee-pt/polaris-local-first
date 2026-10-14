@@ -1,0 +1,24 @@
+*** Begin Patch
+*** Update File: src/ui/worlds/chat/message/MessageRow.tsx
+@@
+   isAssistantContinuation?: boolean;
+   isTerminalAssistantInUserTurn?: boolean;
++  isLatestMessage?: boolean;
+   taskReceiptAction?: MessageTaskReceiptAction | null;
+@@
+   isAssistantContinuation = false,
+   isTerminalAssistantInUserTurn = true,
++  isLatestMessage = false,
+   taskReceiptAction = null
+ }: MessageRowProps) {
+@@
+       speechContent={speechContent}
+       speechCache={speechCacheMatches ? message.voiceCache ?? null : null}
++      autoSpeakKey={isAssistantReply && isLatestMessage && !isStreamingLike ? message.id : null}
++      autoSpeakAt={isAssistantReply && isLatestMessage && !isStreamingLike ? message.timestamp : null}
+       role={message.role === 'assistant' ? 'assistant' : 'user'}
+@@
+     && previous.isTerminalAssistantInUserTurn === next.isTerminalAssistantInUserTurn
++    && previous.isLatestMessage === next.isLatestMessage
+     && previous.taskReceiptAction === next.taskReceiptAction
+*** End Patch

@@ -274,7 +274,7 @@ function buildElevenLabsSpeechBody(model: string, input: string, format: VoiceGe
   };
 }
 
-function buildFishAudioSpeechBody(input: string, voice: string, format: VoiceGenerationFormat) {
+function buildFishAudioSpeechBody(input: string, voice: string, format: VoiceGenerationFormat, speed?: number) {
   if (!FISHAUDIO_VOICE_FORMATS.has(format)) {
     throw new Error('FishAudio TTS 接口只支持 MP3、WAV、PCM、Opus。');
   }
@@ -284,7 +284,8 @@ function buildFishAudioSpeechBody(input: string, voice: string, format: VoiceGen
     ...(voice ? { reference_id: voice } : {}),
     format,
     normalize: true,
-    latency: 'balanced'
+    latency: 'balanced',
+    ...(speed !== undefined && speed !== 1 ? { speed } : {})
   };
 }
 
@@ -336,7 +337,7 @@ export async function requestGeneratedSpeech(params: VoiceGenerationRequest): Pr
     : providerType === 'elevenlabs'
       ? buildElevenLabsSpeechBody(model, input, format)
       : providerType === 'fishaudio'
-        ? buildFishAudioSpeechBody(input, voice, format)
+        ? buildFishAudioSpeechBody(input, voice, format, params.settings.speed)
         : buildOpenAiSpeechBody(model, input, voice, format);
   const requestEndpoint = providerType === 'elevenlabs'
     ? `${endpoint}?output_format=${ELEVENLABS_OUTPUT_FORMAT_BY_FORMAT[format] ?? format}`
