@@ -8,7 +8,7 @@ import type { ChatMessageVoiceCache } from '../../types/domain';
 import { readMessageSpeechCacheBlob, saveMessageSpeechCache } from './messageSpeechCache';
 
 /** Default silence between spoken lines in voice-script mode (ms). */
-const VOICE_SCRIPT_GAP_MS = 400;
+const VOICE_SCRIPT_GAP_MS = 200;
 
 export type UseVoiceScriptPlaybackArgs = {
   speakerCollaboratorId?: string | null;
