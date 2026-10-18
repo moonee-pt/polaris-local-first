@@ -7,9 +7,9 @@
  * the sound it wants: two plap types, wet, strokes, and the two one-shots.
  */
 
-export type FleshAmbienceCategory = 'dryplap' | 'wetplap' | 'wet' | 'stroke' | 'cum' | 'pullout';
+export type FleshAmbienceCategory = 'dryplap' | 'wetplap' | 'wet' | 'stroke' | 'cum' | 'pullout' | 'sp';
 
-export type FleshLoopCategory = 'dryplap' | 'wetplap' | 'wet' | 'stroke';
+export type FleshLoopCategory = 'dryplap' | 'wetplap' | 'wet' | 'stroke' | 'sp';
 
 export type FleshAmbiencePreset = 'soft' | 'mid' | 'hard' | 'extreme';
 
@@ -24,12 +24,12 @@ export type FleshAmbienceHit = {
   gain: number;
 };
 
-const CUE_SOURCE = '\\[(flesh|dryplap|wetplap|wet|stroke|cum|pullout)(?::(soft|mid|hard|extreme))?\\]';
+const CUE_SOURCE = '\\[(flesh|dryplap|wetplap|wet|stroke|cum|pullout|sp)(?::(soft|mid|hard|extreme))?\\]';
 
 /** Scanner source for the cue brackets, so a timeline can walk a text and find them in order. */
 export const FLESH_CUE_PATTERN = CUE_SOURCE;
 
-const FLESH_CUE_SLUGS = new Set(['flesh', 'dryplap', 'wetplap', 'wet', 'stroke', 'cum', 'pullout']);
+const FLESH_CUE_SLUGS = new Set(['flesh', 'dryplap', 'wetplap', 'wet', 'stroke', 'cum', 'pullout', 'sp']);
 
 /** True when a bracket's inner text (already lowercased/trimmed) is a body-sound cue. */
 export function isFleshCueTag(inner: string) {
@@ -40,7 +40,8 @@ const CATEGORY_PROFILE: Record<FleshLoopCategory, { perSec: number; gain: number
   dryplap: { perSec: 2.4, gain: 1.6 },
   wetplap: { perSec: 2.4, gain: 1.6 },
   wet: { perSec: 1.2, gain: 1.1 },
-  stroke: { perSec: 1.2, gain: 1.1 }
+  stroke: { perSec: 1.2, gain: 1.1 },
+  sp: { perSec: 1.0, gain: 3.0 }
 };
 
 const PRESET_SCALE: Record<FleshAmbiencePreset, { rate: number; gain: number }> = {
@@ -67,11 +68,12 @@ export const FLESH_CLIP_NAMES: Record<FleshAmbienceCategory, string[]> = {
   wet: range('wet', 1, 12),
   stroke: range('stroke', 1, 10),
   cum: [...range('cum_in', 1, 3), ...range('cum_out', 1, 6)],
-  pullout: range('pullout', 1, 3)
+  pullout: range('pullout', 1, 3),
+  sp: ['clap']
 };
 
 /** Body beds a scene swaps between. */
-export const FLESH_LOOP_CATEGORIES: FleshLoopCategory[] = ['dryplap', 'wetplap', 'wet', 'stroke'];
+export const FLESH_LOOP_CATEGORIES: FleshLoopCategory[] = ['dryplap', 'wetplap', 'wet', 'stroke', 'sp'];
 
 /** File name of one clip inside public/sfx/flesh. */
 export function fleshClipFile(category: FleshAmbienceCategory, clip: string) {
