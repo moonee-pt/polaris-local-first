@@ -9,13 +9,13 @@
 
 export type FleshAmbienceCategory = 'dryplap' | 'wetplap' | 'wet' | 'stroke' | 'cum' | 'pullout' | 'sp';
 
-export type FleshLoopCategory = 'dryplap' | 'wetplap' | 'wet' | 'stroke' | 'sp';
+export type FleshLoopCategory = 'dryplap' | 'wetplap' | 'wet' | 'stroke';
 
 export type FleshAmbiencePreset = 'soft' | 'mid' | 'hard' | 'extreme';
 
 export type FleshCue =
   | { kind: 'loop'; category: FleshLoopCategory; preset: FleshAmbiencePreset }
-  | { kind: 'oneShot'; category: 'cum' | 'pullout' };
+  | { kind: 'oneShot'; category: 'cum' | 'pullout' | 'sp' };
 
 export type FleshAmbienceHit = {
   atSec: number;
@@ -40,8 +40,7 @@ const CATEGORY_PROFILE: Record<FleshLoopCategory, { perSec: number; gain: number
   dryplap: { perSec: 4.5, gain: 3.0 },
   wetplap: { perSec: 4.5, gain: 3.0 },
   wet: { perSec: 2.2, gain: 2.0 },
-  stroke: { perSec: 2.2, gain: 2.0 },
-  sp: { perSec: 1.8, gain: 5.0 }
+  stroke: { perSec: 2.2, gain: 2.0 }
 };
 
 const PRESET_SCALE: Record<FleshAmbiencePreset, { rate: number; gain: number }> = {
@@ -73,7 +72,7 @@ export const FLESH_CLIP_NAMES: Record<FleshAmbienceCategory, string[]> = {
 };
 
 /** Body beds a scene swaps between. */
-export const FLESH_LOOP_CATEGORIES: FleshLoopCategory[] = ['dryplap', 'wetplap', 'wet', 'stroke', 'sp'];
+export const FLESH_LOOP_CATEGORIES: FleshLoopCategory[] = ['dryplap', 'wetplap', 'wet', 'stroke'];
 
 /** File name of one clip inside public/sfx/flesh. */
 export function fleshClipFile(category: FleshAmbienceCategory, clip: string) {
@@ -94,7 +93,7 @@ function presetFromSuffix(suffix: string): FleshAmbiencePreset {
 /** One bracket's contents turned into a cue, or null when it is not a body sound. */
 export function parseFleshCueTag(name: string, modifier = ''): FleshCue | null {
   const raw = name.toLowerCase();
-  if (raw === 'cum' || raw === 'pullout') return { kind: 'oneShot', category: raw };
+  if (raw === 'cum' || raw === 'pullout' || raw === 'sp') return { kind: 'oneShot', category: raw };
   if (raw !== 'flesh' && !FLESH_CUE_SLUGS.has(raw)) return null;
   // flesh is a legacy alias so older messages still start a track.
   const category = raw === 'flesh' ? 'wetplap' : raw;

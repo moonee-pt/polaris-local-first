@@ -204,6 +204,24 @@ export function buildAssistantSpeechPlan(content: string): VoiceCallSpeechPlan {
 }
 
 /**
+ * While a reply is still streaming only lines whose closer has arrived can be
+ * synthesised: cut after the last closing quote and build the plan from that
+ * prefix. Null means nothing has closed yet.
+ */
+export function buildStreamingVoicePlan(content: string): VoiceCallSpeechPlan | null {
+  const cleaned = cleanReplyForVoice(content);
+  const pairs = cleaned.includes('【') ? CALL_SPEECH_PAIRS : QUOTE_PAIRS;
+  let prefixEnd = -1;
+  for (const [, closer] of pairs) {
+    const index = cleaned.lastIndexOf(closer);
+    if (index + closer.length - 1 > prefixEnd) prefixEnd = index + closer.length - 1;
+  }
+  if (prefixEnd < 0) return null;
+  const plan = buildAssistantSpeechPlan(cleaned.slice(0, prefixEnd + 1));
+  return plan.units.length > 0 ? plan : null;
+}
+
+/**
  * Fallback for replies that never marked their spoken lines: read the prose but skip
  * the （）stage directions instead of reading the whole thing out loud.
  */

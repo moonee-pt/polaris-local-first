@@ -50,6 +50,8 @@ type MessageActionsProps = {
   allowAssistantSpeech?: boolean;
   /** 音声模式：每句独立 TTS + 句间停顿 + 自动朗读 */
   isVoiceScriptMode?: boolean;
+  /** Reply is still streaming: 音声模式 feeds closed lines to the pipeline as they land. */
+  isStreamingLike?: boolean;
   role: 'assistant' | 'user';
   onSetCommandStatus: (text: string, isError?: boolean) => void;
   onCodeCardAction: () => void;
@@ -79,6 +81,7 @@ export function MessageActions({
   autoSpeakAt = null,
   allowAssistantSpeech = true,
   isVoiceScriptMode = false,
+  isStreamingLike = false,
   role,
   onSetCommandStatus,
   onCodeCardAction,
@@ -96,6 +99,7 @@ export function MessageActions({
   const [assistantSheetMode, setAssistantSheetMode] = useState<'menu' | 'edit' | 'memory'>('menu');
   const [assistantDraft, setAssistantDraft] = useState(messageContent);
   const abortRef = useRef<AbortController | null>(null);
+  const voiceScriptMessageIdRef = useRef<string | null>(null);
   const voiceGeneration = useVoiceSettingsForSpeaker(speakerCollaboratorId);
   const autoSpeakRef = useRef<(() => void) | null>(null);
   /** Auto read-aloud keeps its ambience alive after the clip ends. */
@@ -142,6 +146,8 @@ export function MessageActions({
     speaking: voiceScriptSpeaking,
     loading: voiceScriptLoading,
     speak: speakVoiceScript,
+    feedStream: feedVoiceScriptStream,
+    finalize: finalizeVoiceScriptSpeech,
     stop: stopVoiceScript
   } = useVoiceScriptPlayback({
     speakerCollaboratorId,
@@ -168,11 +174,17 @@ export function MessageActions({
     if (autoSpokenMessageIds.has(autoSpeakKey)) return;
     if (role !== 'assistant' || !speakableContent) return;
     if (!canUseConfiguredSpeech && !hasSpeechCache) return;
-    // 音声模式：每句都自动朗读，不需要环境音提示
-    if (!isVoiceScriptMode && !getAssistantAmbiencePlan(messageContent).cues.length) return;
+    if (isVoiceScriptMode) {
+      // 音声模式：首句一闭合就送合成，之后的内容边流边喂。
+      if (!beginVoiceScriptSpeech(true, isStreamingLike)) return;
+      autoSpokenMessageIds.add(autoSpeakKey);
+      return;
+    }
+    // 普通模式：没有环境音提示就不自动朗读
+    if (!getAssistantAmbiencePlan(messageContent).cues.length) return;
     autoSpokenMessageIds.add(autoSpeakKey);
     autoSpeakRef.current?.();
-  }, [autoSpeakKey, autoSpeakAt, role, speakableContent, canUseConfiguredSpeech, hasSpeechCache, messageContent, isVoiceScriptMode]);
+  }, [autoSpeakKey, autoSpeakAt, role, speakableContent, canUseConfiguredSpeech, hasSpeechCache, messageContent, isVoiceScriptMode, isStreamingLike]);
 
   if (!canCopyAssistant && !canSpeakAssistant && !hasAssistantMore && !showCodeCardAction && !taskReceiptAction) {
     return null;
@@ -192,6 +204,7 @@ export function MessageActions({
     }
     stopChatSpeechAudio();
     stopVoiceScript();
+    voiceScriptMessageIdRef.current = null;
     abortRef.current?.abort();
     abortRef.current = null;
     setSpeaking(false);
@@ -296,13 +309,15 @@ export function MessageActions({
     }
   };
 
-  const beginVoiceScriptSpeech = (auto = false) => {
+  const beginVoiceScriptSpeech = (auto = false, streaming = false): boolean => {
     const text = speakableContent;
-    if (!text) return;
+    if (!text) return false;
     autoPlaybackRef.current = auto;
     primeChatSpeechAudio();
     stopSpeechPlayback();
-    speakVoiceScript(messageId, text, speechCache ?? null);
+    const started = speakVoiceScript(messageId, text, speechCache ?? null, streaming);
+    voiceScriptMessageIdRef.current = started ? messageId : null;
+    return started;
   };
 
   const beginSpeech = (auto = false) => {
@@ -328,6 +343,19 @@ export function MessageActions({
     playNativeSpeech(text);
   };
   autoSpeakRef.current = () => beginSpeech(true);
+
+  // 音声模式流式期间：新闭合的句子随时喂进合成队列；流结束时收尾。
+  useEffect(() => {
+    if (!isVoiceScriptMode || role !== 'assistant') return;
+    if (voiceScriptMessageIdRef.current !== messageId) return;
+    if (!speakableContent) return;
+    if (isStreamingLike) {
+      feedVoiceScriptStream(messageId, speechContent);
+      return;
+    }
+    finalizeVoiceScriptSpeech(messageId, speechContent);
+    voiceScriptMessageIdRef.current = null;
+  }, [isVoiceScriptMode, isStreamingLike, role, messageId, speechContent, speakableContent, feedVoiceScriptStream, finalizeVoiceScriptSpeech]);
 
   const toggleSpeech = () => {
     if (!canSpeakAssistant || effectiveLoading) return;

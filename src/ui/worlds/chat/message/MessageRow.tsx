@@ -272,8 +272,9 @@ function MessageRowComponent({
       speakerCollaboratorId={message.speakerCollaboratorId ?? null}
       speechCache={speechCacheMatches ? message.voiceCache ?? null : null}
       isVoiceScriptMode={isVoiceScriptMode}
-      autoSpeakKey={isAssistantReply && isLatestMessage && !isStreamingLike ? message.id : null}
-      autoSpeakAt={isAssistantReply && isLatestMessage && !isStreamingLike ? message.timestamp : null}
+      isStreamingLike={isStreamingLike}
+      autoSpeakKey={isAssistantReply && isLatestMessage && (!isStreamingLike || isVoiceScriptMode) ? message.id : null}
+      autoSpeakAt={isAssistantReply && isLatestMessage && (!isStreamingLike || isVoiceScriptMode) ? message.timestamp : null}
       allowAssistantSpeech={isTerminalAssistantInUserTurn}
       role={message.role === 'assistant' ? 'assistant' : 'user'}
       onSetCommandStatus={actions.setCommandStatus}

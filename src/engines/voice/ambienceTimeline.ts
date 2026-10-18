@@ -72,7 +72,7 @@ export type AmbienceBed = {
   steps: AmbienceStep[];
 };
 
-export type AmbienceShot = { category: 'cum' | 'pullout'; atSec: number };
+export type AmbienceShot = { category: 'cum' | 'pullout' | 'sp'; atSec: number };
 
 export type AmbienceSchedule = { beds: AmbienceBed[]; shots: AmbienceShot[] };
 

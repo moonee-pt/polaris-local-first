@@ -376,6 +376,7 @@ export const chat = {
   'chat.performanceTag.stroke': 'stroke',
   'chat.performanceTag.cum': 'climax',
   'chat.performanceTag.pullout': 'pull out',
+  'chat.performanceTag.sp': 'slap',
   'chat.performanceTag.cueSoft': 'soft',
   'chat.performanceTag.cueHard': 'hard',
   'chat.performanceTag.cueExtreme': 'extreme',

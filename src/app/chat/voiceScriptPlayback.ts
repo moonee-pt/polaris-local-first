@@ -2,8 +2,8 @@ import { useCallback, useRef, useState } from 'react';
 import { AudioQueueManager } from '../../engines/voiceScriptAudioQueue';
 import { requestGeneratedSpeech } from '../../engines/voiceGenerationClient';
 import { useVoiceSettingsForSpeaker } from '../voice/useVoiceSettingsForSpeaker';
-import { buildAssistantSpeechPlan } from '../../ui/worlds/chat/message/messageSpeechText';
-import type { VoiceCallSpeechPlan } from '../../engines/voice/voiceCallSpeechUnits';
+import { buildAssistantSpeechPlan, buildStreamingVoicePlan } from '../../ui/worlds/chat/message/messageSpeechText';
+import type { VoiceCallSpeechPlan, VoiceCallSpeechUnit } from '../../engines/voice/voiceCallSpeechUnits';
 import type { ChatMessageVoiceCache } from '../../types/domain';
 import { readMessageSpeechCacheBlob, saveMessageSpeechCache } from './messageSpeechCache';
 
@@ -19,17 +19,40 @@ export type UseVoiceScriptPlaybackArgs = {
 export type UseVoiceScriptPlaybackResult = {
   speaking: boolean;
   loading: boolean;
-  /** Start the per-sentence TTS pipeline for a reply. */
-  speak: (messageId: string, content: string, cache?: ChatMessageVoiceCache | null) => void;
+  /**
+   * Start the per-sentence TTS pipeline for a reply. Returns true when a run
+   * actually began. With streaming=true only closed lines are synthesised and
+   * later content keeps feeding the same run via feedStream; with streaming=false
+   * the reply is final.
+   */
+  speak: (messageId: string, content: string, cache?: ChatMessageVoiceCache | null, streaming?: boolean) => boolean;
+  /** Feed newly arrived content into the running stream for this message. */
+  feedStream: (messageId: string, content: string) => void;
+  /** Mark the streamed reply as complete: the run finishes after the queued lines. */
+  finalize: (messageId: string, content: string) => void;
   /** Stop everything — current clip, queued clips, pending synthesis. */
   stop: () => void;
 };
 
+type UnitState = {
+  unit: VoiceCallSpeechUnit;
+  blob: Promise<Blob> | null;
+};
+
+type ScriptSession = {
+  runId: number;
+  controller: AbortController;
+  cache: ChatMessageVoiceCache | null;
+  queue: UnitState[];
+  settled: boolean;
+  resolveWake: (() => void) | null;
+};
+
 /**
- * Per-message playback hook for 音声模式. Splits a reply into spoken lines via
- * `buildAssistantSpeechPlan`, synthesises each line independently, and plays them
- * back one by one with silence gaps — so the first line can start while later
- * lines are still being generated.
+ * Per-message playback hook for 音声模式. Splits a reply into spoken lines,
+ * synthesises each line independently and plays them back one by one. While the
+ * reply is still streaming, every line whose 【…】 closed is sent to synthesis
+ * right away, so the audio for early lines is ready by the time the text lands.
  */
 export function useVoiceScriptPlayback({
   speakerCollaboratorId = null,
@@ -43,6 +66,8 @@ export function useVoiceScriptPlayback({
   const runIdRef = useRef(0);
   const abortRef = useRef<AbortController | null>(null);
   const queueRef = useRef<AudioQueueManager | null>(null);
+  const sessionRef = useRef<ScriptSession | null>(null);
+  const sessionMessageIdRef = useRef<string | null>(null);
   const onStartedRef = useRef(onStarted);
   const onSpeechCacheReadyRef = useRef(onSpeechCacheReady);
   onStartedRef.current = onStarted;
@@ -60,148 +85,206 @@ export function useVoiceScriptPlayback({
     abortRef.current = null;
     queueRef.current?.stop();
     queueRef.current = null;
+    sessionRef.current = null;
+    sessionMessageIdRef.current = null;
     setSpeaking(false);
     setLoading(false);
   }, []);
 
-  const speakPlan = useCallback(async (
-    messageId: string,
-    content: string,
-    plan: VoiceCallSpeechPlan,
-    cache: ChatMessageVoiceCache | null
-  ) => {
-    const runId = ++runIdRef.current;
-    abortRef.current?.abort();
-    const controller = new AbortController();
-    abortRef.current = controller;
-    queueRef.current?.stop();
+  const wake = (session: ScriptSession) => {
+    const resolve = session.resolveWake;
+    session.resolveWake = null;
+    resolve?.();
+  };
 
+  const startSynthesis = (session: ScriptSession, state: UnitState, index: number) => {
+    const runId = session.runId;
+    const settings = voiceGeneration;
     const isStale = () => runIdRef.current !== runId;
 
-    setLoading(true);
+    // The first line of a single-unit reply can come straight from the cache.
+    if (index === 0 && session.cache?.assetId && session.queue.length === 1) {
+      state.blob = readMessageSpeechCacheBlob(session.cache).catch(async () => {
+        if (isStale() || !canSpeak) throw new Error('speech unavailable');
+        const outcome = await requestGeneratedSpeech({
+          settings,
+          text: state.unit.tts,
+          signal: session.controller.signal
+        });
+        return outcome.blob;
+      });
+      return;
+    }
 
-    // Pipeline: synthesise each unit and play it before moving to the next.
-    // While one clip plays, the next is already being generated.
-    void (async () => {
-      try {
-        for (let index = 0; index < plan.units.length; index += 1) {
-          if (isStale() || controller.signal.aborted) return;
-
-          const unit = plan.units[index];
-          let blob: Blob;
-
-          // For a single-unit plan with a matching cache, skip synthesis entirely.
-          if (index === 0 && cache?.assetId && plan.units.length === 1) {
-            try {
-              blob = await readMessageSpeechCacheBlob(cache);
-            } catch {
-              if (isStale() || !canSpeak) return;
-              const outcome = await requestGeneratedSpeech({
-                settings: voiceGeneration,
-                text: unit.tts,
-                signal: controller.signal
-              });
-              if (isStale()) return;
-              blob = outcome.blob;
-            }
-          } else {
-            const outcome = await requestGeneratedSpeech({
-              settings: voiceGeneration,
-              text: unit.tts,
-              signal: controller.signal
-            });
-            if (isStale()) return;
-            blob = outcome.blob;
-
-            // Single-unit reply: cache the result for next time.
-            if (plan.units.length === 1) {
-              void saveMessageSpeechCache({
-                text: unit.tts,
-                settings: voiceGeneration,
-                result: outcome
-              }).then((voiceCache) => {
-                if (runIdRef.current === runId) {
-                  onSpeechCacheReadyRef.current?.(voiceCache);
-                }
-              }).catch(() => {
-                // Caching is best-effort.
-              });
-            }
+    state.blob = (async () => {
+      const outcome = await requestGeneratedSpeech({
+        settings,
+        text: state.unit.tts,
+        signal: session.controller.signal
+      });
+      // A reply that never grew past one line: keep the take for next time.
+      if (session.settled && session.queue.length === 1) {
+        void saveMessageSpeechCache({
+          text: state.unit.tts,
+          settings,
+          result: outcome
+        }).then((voiceCache) => {
+          if (runIdRef.current === runId) {
+            onSpeechCacheReadyRef.current?.(voiceCache);
           }
+        }).catch(() => {
+          // Caching is best-effort.
+        });
+      }
+      return outcome.blob;
+    })();
+  };
 
-          // Each unit gets its own queue so the onEnded callback is bound to
-          // exactly one clip — no shared-mutable-state issues between iterations.
-          const idlePromise = new Promise<'ended' | 'error' | 'blocked'>((resolve) => {
-            let settled = false;
-            const settle = (result: 'ended' | 'error' | 'blocked') => {
-              if (settled) return;
-              settled = true;
-              resolve(result);
-            };
+  const feedUnits = (session: ScriptSession, plan: VoiceCallSpeechPlan | null, settled: boolean) => {
+    const units = plan?.units ?? [];
+    while (session.queue.length < units.length) {
+      const index = session.queue.length;
+      const state: UnitState = { unit: units[index], blob: null };
+      session.queue.push(state);
+      if (canSpeak) startSynthesis(session, state, index);
+    }
+    if (settled && session.queue.length === 1 && !canSpeak) {
+      // Cached-only single line: play it once the queue knows nothing more arrives.
+      session.queue[0].blob = session.queue[0].blob ?? readMessageSpeechCacheBlob(session.cache!)
+        .catch(() => Promise.reject(new Error('speech unavailable')));
+    }
+    session.settled = session.settled || settled;
+    wake(session);
+  };
 
-            const queue = new AudioQueueManager(VOICE_SCRIPT_GAP_MS, {
-              onStarted: () => {
-                if (isStale()) return;
-                setSpeaking(true);
-                setLoading(false);
-                if (index === 0) {
-                  onStartedRef.current?.(0);
-                }
-              },
-              onEnded: () => settle('ended'),
-              onError: () => settle('error'),
-              onBlocked: () => settle('blocked')
-            });
-            queueRef.current = queue;
-            queue.enqueue(blob);
+  const runSession = (session: ScriptSession) => {
+    const runId = session.runId;
+    const isStale = () => runIdRef.current !== runId;
+
+    void (async () => {
+      let index = 0;
+      while (true) {
+        if (isStale() || session.controller.signal.aborted) return;
+        if (index >= session.queue.length) {
+          if (session.settled) break;
+          await new Promise<void>((resolve) => {
+            session.resolveWake = resolve;
           });
-
-          const result = await idlePromise;
-          if (isStale() || controller.signal.aborted) return;
-          if (result === 'blocked') { stop(); return; }
-          // On error, skip this unit and continue to the next.
+          continue;
         }
-      } catch {
-        if (!isStale()) stop();
-        return;
+
+        const state = session.queue[index];
+        index += 1;
+        let blob: Blob | null = null;
+        if (state.blob) {
+          try {
+            blob = await state.blob;
+          } catch {
+            if (isStale() || session.controller.signal.aborted) return;
+            blob = null;
+          }
+        }
+        if (!blob) continue;
+
+        // Each unit gets its own queue so the onEnded callback is bound to
+        // exactly one clip — no shared-mutable-state issues between iterations.
+        const result = await new Promise<'ended' | 'error' | 'blocked'>((resolve) => {
+          let settledFlag = false;
+          const settle = (value: 'ended' | 'error' | 'blocked') => {
+            if (settledFlag) return;
+            settledFlag = true;
+            resolve(value);
+          };
+
+          const queue = new AudioQueueManager(VOICE_SCRIPT_GAP_MS, {
+            onStarted: () => {
+              if (isStale()) return;
+              setSpeaking(true);
+              setLoading(false);
+              if (index === 1) {
+                onStartedRef.current?.(0);
+              }
+            },
+            onEnded: () => settle('ended'),
+            onError: () => settle('error'),
+            onBlocked: () => settle('blocked')
+          });
+          queueRef.current = queue;
+          queue.enqueue(blob as Blob);
+        });
+
+        if (isStale() || session.controller.signal.aborted) return;
+        if (result === 'blocked') { stop(); return; }
+        // On error, skip this unit and continue to the next.
       }
 
       if (isStale()) return;
       queueRef.current = null;
+      sessionRef.current = null;
+      sessionMessageIdRef.current = null;
       setSpeaking(false);
       setLoading(false);
     })();
-  }, [canSpeak, stop, voiceGeneration]);
+  };
 
   const speak = useCallback((
     messageId: string,
     content: string,
-    cache?: ChatMessageVoiceCache | null
-  ) => {
+    cache?: ChatMessageVoiceCache | null,
+    streaming = false
+  ): boolean => {
     stop();
 
-    if (!canSpeak && !cache?.assetId) return;
+    if (!canSpeak && !cache?.assetId) return false;
 
-    const plan = buildAssistantSpeechPlan(content);
-    if (plan.units.length === 0) return;
+    const plan = streaming ? buildStreamingVoicePlan(content) : buildAssistantSpeechPlan(content);
+    if (!plan || plan.units.length === 0) return false;
+
+    const runId = ++runIdRef.current;
+    const controller = new AbortController();
+    abortRef.current = controller;
+    queueRef.current?.stop();
+
+    const session: ScriptSession = {
+      runId,
+      controller,
+      cache: cache ?? null,
+      queue: [],
+      settled: !streaming,
+      resolveWake: null
+    };
+    sessionRef.current = session;
+    sessionMessageIdRef.current = messageId;
 
     setSpeaking(true);
+    setLoading(true);
+    feedUnits(session, plan, !streaming);
+    runSession(session);
+    return true;
+  }, [canSpeak, stop, voiceGeneration]);
 
-    // If the whole reply is already cached as one blob, skip the pipeline.
-    if (cache?.assetId && plan.units.length === 1) {
-      void speakPlan(messageId, content, plan, cache);
+  const feedStream = useCallback((messageId: string, content: string) => {
+    const session = sessionRef.current;
+    if (!session || sessionMessageIdRef.current !== messageId || session.settled) return;
+    feedUnits(session, buildStreamingVoicePlan(content), false);
+  }, []);
+
+  const finalize = useCallback((messageId: string, content: string) => {
+    const session = sessionRef.current;
+    if (session && sessionMessageIdRef.current === messageId && !session.settled) {
+      feedUnits(session, buildAssistantSpeechPlan(content), true);
       return;
     }
-
-    if (!canSpeak) return;
-
-    void speakPlan(messageId, content, plan, cache ?? null);
-  }, [canSpeak, speakPlan, stop]);
+    if (sessionMessageIdRef.current === messageId) return;
+    speak(messageId, content, null, false);
+  }, [speak]);
 
   return {
     speaking,
     loading,
     speak,
+    feedStream,
+    finalize,
     stop
   };
 }

@@ -184,7 +184,8 @@ export function useFleshAmbience(): FleshAmbienceController {
     const names = FLESH_CLIP_NAMES[category];
     const clip = names[Math.floor(Math.random() * names.length)];
     if (!clip) return;
-    scheduleHit(context, category, clip, context.currentTime + 0.05, 1, duck, oneShotVoicesRef.current);
+    // A slap is one heavy hit: a single clip has no bed to lean on, so it gets its own gain.
+    scheduleHit(context, category, clip, context.currentTime + 0.05, category === 'sp' ? 4 : 1, duck, oneShotVoicesRef.current);
   }, [scheduleHit]);
 
   const tick = useCallback(() => {

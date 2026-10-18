@@ -21,13 +21,14 @@ function collect(seed: number, category: FleshLoopCategory, preset: FleshAmbienc
 
 describe('flesh ambience cues', () => {
   it('maps each sound folder to its own cue', () => {
-    expect(readFleshCues('嗯…[wetplap]…\n[dryplap:hard]\n[wet]\n[stroke:soft]\n[cum]\n[pullout]')).toEqual([
+    expect(readFleshCues('嗯…[wetplap]…\n[dryplap:hard]\n[wet]\n[stroke:soft]\n[cum]\n[pullout]\n[sp]')).toEqual([
       { kind: 'loop', category: 'wetplap', preset: 'mid' },
       { kind: 'loop', category: 'dryplap', preset: 'hard' },
       { kind: 'loop', category: 'wet', preset: 'mid' },
       { kind: 'loop', category: 'stroke', preset: 'soft' },
       { kind: 'oneShot', category: 'cum' },
-      { kind: 'oneShot', category: 'pullout' }
+      { kind: 'oneShot', category: 'pullout' },
+      { kind: 'oneShot', category: 'sp' }
     ]);
   });
 
@@ -94,9 +95,9 @@ describe('flesh ambience loop', () => {
 
   it('applies gain jitter around the preset level', () => {
     const plaps = collect(13, 'wetplap', 'soft', 40);
-    expect(plaps.every((hit) => hit.gain > 1.3 && hit.gain < 1.9)).toBe(true);
+    expect(plaps.every((hit) => hit.gain > 2.6 && hit.gain < 3.4)).toBe(true);
     const bed = collect(13, 'wet', 'soft', 40);
-    expect(bed.every((hit) => hit.gain > 0.9 && hit.gain < 1.3)).toBe(true);
+    expect(bed.every((hit) => hit.gain > 1.7 && hit.gain < 2.3)).toBe(true);
   });
 
   it('switches density when the preset is changed mid-scene', () => {
