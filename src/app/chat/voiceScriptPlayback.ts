@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from 'react';
 import { AudioQueueManager } from '../../engines/voiceScriptAudioQueue';
 import { requestGeneratedSpeech } from '../../engines/voiceGenerationClient';
 import { useVoiceSettingsForSpeaker } from '../voice/useVoiceSettingsForSpeaker';
-import { buildAssistantSpeechPlan, getAssistantAmbiencePlan } from '../../ui/worlds/chat/message/messageSpeechText';
+import { buildAssistantSpeechPlan } from '../../ui/worlds/chat/message/messageSpeechText';
 import type { VoiceCallSpeechPlan } from '../../engines/voice/voiceCallSpeechUnits';
 import type { ChatMessageVoiceCache } from '../../types/domain';
 import { readMessageSpeechCacheBlob, saveMessageSpeechCache } from './messageSpeechCache';
@@ -145,8 +145,7 @@ export function useVoiceScriptPlayback({
                 setSpeaking(true);
                 setLoading(false);
                 if (index === 0) {
-                  const ambiencePlan = getAssistantAmbiencePlan(content);
-                  onStartedRef.current?.(ambiencePlan.estimatedSec);
+                  onStartedRef.current?.(0);
                 }
               },
               onEnded: () => settle('ended'),
