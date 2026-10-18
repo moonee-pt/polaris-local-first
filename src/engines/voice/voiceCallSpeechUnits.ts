@@ -3,6 +3,7 @@ import {
   type VoiceCallCaptionSegment,
   type VoiceCallCaptionSourcePart
 } from './voiceCallCaption';
+import type { FleshCue } from './fleshAmbience';
 
 /** Silence held between two spoken lines written back to back. */
 export const VOICE_CALL_LINE_GAP_MS = 400;
@@ -24,6 +25,8 @@ export type VoiceCallSpeechUnit = {
   weight: number;
   /** Silence held before this unit so the previous line can land. */
   pauseBeforeMs: number;
+  /** Body-sound markers written in this line, scheduled when the line starts. */
+  cues: FleshCue[];
 };
 
 export type VoiceCallSpeechPlan = {
@@ -49,6 +52,7 @@ export function createVoiceCallSpeechUnit(input: {
   caption: string;
   narration?: string[];
   pauseBeforeMs: number;
+  cues?: FleshCue[];
   /** The line right before this one was spoken too: the caption breaks between them. */
   continuesPreviousLine?: boolean;
 }): VoiceCallSpeechUnit | null {
@@ -67,7 +71,8 @@ export function createVoiceCallSpeechUnit(input: {
     segments,
     stageWeight: leadingStageWeight(segments),
     weight: weightOf(segments),
-    pauseBeforeMs: Math.max(0, input.pauseBeforeMs)
+    pauseBeforeMs: Math.max(0, input.pauseBeforeMs),
+    cues: input.cues ?? []
   };
 }
 
@@ -93,7 +98,8 @@ export function buildWholeClipPlan(caption: VoiceCallCaptionSourcePart[]): Voice
         segments,
         stageWeight: 0,
         weight,
-        pauseBeforeMs: 0
+        pauseBeforeMs: 0,
+        cues: []
       }
     ],
     totalWeight: weight

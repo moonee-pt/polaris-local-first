@@ -1,8 +1,7 @@
 import { TOOL_DRAFT_BLOCK_PATTERN } from '../../../../app/chat/chatMarkdownPatterns';
 import { stripCodeBlocksFromMessage } from '../../../../engines/codeCardEngine';
 import { buildAmbiencePlan, type AmbiencePlan } from '../../../../engines/voice/ambienceTimeline';
-import { readFleshCues, selectAmbienceCues, stripFleshCues, type FleshCue } from '../../../../engines/voice/fleshAmbience';
-import { normalizePauseTagsForEngine, stripCrowdLaughterTags, stripPerformanceTags } from '../../../../engines/voice/performanceTags';
+import { readFleshCues, selectAmbienceCues, stripFleshCues, type FleshCue } from '../../../../engines/voice/fleshAmbience';import { normalizePauseTagsForEngine, stripCrowdLaughterTags, stripPerformanceTags } from '../../../../engines/voice/performanceTags';
 import {
   VOICE_CALL_LINE_GAP_MS,
   VOICE_CALL_PAUSE_MS,
@@ -173,6 +172,7 @@ export function buildAssistantSpeechPlan(content: string): VoiceCallSpeechPlan {
 
   segments.forEach((segment, index) => {
     if (segment.kind === 'speech') {
+      const unitCues = selectAmbienceCues(readFleshCues(stripPerformanceTags(segment.text)));
       const spoken = toSpokenText(segment.text);
       if (!spoken) return;
       splitLongSpokenLine(spoken).forEach((piece) => {
@@ -181,6 +181,7 @@ export function buildAssistantSpeechPlan(content: string): VoiceCallSpeechPlan {
           caption: toCaptionText(piece),
           narration,
           pauseBeforeMs: units.length === 0 ? 0 : pauseBeforeMs,
+          cues: unitCues,
           continuesPreviousLine: units.length > 0 && narration.length === 0
         });
         if (!unit) return;

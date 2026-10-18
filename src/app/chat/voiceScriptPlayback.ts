@@ -5,6 +5,7 @@ import { useVoiceSettingsForSpeaker } from '../voice/useVoiceSettingsForSpeaker'
 import { buildAssistantSpeechPlan, buildStreamingVoicePlan } from '../../ui/worlds/chat/message/messageSpeechText';
 import type { VoiceCallSpeechPlan, VoiceCallSpeechUnit } from '../../engines/voice/voiceCallSpeechUnits';
 import type { ChatMessageVoiceCache } from '../../types/domain';
+import type { FleshCue } from '../../engines/voice/fleshAmbience';
 import { readMessageSpeechCacheBlob, saveMessageSpeechCache } from './messageSpeechCache';
 
 /** Default silence between spoken lines in voice-script mode (ms). */
@@ -13,7 +14,8 @@ const VOICE_SCRIPT_GAP_MS = 200;
 export type UseVoiceScriptPlaybackArgs = {
   speakerCollaboratorId?: string | null;
   onSpeechCacheReady?: (voiceCache: ChatMessageVoiceCache) => void;
-  onStarted?: (durationSec: number) => void;
+  /** Fires when a spoken line starts: body sounds marked in that line begin now. */
+  onStarted?: (durationSec: number, cues: FleshCue[]) => void;
 };
 
 export type UseVoiceScriptPlaybackResult = {
@@ -202,7 +204,7 @@ export function useVoiceScriptPlayback({
               setSpeaking(true);
               setLoading(false);
               if (index === 1) {
-                onStartedRef.current?.(0);
+                onStartedRef.current?.(0, state.unit.cues);
               }
             },
             onEnded: () => settle('ended'),

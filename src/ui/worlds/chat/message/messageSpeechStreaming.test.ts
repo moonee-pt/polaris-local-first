@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildStreamingVoicePlan } from './messageSpeechText';
+import { buildAssistantSpeechPlan, buildStreamingVoicePlan } from './messageSpeechText';
 
 describe('buildStreamingVoicePlan', () => {
   it('returns null until the first line closes', () => {
@@ -15,5 +15,34 @@ describe('buildStreamingVoicePlan', () => {
   it('grows the plan as more lines close', () => {
     const plan = buildStreamingVoicePlan('【第一句。】\n【第二句。】\n【第三句还');
     expect(plan!.units.map((unit) => unit.tts)).toEqual(['第一句。', '第二句。']);
+  });
+});
+
+describe('per-line body sound cues', () => {
+  it('attaches each line\'s own markers to that line only', () => {
+    const plan = buildAssistantSpeechPlan([
+      '【[wetplap] 慢一点。】',
+      '【[stroke] 这样好吗。】',
+      '【休息一下吧。】'
+    ].join('\n'));
+
+    expect(plan.units.map((unit) => unit.cues.map((cue) => cue.category))).toEqual([
+      ['wetplap'],
+      ['stroke'],
+      []
+    ]);
+  });
+
+  it('splits a long marked line into pieces that all carry the line\'s marker', () => {
+    const long = `[wet] ${'这半句已经够长了，一口气说完有点勉强。中间还有一段话，也长得可以这样说。再说一句用来把长度顶过一口气的范围。最后收尾。'}`;
+    const plan = buildAssistantSpeechPlan(`【${long}】`);
+
+    expect(plan.units.length).toBeGreaterThan(1);
+    expect(plan.units.every((unit) => unit.cues.map((cue) => cue.category).join() === 'wet')).toBe(true);
+  });
+
+  it('keeps markers while streaming', () => {
+    const plan = buildStreamingVoicePlan('【[sp] 啪。】\n【后半句还没');
+    expect(plan!.units[0].cues).toEqual([{ kind: 'oneShot', category: 'sp' }]);
   });
 });

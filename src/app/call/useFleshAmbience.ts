@@ -39,7 +39,12 @@ type PendingShot = { at: number; category: FleshAmbienceCategory };
 
 export type FleshAmbienceController = {
   active: boolean;
-  schedule: (cues: TimedAmbienceCue[], totalSec: number) => void;
+  /**
+   * Runs one reply's (or one line's) cue plan. By default everything from before is
+   * torn down first; per-line voice-script scheduling passes retire, so beds that no
+   * earlier line opened (or that this line keeps marking) survive into the next reply.
+   */
+  schedule: (cues: TimedAmbienceCue[], totalSec: number, retire?: FleshAmbienceCategory[]) => void;
   stop: () => void;
   setDucked: (ducked: boolean) => void;
 };
@@ -240,12 +245,25 @@ export function useFleshAmbience(): FleshAmbienceController {
    * Runs one reply's cue plan against the length of the clip being played, so a track
    * opens where the model wrote it instead of the moment the voice starts.
    */
-  const schedule = useCallback((cues: TimedAmbienceCue[], totalSec: number) => {
+  const schedule = useCallback((cues: TimedAmbienceCue[], totalSec: number, retire?: FleshAmbienceCategory[]) => {
     const context = ensureGraph();
     if (!context || !masterRef.current || !duckRef.current) return;
     void context.resume().catch(() => {});
 
-    stop();
+    if (retire) {
+      // Per-line schedule: only the named beds close; anything still marked
+      // (including one from the previous reply) keeps running as continuity.
+      const nextCategories = new Set<string>(cues.map((cue) => cue.category));
+      for (const category of retire) {
+        if (nextCategories.has(category)) continue;
+        const bed = bedsRef.current.get(category as FleshLoopCategory);
+        if (bed) retireBed(bed);
+      }
+      startsRef.current = startsRef.current.filter((item) => !retire.includes(item.category) || nextCategories.has(item.category));
+      shotsRef.current = shotsRef.current.filter((shot) => !retire.includes(shot.category));
+    } else {
+      stop();
+    }
 
     const horizon = Math.max(1, totalSec);
     const now = context.currentTime;

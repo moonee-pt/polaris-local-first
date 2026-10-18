@@ -9,6 +9,7 @@ import { writeTextToClipboard } from '../../../../infrastructure/clipboard';
 import { useVoiceSettingsForSpeaker } from '../../../../app/voice/useVoiceSettingsForSpeaker';
 import { useVoiceScriptPlayback } from '../../../../app/chat/voiceScriptPlayback';
 import type { ChatMemoryEvidence, ChatMessageVoiceCache, ConversationTaskStatus } from '../../../../types/domain';
+import type { FleshAmbienceCategory, FleshCue } from '../../../../engines/voice/fleshAmbience';
 import { Icon } from '../../../Icon';
 import { runSelectionAction, runSuccessAction } from '../../../haptics';
 import { useI18n } from '../../../../i18n';
@@ -142,6 +143,17 @@ export function MessageActions({
     setDucked: setAmbienceDucked
   } = useFleshAmbience();
 
+  // Categories the previous spoken line marked: beds not re-marked by the next
+  // line close when that line starts; the last line's beds carry to the next reply.
+  const voiceScriptMarkedRef = useRef<FleshAmbienceCategory[]>([]);
+
+  const handleVoiceScriptLine = (durationSec: number, cues: FleshCue[]) => {
+    const retire = voiceScriptMarkedRef.current;
+    voiceScriptMarkedRef.current = cues.map((cue) => cue.category);
+    const timed = cues.map((cue) => ({ ...cue, atRatio: 0 }));
+    scheduleAmbience(timed, Math.max(1, durationSec), retire);
+  };
+
   const {
     speaking: voiceScriptSpeaking,
     loading: voiceScriptLoading,
@@ -152,7 +164,7 @@ export function MessageActions({
   } = useVoiceScriptPlayback({
     speakerCollaboratorId,
     onSpeechCacheReady: (voiceCache) => onSpeechCacheReady(voiceCache),
-    onStarted: (durationSec) => applyMessageAmbience(durationSec)
+    onStarted: handleVoiceScriptLine
   });
 
   const effectiveSpeaking = speaking || voiceScriptSpeaking;
@@ -205,6 +217,7 @@ export function MessageActions({
     stopChatSpeechAudio();
     stopVoiceScript();
     voiceScriptMessageIdRef.current = null;
+    voiceScriptMarkedRef.current = [];
     abortRef.current?.abort();
     abortRef.current = null;
     setSpeaking(false);
