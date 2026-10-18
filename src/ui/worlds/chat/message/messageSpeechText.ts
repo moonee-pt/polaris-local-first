@@ -86,7 +86,6 @@ function splitSpeechSegments(content: string, pairs: Array<[string, string]>): S
 /** Silence between two spoken lines. Ellipsis would be voiced as a breath, so ask for a pause. */
 function pauseForGap(gap: string) {
   const length = gap.replace(/\s+/g, '').length;
-  if (length >= 30) return '[long-break] [long-break]';
   if (length >= 10) return '[long-break]';
   return '[break]';
 }

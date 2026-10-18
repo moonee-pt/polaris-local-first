@@ -96,12 +96,15 @@ const ENGINE_TAG_BY_SLUG: Record<string, string> = {
 /**
  * The voice engine spells its pauses [break] / [long-break]; the labels we show and the
  * older replies use [pause] / [long pause], which the engine would read out as the word.
+ * Consecutive long breaks collapse into one: a pause never stacks past a single [long-break].
  */
 export function normalizePauseTagsForEngine(text: string): string {
   if (!text) return text;
-  return text.replace(new RegExp(TAG_BRACKET, 'gi'), (match, inner: string) => {
-    const resolved = resolvePerformanceTag(inner);
-    const engineTag = resolved ? ENGINE_TAG_BY_SLUG[resolved.slug] : undefined;
-    return engineTag ? `[${engineTag}]` : match;
-  });
+  return text
+    .replace(new RegExp(TAG_BRACKET, 'gi'), (match, inner: string) => {
+      const resolved = resolvePerformanceTag(inner);
+      const engineTag = resolved ? ENGINE_TAG_BY_SLUG[resolved.slug] : undefined;
+      return engineTag ? `[${engineTag}]` : match;
+    })
+    .replace(/(?:\[long-break\][ \t]*){2,}/gi, '[long-break] ');
 }
