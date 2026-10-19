@@ -14,8 +14,10 @@ const VOICE_SCRIPT_GAP_MS = 200;
 export type UseVoiceScriptPlaybackArgs = {
   speakerCollaboratorId?: string | null;
   onSpeechCacheReady?: (voiceCache: ChatMessageVoiceCache) => void;
-  /** Fires when a spoken line starts: body sounds marked in that line begin now. */
+  /** Fires when a spoken line starts: body sounds marked in (or just before) that line begin now. */
   onStarted?: (durationSec: number, cues: FleshCue[]) => void;
+  /** Fires when the reply's last line ends: markers written after it start now. */
+  onEnded?: (cues: FleshCue[]) => void;
 };
 
 export type UseVoiceScriptPlaybackResult = {
@@ -47,6 +49,7 @@ type ScriptSession = {
   cache: ChatMessageVoiceCache | null;
   queue: UnitState[];
   settled: boolean;
+  trailingCues: FleshCue[];
   resolveWake: (() => void) | null;
 };
 
@@ -59,7 +62,8 @@ type ScriptSession = {
 export function useVoiceScriptPlayback({
   speakerCollaboratorId = null,
   onSpeechCacheReady,
-  onStarted
+  onStarted,
+  onEnded
 }: UseVoiceScriptPlaybackArgs = {}): UseVoiceScriptPlaybackResult {
   const voiceGeneration = useVoiceSettingsForSpeaker(speakerCollaboratorId);
   const [speaking, setSpeaking] = useState(false);
@@ -71,8 +75,10 @@ export function useVoiceScriptPlayback({
   const sessionRef = useRef<ScriptSession | null>(null);
   const sessionMessageIdRef = useRef<string | null>(null);
   const onStartedRef = useRef(onStarted);
+  const onEndedRef = useRef(onEnded);
   const onSpeechCacheReadyRef = useRef(onSpeechCacheReady);
   onStartedRef.current = onStarted;
+  onEndedRef.current = onEnded;
   onSpeechCacheReadyRef.current = onSpeechCacheReady;
 
   const canSpeak = Boolean(
@@ -156,6 +162,7 @@ export function useVoiceScriptPlayback({
         .catch(() => Promise.reject(new Error('speech unavailable')));
     }
     session.settled = session.settled || settled;
+    if (settled) session.trailingCues = plan?.trailingCues ?? [];
     wake(session);
   };
 
@@ -224,6 +231,7 @@ export function useVoiceScriptPlayback({
       queueRef.current = null;
       sessionRef.current = null;
       sessionMessageIdRef.current = null;
+      if (session.trailingCues.length) onEndedRef.current?.(session.trailingCues);
       setSpeaking(false);
       setLoading(false);
     })();
@@ -253,6 +261,7 @@ export function useVoiceScriptPlayback({
       cache: cache ?? null,
       queue: [],
       settled: !streaming,
+      trailingCues: [],
       resolveWake: null
     };
     sessionRef.current = session;

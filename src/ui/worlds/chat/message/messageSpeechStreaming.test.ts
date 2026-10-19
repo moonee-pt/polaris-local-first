@@ -33,12 +33,29 @@ describe('per-line body sound cues', () => {
     ]);
   });
 
-  it('splits a long marked line into pieces that all carry the line\'s marker', () => {
+  it('fires a long line\'s marker once, when the line starts', () => {
     const long = `[wet] ${'这半句已经够长了，一口气说完有点勉强。中间还有一段话，也长得可以这样说。再说一句用来把长度顶过一口气的范围。最后收尾。'}`;
     const plan = buildAssistantSpeechPlan(`【${long}】`);
 
     expect(plan.units.length).toBeGreaterThan(1);
-    expect(plan.units.every((unit) => unit.cues.map((cue) => cue.category).join() === 'wet')).toBe(true);
+    expect(plan.units[0].cues.map((cue) => cue.category)).toEqual(['wet']);
+    expect(plan.units.slice(1).every((unit) => unit.cues.length === 0)).toBe(true);
+  });
+
+  it('attaches markers written in the narration to the line that follows them', () => {
+    const plan = buildAssistantSpeechPlan('（[wetplap] 她凑过来）【慢一点。】\n【[stroke] 这样。】');
+
+    expect(plan.units.map((unit) => unit.cues.map((cue) => cue.category))).toEqual([
+      ['wetplap'],
+      ['stroke']
+    ]);
+  });
+
+  it('keeps markers after the last line as trailing cues', () => {
+    const plan = buildAssistantSpeechPlan('【好。】\n（[wet] 收尾的水声）');
+
+    expect(plan.units[0].cues).toEqual([]);
+    expect(plan.trailingCues).toEqual([{ kind: 'loop', category: 'wet', preset: 'mid' }]);
   });
 
   it('keeps markers while streaming', () => {

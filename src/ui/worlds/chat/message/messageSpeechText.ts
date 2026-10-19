@@ -169,24 +169,31 @@ export function buildAssistantSpeechPlan(content: string): VoiceCallSpeechPlan {
   const units: VoiceCallSpeechUnit[] = [];
   let narration: string[] = [];
   let pauseBeforeMs = 0;
+  let pendingCues: FleshCue[] = [];
+  let trailingCues: FleshCue[] = [];
 
   segments.forEach((segment, index) => {
     if (segment.kind === 'speech') {
-      const unitCues = selectAmbienceCues(readFleshCues(stripPerformanceTags(segment.text)));
+      const lineCues = selectAmbienceCues(readFleshCues(stripPerformanceTags(segment.text)));
       const spoken = toSpokenText(segment.text);
       if (!spoken) return;
+      let firstPiece = true;
       splitLongSpokenLine(spoken).forEach((piece) => {
         const unit = createVoiceCallSpeechUnit({
           tts: piece,
           caption: toCaptionText(piece),
           narration,
           pauseBeforeMs: units.length === 0 ? 0 : pauseBeforeMs,
-          cues: unitCues,
+          // The line's own markers plus those written in the narration before it:
+          // narration is silent, so its sound starts with the voice that follows.
+          cues: firstPiece ? [...pendingCues, ...lineCues] : [],
           continuesPreviousLine: units.length > 0 && narration.length === 0
         });
         if (!unit) return;
+        firstPiece = false;
         units.push(unit);
         narration = [];
+        pendingCues = [];
         pauseBeforeMs = VOICE_CALL_LINE_GAP_MS;
       });
       return;
@@ -194,14 +201,19 @@ export function buildAssistantSpeechPlan(content: string): VoiceCallSpeechPlan {
 
     const gap = segment.text.trim();
     if (!gap) return;
+    const gapCues = selectAmbienceCues(readFleshCues(gap));
     const hasLaterSpeech = segments.slice(index + 1).some((item) => item.kind === 'speech' && item.text.trim());
-    if (!hasLaterSpeech) return;
+    if (!hasLaterSpeech) {
+      trailingCues = [...trailingCues, ...gapCues];
+      return;
+    }
     const narrationText = formatStageDirection(gap);
     if (narrationText) narration.push(narrationText);
+    pendingCues = [...pendingCues, ...gapCues];
     pauseBeforeMs = pauseMsForGap(gap);
   });
 
-  return createVoiceCallSpeechPlan(units);
+  return createVoiceCallSpeechPlan(units, trailingCues);
 }
 
 /**

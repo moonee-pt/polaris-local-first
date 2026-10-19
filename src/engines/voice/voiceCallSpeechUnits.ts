@@ -32,6 +32,8 @@ export type VoiceCallSpeechUnit = {
 export type VoiceCallSpeechPlan = {
   units: VoiceCallSpeechUnit[];
   totalWeight: number;
+  /** Body-sound markers after the last spoken line: they start when that line ends. */
+  trailingCues: FleshCue[];
 };
 
 function weightOf(segments: VoiceCallCaptionSegment[]) {
@@ -76,10 +78,11 @@ export function createVoiceCallSpeechUnit(input: {
   };
 }
 
-export function createVoiceCallSpeechPlan(units: VoiceCallSpeechUnit[]): VoiceCallSpeechPlan {
+export function createVoiceCallSpeechPlan(units: VoiceCallSpeechUnit[], trailingCues: FleshCue[] = []): VoiceCallSpeechPlan {
   return {
     units,
-    totalWeight: units.reduce((sum, unit) => sum + unit.weight, 0)
+    totalWeight: units.reduce((sum, unit) => sum + unit.weight, 0),
+    trailingCues
   };
 }
 
@@ -90,7 +93,7 @@ export function createVoiceCallSpeechPlan(units: VoiceCallSpeechUnit[]): VoiceCa
 export function buildWholeClipPlan(caption: VoiceCallCaptionSourcePart[]): VoiceCallSpeechPlan {
   const segments = splitVoiceCallCaptions(caption);
   const weight = weightOf(segments);
-  if (segments.length === 0 || weight <= 0) return { units: [], totalWeight: 0 };
+  if (segments.length === 0 || weight <= 0) return { units: [], totalWeight: 0, trailingCues: [] };
   return {
     units: [
       {
@@ -102,7 +105,8 @@ export function buildWholeClipPlan(caption: VoiceCallCaptionSourcePart[]): Voice
         cues: []
       }
     ],
-    totalWeight: weight
+    totalWeight: weight,
+    trailingCues: []
   };
 }
 

@@ -147,11 +147,11 @@ export function MessageActions({
   // line close when that line starts; the last line's beds carry to the next reply.
   const voiceScriptMarkedRef = useRef<FleshAmbienceCategory[]>([]);
 
-  const handleVoiceScriptLine = (durationSec: number, cues: FleshCue[]) => {
-    const retire = voiceScriptMarkedRef.current;
+  const handleVoiceScriptLine = (durationSec: number, cues: FleshCue[], retire?: FleshAmbienceCategory[]) => {
+    const previous = retire ?? voiceScriptMarkedRef.current;
     voiceScriptMarkedRef.current = cues.map((cue) => cue.category);
     const timed = cues.map((cue) => ({ ...cue, atRatio: 0 }));
-    scheduleAmbience(timed, Math.max(1, durationSec), retire);
+    scheduleAmbience(timed, Math.max(1, durationSec), previous);
   };
 
   const {
@@ -164,7 +164,8 @@ export function MessageActions({
   } = useVoiceScriptPlayback({
     speakerCollaboratorId,
     onSpeechCacheReady: (voiceCache) => onSpeechCacheReady(voiceCache),
-    onStarted: handleVoiceScriptLine
+    onStarted: (durationSec, cues) => handleVoiceScriptLine(durationSec, cues),
+    onEnded: (cues) => handleVoiceScriptLine(0, cues, [])
   });
 
   const effectiveSpeaking = speaking || voiceScriptSpeaking;
