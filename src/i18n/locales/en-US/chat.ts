@@ -62,6 +62,7 @@ export const chat = {
   'chat.messageActions.stopReading': 'Stop reading',
   'chat.messageActions.readAssistant': 'Read response',
   'chat.messageActions.read': 'Read',
+  'chat.messageActions.regenerateSpeech': 'Regenerate speech',
   'chat.messageActions.collapseTask': 'Collapse this task',
   'chat.messageActions.viewTask': 'View this task',
   'chat.messageActions.collapseTaskTitle': 'Collapse task',

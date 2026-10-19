@@ -60,6 +60,7 @@ export const chat = {
   'chat.messageActions.stopReading': '停止朗读',
   'chat.messageActions.readAssistant': '朗读回答',
   'chat.messageActions.read': '朗读',
+  'chat.messageActions.regenerateSpeech': '重新生成语音',
   'chat.messageActions.collapseTask': '收起这次任务',
   'chat.messageActions.viewTask': '查看这次任务',
   'chat.messageActions.collapseTaskTitle': '收起任务',

@@ -323,13 +323,13 @@ export function MessageActions({
     }
   };
 
-  const beginVoiceScriptSpeech = (auto = false, streaming = false): boolean => {
+  const beginVoiceScriptSpeech = (auto = false, streaming = false, useCache = true): boolean => {
     const text = speakableContent;
     if (!text) return false;
     autoPlaybackRef.current = auto;
     primeChatSpeechAudio();
     stopSpeechPlayback();
-    const started = speakVoiceScript(messageId, text, speechCache ?? null, streaming);
+    const started = speakVoiceScript(messageId, text, useCache ? (speechCache ?? null) : null, streaming);
     voiceScriptMessageIdRef.current = started ? messageId : null;
     return started;
   };
@@ -378,6 +378,20 @@ export function MessageActions({
       return;
     }
     beginSpeech();
+  };
+
+  /** Re-synthesise the same reply: the cached clip is skipped, the TTS runs again
+   *  and the body-sound beds are laid out from a fresh roll. */
+  const regenerateSpeech = () => {
+    if (!canUseConfiguredSpeech || !speakableContent) return;
+    if (isVoiceScriptMode) {
+      beginVoiceScriptSpeech(false, false, false);
+      return;
+    }
+    autoPlaybackRef.current = false;
+    primeChatSpeechAudio();
+    stopSpeechPlayback();
+    void playConfiguredSpeech(speakableContent);
   };
 
   const closeAssistantSheet = () => {
@@ -458,6 +472,21 @@ export function MessageActions({
               >
                 <Icon name="refresh" size={18} />
                 <span>{resolvedRetryAssistantLabel}</span>
+              </button>
+            ) : null}
+            {canSpeakAssistant && canUseConfiguredSpeech && !isStreamingLike ? (
+              <button
+                type="button"
+                className="assistant-message-action-btn"
+                onClick={(event) => {
+                  runSelectionAction(() => {
+                    regenerateSpeech();
+                    closeAssistantSheet();
+                  }, { element: event.currentTarget });
+                }}
+              >
+                <Icon name="sparkle" size={18} />
+                <span>{t('chat.messageActions.regenerateSpeech')}</span>
               </button>
             ) : null}
           </div>
