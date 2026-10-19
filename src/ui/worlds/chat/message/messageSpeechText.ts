@@ -187,6 +187,7 @@ export function buildAssistantSpeechPlan(content: string): VoiceCallSpeechPlan {
           // The line's own markers plus those written in the narration before it:
           // narration is silent, so its sound starts with the voice that follows.
           cues: firstPiece ? [...pendingCues, ...lineCues] : [],
+          startsLine: firstPiece,
           continuesPreviousLine: units.length > 0 && narration.length === 0
         });
         if (!unit) return;

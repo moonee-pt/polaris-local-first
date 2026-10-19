@@ -40,6 +40,19 @@ describe('per-line body sound cues', () => {
     expect(plan.units.length).toBeGreaterThan(1);
     expect(plan.units[0].cues.map((cue) => cue.category)).toEqual(['wet']);
     expect(plan.units.slice(1).every((unit) => unit.cues.length === 0)).toBe(true);
+    expect(plan.units[0].startsLine).toBe(true);
+    expect(plan.units.slice(1).every((unit) => unit.startsLine === false)).toBe(true);
+  });
+
+  it('marks every written line as a sound trigger, not only the first', () => {
+    const plan = buildAssistantSpeechPlan('【[wetplap] 第一句。】\n【第二句。】\n【[stroke] 第三句。】');
+
+    expect(plan.units.map((unit) => unit.startsLine)).toEqual([true, true, true]);
+    expect(plan.units.map((unit) => unit.cues.map((cue) => cue.category))).toEqual([
+      ['wetplap'],
+      [],
+      ['stroke']
+    ]);
   });
 
   it('attaches markers written in the narration to the line that follows them', () => {

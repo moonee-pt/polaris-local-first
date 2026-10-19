@@ -210,7 +210,7 @@ export function useVoiceScriptPlayback({
               if (isStale()) return;
               setSpeaking(true);
               setLoading(false);
-              if (index === 1) {
+              if (state.unit.startsLine) {
                 onStartedRef.current?.(0, state.unit.cues);
               }
             },

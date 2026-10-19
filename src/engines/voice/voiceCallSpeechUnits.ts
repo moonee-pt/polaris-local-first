@@ -27,6 +27,8 @@ export type VoiceCallSpeechUnit = {
   pauseBeforeMs: number;
   /** Body-sound markers written in this line, scheduled when the line starts. */
   cues: FleshCue[];
+  /** False only on the continuation pieces of a split long line: its markers already fired with the first piece. */
+  startsLine: boolean;
 };
 
 export type VoiceCallSpeechPlan = {
@@ -55,6 +57,8 @@ export function createVoiceCallSpeechUnit(input: {
   narration?: string[];
   pauseBeforeMs: number;
   cues?: FleshCue[];
+  /** First piece of a written line (the default); false for continuation pieces of a split long line. */
+  startsLine?: boolean;
   /** The line right before this one was spoken too: the caption breaks between them. */
   continuesPreviousLine?: boolean;
 }): VoiceCallSpeechUnit | null {
@@ -74,7 +78,8 @@ export function createVoiceCallSpeechUnit(input: {
     stageWeight: leadingStageWeight(segments),
     weight: weightOf(segments),
     pauseBeforeMs: Math.max(0, input.pauseBeforeMs),
-    cues: input.cues ?? []
+    cues: input.cues ?? [],
+    startsLine: input.startsLine !== false
   };
 }
 
@@ -102,7 +107,8 @@ export function buildWholeClipPlan(caption: VoiceCallCaptionSourcePart[]): Voice
         stageWeight: 0,
         weight,
         pauseBeforeMs: 0,
-        cues: []
+        cues: [],
+        startsLine: true
       }
     ],
     totalWeight: weight,
