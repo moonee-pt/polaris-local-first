@@ -1,7 +1,7 @@
 {
   "name": "polaris",
   "private": true,
-  "version": "1.10.24",
+  "version": "1.10.25",
   "license": "AGPL-3.0-only",
   "type": "module",
   "bin": {
