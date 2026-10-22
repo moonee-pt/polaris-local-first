@@ -3,13 +3,12 @@ import { createPortal } from 'react-dom';
 import { useVoiceCallPlayback } from '../../../app/call/useVoiceCallPlayback';
 import { primeCallAudio } from '../../../app/call/callAudio';
 import { useFleshAmbience } from '../../../app/call/useFleshAmbience';
-import type { VoiceCallCaptionSourcePart } from '../../../engines/voice/voiceCallCaption';
 import type { TimedAmbienceCue } from '../../../engines/voice/ambienceTimeline';
+import type { FleshAmbienceCategory, FleshCue } from '../../../engines/voice/fleshAmbience';
 import { useI18n } from '../../../i18n';
 import type { I18nKey } from '../../../i18n/messages';
 import { useChatActions, useChatPresentation, useChatStablePayload, useChatUi } from '../chat/context/ChatContext';
-import { buildAssistantCaptionParts, buildAssistantSpeechPlan, getAssistantAmbiencePlan } from '../chat/message/messageSpeechText';
-import type { VoiceCallSpeechPlan } from '../../../engines/voice/voiceCallSpeechUnits';
+import { buildAssistantCaptionParts, getAssistantAmbiencePlan } from '../chat/message/messageSpeechText';
 import { resolveVoiceCallSpeechTarget } from './voiceCallSpeechTarget';
 import { Icon } from '../../Icon';
 import { runImpactAction, runSelectionAction } from '../../haptics';
@@ -54,18 +53,32 @@ export function VoiceCallStage({ onClose }: VoiceCallStageProps) {
   const [errorCode, setErrorCode] = useState<string | null>(null);
 
   const ambiencePlanRef = useRef<TimedAmbienceCue[]>([]);
+  // Categories the previous spoken line marked, and the reply whose stream we are
+  // feeding: same per-line schedule as the chat voice-script mode.
+  const markedRef = useRef<FleshAmbienceCategory[]>([]);
+  const sessionMessageIdRef = useRef<string | null>(null);
   const ambience = useFleshAmbience();
+
+  const handleCallLine = (cues: FleshCue[], retire?: FleshAmbienceCategory[]) => {
+    const previous = retire ?? markedRef.current;
+    markedRef.current = cues.map((cue) => cue.category);
+    const timed = cues.map((cue) => ({ ...cue, atRatio: 0 }));
+    ambience.schedule(timed, 1, previous);
+  };
 
   const playback = useVoiceCallPlayback({
     onSpeechCacheReady: (messageId, voiceCache) => {
       const target = stablePayload.messages.find((message) => message.id === messageId);
       if (target) actions.cacheAssistantSpeech(target, voiceCache);
     },
+    // A cached whole-reply take carries its markers as one spread-out plan.
     onPlaybackStarted: (durationSec) => {
       const cues = ambiencePlanRef.current;
       ambiencePlanRef.current = [];
       if (cues.length) ambience.schedule(cues, durationSec);
     },
+    onLineStarted: (cues) => handleCallLine(cues),
+    onLineEnded: (cues) => handleCallLine(cues, []),
     onError: (code) => setErrorCode(code)
   });
 
@@ -75,7 +88,6 @@ export function VoiceCallStage({ onClose }: VoiceCallStageProps) {
       return;
     }
     ambience.setDucked(false);
-    if (playback.status === 'idle' && ambience.active) ambience.stop();
   }, [ambience, playback.status]);
 
   const queueFleshCues = (content: string) => {
@@ -108,32 +120,55 @@ export function VoiceCallStage({ onClose }: VoiceCallStageProps) {
     return null;
   }, [stablePayload.messages]);
 
-  const speakAssistantMessage = (messageId: string, plan: VoiceCallSpeechPlan, caption: VoiceCallCaptionSourcePart[]) => {
-    if (plan.units.length === 0 || caption.length === 0) return;
+  const isStreamingMessage = (messageId: string) =>
+    Boolean(ui.streaming && ui.streaming.messageId === messageId && (ui.streaming.phase === 'stage' || ui.streaming.phase === 'live'));
+
+  const speakAssistantMessage = (messageId: string, content: string, streaming: boolean) => {
     const source = stablePayload.messages.find((message) => message.id === messageId);
-    if (source) queueFleshCues(source.content);
-    const cachedVoice = stablePayload.messages.find((message) => message.id === messageId)?.voiceCache;
-    if (cachedVoice) {
-      playback.playCachedClip(messageId, cachedVoice, caption);
-      return;
+    if (!source || !content.trim()) return;
+    if (!streaming && source.voiceCache) {
+      queueFleshCues(content);
+      const caption = buildAssistantCaptionParts(content);
+      if (caption.length > 0) {
+        playback.playCachedClip(messageId, source.voiceCache, caption);
+        return;
+      }
     }
-    playback.speak({ messageId, plan });
+    if (playback.speak(messageId, content, streaming)) {
+      sessionMessageIdRef.current = streaming ? messageId : null;
+    }
   };
 
   useEffect(() => {
+    const activeId = sessionMessageIdRef.current;
+    if (activeId) {
+      const message = stablePayload.messages.find((item) => item.id === activeId);
+      if (!message) {
+        sessionMessageIdRef.current = null;
+      } else if (isStreamingMessage(activeId)) {
+        playback.feedStream(activeId, message.content);
+        return;
+      } else {
+        playback.finalize(activeId, message.content);
+        sessionMessageIdRef.current = null;
+        return;
+      }
+    }
+
     const target = resolveVoiceCallSpeechTarget({
       messages: stablePayload.messages,
       startedAt: startedAtRef.current,
       muted,
       busy: playback.status !== 'idle',
-      generating: ui.sending || Boolean(ui.streaming),
-      hasSpoken: (messageId) => spokenMessageIdsRef.current.has(messageId)
+      sending: ui.sending,
+      hasSpoken: (messageId) => spokenMessageIdsRef.current.has(messageId),
+      isStreamingMessage
     });
     if (!target) return;
 
     spokenMessageIdsRef.current.add(target.messageId);
     setErrorCode(null);
-    speakAssistantMessage(target.messageId, target.plan, target.caption);
+    speakAssistantMessage(target.messageId, target.content, target.streaming);
   }, [stablePayload.messages, muted, playback.status, ui.sending, ui.streaming]);
 
   function handleHangUp() {
@@ -176,12 +211,8 @@ export function VoiceCallStage({ onClose }: VoiceCallStageProps) {
   function handleRetrySpeak() {
     const message = latestAssistantMessage;
     if (!message) return;
-    const plan = buildAssistantSpeechPlan(message.content);
-    const caption = buildAssistantCaptionParts(message.content);
-    if (plan.units.length === 0 || caption.length === 0) return;
-    queueFleshCues(message.content);
     setErrorCode(null);
-    speakAssistantMessage(message.id, plan, caption);
+    speakAssistantMessage(message.id, message.content, false);
   }
 
   useEffect(() => {
@@ -299,7 +330,15 @@ export function VoiceCallStage({ onClose }: VoiceCallStageProps) {
             onClick={(event) => {
               runSelectionAction(() => {
                 setMuted((current) => {
-                  if (!current) playback.stop();
+                  if (!current) {
+                    const activeId = sessionMessageIdRef.current;
+                    if (activeId) spokenMessageIdsRef.current.delete(activeId);
+                    sessionMessageIdRef.current = null;
+                    markedRef.current = [];
+                    ambiencePlanRef.current = [];
+                    playback.stop();
+                    ambience.stop();
+                  }
                   return !current;
                 });
               }, { element: event.currentTarget });

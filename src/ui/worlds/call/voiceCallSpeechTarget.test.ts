@@ -12,8 +12,9 @@ function baseArgs(messages: ChatMessage[], overrides: Partial<Parameters<typeof 
     startedAt: 1_000,
     muted: false,
     busy: false,
-    generating: false,
+    sending: false,
     hasSpoken: () => false,
+    isStreamingMessage: () => false,
     ...overrides
   };
 }
@@ -25,9 +26,7 @@ describe('resolveVoiceCallSpeechTarget', () => {
       assistantMessage('a1', '我在。', 1_200)
     ]));
 
-    expect(target?.messageId).toBe('a1');
-    expect(target?.plan.units.map((unit) => unit.tts)).toEqual(['我在。']);
-    expect(target?.caption).toEqual([{ kind: 'speech', text: '我在。' }]);
+    expect(target).toEqual({ messageId: 'a1', content: '我在。', streaming: false });
   });
 
   it('ignores replies that existed before the call started', () => {
@@ -38,12 +37,12 @@ describe('resolveVoiceCallSpeechTarget', () => {
     expect(target).toBeNull();
   });
 
-  it('stays quiet while muted, busy, or still generating', () => {
+  it('stays quiet while muted, busy, or still sending', () => {
     const messages = [assistantMessage('a1', '我在。', 1_200)];
 
     expect(resolveVoiceCallSpeechTarget(baseArgs(messages, { muted: true }))).toBeNull();
     expect(resolveVoiceCallSpeechTarget(baseArgs(messages, { busy: true }))).toBeNull();
-    expect(resolveVoiceCallSpeechTarget(baseArgs(messages, { generating: true }))).toBeNull();
+    expect(resolveVoiceCallSpeechTarget(baseArgs(messages, { sending: true }))).toBeNull();
   });
 
   it('does not repeat a reply it already spoke', () => {
@@ -72,23 +71,29 @@ describe('resolveVoiceCallSpeechTarget', () => {
     expect(target).toBeNull();
   });
 
-  it('strips markup so the caption matches what is spoken', () => {
-    const target = resolveVoiceCallSpeechTarget(baseArgs([
-      assistantMessage('a1', '**嗯哼**，我在。', 1_200)
-    ]));
+  it('starts a streaming reply as soon as one line closes', () => {
+    const target = resolveVoiceCallSpeechTarget(baseArgs(
+      [assistantMessage('a1', '【第一句。】\n【第二句还', 1_200)],
+      { isStreamingMessage: (messageId) => messageId === 'a1' }
+    ));
 
-    expect(target?.plan.units.map((unit) => unit.tts)).toEqual(['嗯哼，我在。']);
+    expect(target).toEqual({ messageId: 'a1', content: '【第一句。】\n【第二句还', streaming: true });
   });
 
-  it('keeps delivery cues for the voice but hides them from the caption', () => {
+  it('waits for the first closed line before starting a streaming reply', () => {
+    const target = resolveVoiceCallSpeechTarget(baseArgs(
+      [assistantMessage('a1', '【第一句还没写完', 1_200)],
+      { isStreamingMessage: (messageId) => messageId === 'a1' }
+    ));
+
+    expect(target).toBeNull();
+  });
+
+  it('skips a settled reply that has no words to say', () => {
     const target = resolveVoiceCallSpeechTarget(baseArgs([
-      assistantMessage('a1', '【[whispering] 别闹。】\n（他偏过头）', 1_200)
+      assistantMessage('a1', '（只是旁白。）', 1_200)
     ]));
 
-    expect(target?.plan.units.map((unit) => unit.tts)).toEqual(['[whispering] 别闹。']);
-    expect(target?.caption).toEqual([
-      { kind: 'speech', text: '别闹。' },
-      { kind: 'stage', text: '（他偏过头）' }
-    ]);
+    expect(target).toBeNull();
   });
 });

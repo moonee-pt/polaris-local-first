@@ -1,12 +1,11 @@
 import type { ChatMessage } from '../../../types/domain';
-import { buildAssistantCaptionParts, buildAssistantSpeechPlan } from '../chat/message/messageSpeechText';
-import type { VoiceCallCaptionSourcePart } from '../../../engines/voice/voiceCallCaption';
-import { buildCaptionPartsFromPlan, type VoiceCallSpeechPlan } from '../../../engines/voice/voiceCallSpeechUnits';
+import { buildAssistantSpeechPlan, buildStreamingVoicePlan } from '../chat/message/messageSpeechText';
 
 export type VoiceCallSpeechTarget = {
   messageId: string;
-  plan: VoiceCallSpeechPlan;
-  caption: VoiceCallCaptionSourcePart[];
+  content: string;
+  /** Reply is still streaming: speak only the lines that closed and keep feeding the rest. */
+  streaming: boolean;
 };
 
 type ResolveVoiceCallSpeechTargetArgs = {
@@ -14,25 +13,28 @@ type ResolveVoiceCallSpeechTargetArgs = {
   startedAt: number;
   muted: boolean;
   busy: boolean;
-  generating: boolean;
+  sending: boolean;
   hasSpoken: (messageId: string) => boolean;
+  isStreamingMessage: (messageId: string) => boolean;
 };
 
 /**
  * Decides whether the call should start saying a newly arrived reply.
  *
- * Only the newest settled assistant message counts, and only when it was written
- * during this call, nothing else is playing, and the reply is not still streaming.
+ * Only the newest assistant message counts, and only when it was written during this
+ * call and nothing else is playing. While it is still streaming the call starts as soon
+ * as one line has closed; a settled reply starts as soon as it has any words at all.
  */
 export function resolveVoiceCallSpeechTarget({
   messages,
   startedAt,
   muted,
   busy,
-  generating,
-  hasSpoken
+  sending,
+  hasSpoken,
+  isStreamingMessage
 }: ResolveVoiceCallSpeechTargetArgs): VoiceCallSpeechTarget | null {
-  if (muted || busy || generating) return null;
+  if (muted || busy || sending) return null;
 
   for (let index = messages.length - 1; index >= 0; index -= 1) {
     const message = messages[index];
@@ -42,14 +44,14 @@ export function resolveVoiceCallSpeechTarget({
     if (message.timestamp < startedAt) return null;
     if (hasSpoken(message.id)) return null;
 
-    const plan = buildAssistantSpeechPlan(message.content);
-    if (plan.units.length === 0) return null;
-    const caption = buildAssistantCaptionParts(message.content);
-    return {
-      messageId: message.id,
-      plan,
-      caption: caption.length > 0 ? caption : buildCaptionPartsFromPlan(plan)
-    };
+    const streaming = isStreamingMessage(message.id);
+    if (streaming) {
+      const plan = buildStreamingVoicePlan(message.content);
+      if (!plan || plan.units.length === 0) return null;
+    } else if (buildAssistantSpeechPlan(message.content).units.length === 0) {
+      return null;
+    }
+    return { messageId: message.id, content: message.content, streaming };
   }
 
   return null;
