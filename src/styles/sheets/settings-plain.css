@@ -585,6 +585,18 @@
   box-shadow: none;
 }
 
+/* The flat skin drops gradient fills; primary buttons keep white text from the
+   gradient treatment, so they need a solid fill or the label turns invisible. */
+:is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .mcp-btn.primary {
+  background-color: var(--accent);
+  color: #fff;
+}
+
+:is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .mcp-btn.primary:hover,
+:is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .mcp-btn.primary:focus-visible {
+  background-color: color-mix(in srgb, var(--accent) 86%, #fff);
+}
+
 :is(.menu-sheet-page, .api-provider-sheet):is(.menu-sheet-page, .api-provider-sheet) .api-provider-list-row.active {
   background: color-mix(in srgb, var(--accent-soft) 46%, transparent);
 }
