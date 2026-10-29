@@ -7,6 +7,8 @@
  * scheduled after the previous clip plus a configurable gap.
  */
 
+import { getSharedAudioContext } from '../app/audio/sharedAudioContext';
+
 type AudioQueueCallbacks = {
   onStarted: () => void;
   onEnded: () => void;
@@ -15,7 +17,6 @@ type AudioQueueCallbacks = {
 };
 
 export class AudioQueueManager {
-  private context: AudioContext | null = null;
   private queue: AudioBuffer[] = [];
   private nextIndex = 0;
   private isPlaying = false;
@@ -32,13 +33,7 @@ export class AudioQueueManager {
   }
 
   private getContext(): AudioContext | null {
-    if (this.context) return this.context;
-    if (typeof window === 'undefined') return null;
-    const Ctor = window.AudioContext
-      ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-    if (!Ctor) return null;
-    this.context = new Ctor();
-    return this.context;
+    return getSharedAudioContext();
   }
 
   enqueue(blob: Blob): void {
@@ -186,10 +181,6 @@ export class AudioQueueManager {
     this.isPlaying = false;
     this.queue = [];
     this.nextIndex = 0;
-
-    if (this.context && this.context.state === 'running') {
-      void this.context.suspend().catch(() => {});
-    }
   }
 
   get playing(): boolean {

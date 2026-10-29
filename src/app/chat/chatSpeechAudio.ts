@@ -5,27 +5,14 @@
  * The AudioContext is unlocked synchronously on the tap, and programmatic buffer
  * playback then keeps working — the same path the body track already uses.
  */
-type AudioContextCtor = typeof AudioContext;
+import { getSharedAudioContext, resumeSharedAudioContext } from '../audio/sharedAudioContext';
 
-let context: AudioContext | null = null;
 let currentSource: AudioBufferSourceNode | null = null;
 let generation = 0;
 
-function ensureContext(): AudioContext | null {
-  if (typeof window === 'undefined') return null;
-  if (context) return context;
-  const Ctor = window.AudioContext
-    ?? (window as unknown as { webkitAudioContext?: AudioContextCtor }).webkitAudioContext;
-  if (!Ctor) return null;
-  context = new Ctor();
-  return context;
-}
-
 /** Must be called synchronously inside the tap that starts read-aloud. */
 export function primeChatSpeechAudio() {
-  const target = ensureContext();
-  if (!target || target.state !== 'suspended') return;
-  void target.resume().catch(() => {});
+  resumeSharedAudioContext();
 }
 
 export function stopChatSpeechAudio() {
@@ -50,7 +37,7 @@ export type ChatSpeechPlaybackHandlers = {
 };
 
 export async function playChatSpeechBlob(blob: Blob, handlers: ChatSpeechPlaybackHandlers): Promise<void> {
-  const target = ensureContext();
+  const target = getSharedAudioContext();
   if (!target) {
     handlers.onError();
     return;

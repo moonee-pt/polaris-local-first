@@ -225,6 +225,13 @@ export function MessageActions({
     setSpeechLoading(false);
   }
 
+  /** 起读是设备音频能力的边界：浏览器拒绝给音频通道时只能报一句「播放失败」，
+   *  不能让异常从渲染阶段逃出去，把整个对话世界带进崩溃页。 */
+  function failSpeechStart(error: unknown) {
+    stopSpeechPlayback();
+    onSetCommandStatus(error instanceof Error ? error.message : t('chat.messageActions.audioPlaybackFailed'), true);
+  }
+
   /** A clip that ended on its own: auto read-aloud leaves the ambience running,
    *  a manual tap still tears it down. */
   function finishSpeechPlayback() {
@@ -327,11 +334,17 @@ export function MessageActions({
     const text = speakableContent;
     if (!text) return false;
     autoPlaybackRef.current = auto;
-    primeChatSpeechAudio();
-    stopSpeechPlayback();
-    const started = speakVoiceScript(messageId, text, useCache ? (speechCache ?? null) : null, streaming);
-    voiceScriptMessageIdRef.current = started ? messageId : null;
-    return started;
+    try {
+      primeChatSpeechAudio();
+      stopSpeechPlayback();
+      const started = speakVoiceScript(messageId, text, useCache ? (speechCache ?? null) : null, streaming);
+      voiceScriptMessageIdRef.current = started ? messageId : null;
+      return started;
+    } catch (error) {
+      voiceScriptMessageIdRef.current = null;
+      failSpeechStart(error);
+      return false;
+    }
   };
 
   const beginSpeech = (auto = false) => {
@@ -343,18 +356,22 @@ export function MessageActions({
     const text = speakableContent;
     if (!text) return;
     autoPlaybackRef.current = auto;
-    primeChatSpeechAudio();
-    stopSpeechPlayback();
-    if (speechCache?.assetId) {
-      void playCachedSpeech(speechCache);
-      return;
+    try {
+      primeChatSpeechAudio();
+      stopSpeechPlayback();
+      if (speechCache?.assetId) {
+        void playCachedSpeech(speechCache);
+        return;
+      }
+      if (voiceGeneration.enabled) {
+        void playConfiguredSpeech(text);
+        return;
+      }
+      onSetCommandStatus(t('chat.messageActions.systemVoiceFallback'));
+      playNativeSpeech(text);
+    } catch (error) {
+      failSpeechStart(error);
     }
-    if (voiceGeneration.enabled) {
-      void playConfiguredSpeech(text);
-      return;
-    }
-    onSetCommandStatus(t('chat.messageActions.systemVoiceFallback'));
-    playNativeSpeech(text);
   };
   autoSpeakRef.current = () => beginSpeech(true);
 

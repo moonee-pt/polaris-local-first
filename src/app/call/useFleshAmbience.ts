@@ -9,6 +9,7 @@ import {
   type FleshAmbiencePreset
 } from '../../engines/voice/fleshAmbience';
 import type { TimedAmbienceCue } from '../../engines/voice/ambienceTimeline';
+import { getSharedAudioContext } from '../audio/sharedAudioContext';
 
 const LOOKAHEAD_SEC = 0.8;
 const TICK_MS = 150;
@@ -70,12 +71,9 @@ export function useFleshAmbience(): FleshAmbienceController {
   const [active, setActive] = useState(false);
 
   const ensureGraph = useCallback(() => {
-    if (typeof window === 'undefined') return null;
     if (contextRef.current) return contextRef.current;
-    const Ctor = window.AudioContext
-      ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-    if (!Ctor) return null;
-    const context = new Ctor();
+    const context = getSharedAudioContext();
+    if (!context) return null;
     const duck = context.createGain();
     duck.gain.value = 1;
     const master = context.createGain();
@@ -315,11 +313,23 @@ export function useFleshAmbience(): FleshAmbienceController {
       }
     }
     oneShotVoicesRef.current.clear();
-    void contextRef.current?.close().catch(() => {});
+    // The context is shared app-wide, so this row only tears down its own nodes.
+    for (const bed of bedsRef.current.values()) {
+      for (const voice of bed.voices) {
+        try {
+          voice.source.stop();
+        } catch {
+          // Already stopped.
+        }
+      }
+      bed.gain.disconnect();
+    }
+    bedsRef.current.clear();
+    duckRef.current?.disconnect();
+    masterRef.current?.disconnect();
     contextRef.current = null;
     masterRef.current = null;
     duckRef.current = null;
-    bedsRef.current.clear();
   }, [clearTimer]);
 
   return { active, schedule, stop, setDucked };
